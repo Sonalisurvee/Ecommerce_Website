@@ -1,0 +1,101 @@
+{% extends 'userpanel/userbase.html' %}
+{% block title %}login{% endblock title %}
+{% block body %}
+
+<style>
+    .cap {
+        width: 400px; /* adjust as needed */
+        height: 400px; /* adjust as needed */
+        position: relative;
+        overflow: hidden;        
+      }
+      
+    .cap img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 100%;
+        max-height: 100%;
+      }
+      
+</style>
+
+    <!-- breadcrumb part start-->
+    <section class="breadcrumb_part">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb_iner">
+                        <h2>Product list</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- breadcrumb part end-->
+    
+    <!-- product list part start-->
+    <section class="product_list section_padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="product_sidebar">
+                        <div class="single_sedebar">
+                            <form action="#">
+                                <input type="text" name="#" placeholder="Search keyword">
+                                <i class="ti-search"></i>
+                            </form>
+                        </div>
+                        <div class="single_sedebar">
+                            <div class="select_option">
+                                <div class="select_option_list">Category <i class="right fas fa-caret-down"></i> </div>
+                                <div class="select_option_dropdown">
+                                    <p><a href="#">Category 1</a></p>
+                                    <p><a href="#">Category 2</a></p>
+                                    <p><a href="#">Category 3</a></p>
+                                    <p><a href="#">Category 4</a></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="single_sedebar">
+                            <div class="select_option">
+                                <div class="select_option_list">Type <i class="right fas fa-caret-down"></i> </div>
+                                <div class="select_option_dropdown">
+                                    <p><a href="#">Type 1</a></p>
+                                    <p><a href="#">Type 2</a></p>
+                                    <p><a href="#">Type 3</a></p>
+                                    <p><a href="#">Type 4</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="product_list">
+                        <div class="row">
+                            {% for p in products %}
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="single_product_item ">
+                                        {% if p.image %}
+                                            <img src="{{p.image.url}}" alt="{{p.product_name}}" class="">
+                                         {% endif %}
+                                    <h3> <a href="single-product.html">{{p.product_name}}</a> </h3>
+                                    <p>{{p.price}}</p>
+                                </div>
+                            </div>  
+                            {% endfor %}
+                        </div>
+                        <div class="load_more_btn text-center">
+                            <a href="#" class="btn_3">Load More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- product list part end-->
+  
+  
+
+{% endblock body %}   
