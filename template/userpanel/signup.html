@@ -8,7 +8,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="breadcrumb_iner">
-                        <h2>login</h2>
+                        <h2>Signup</h2>
                     </div>
                 </div>
             </div>
@@ -26,15 +26,27 @@
                         <div class="login_part_form_iner">
                             <h3>Welcome Back ! <br>
                                 Please Sign in now</h3>
+                                {% for m in  messages %}
+                                {{ m }}
+                                {% endfor %}
                             <form class="row contact_form" action="{% url 'signup' %}" method="post">
+                                {% csrf_token %}
                                 <div class="col-md-12 form-group p_star">
-                                    <input type="text" class="form-control" id="username" name="name" value=""
+                                    <input type="text" class="form-control" id="username" name="username" value=""
                                         placeholder="Username">
+                                </div>
+
+                                <div class="col-md-12 form-group p_star">
+                                    <input type="email" class="form-control" id="email" name="email" value=""
+                                        placeholder="Email">
                                 </div>
                                 <div class="col-md-12 form-group p_star">
                                     <input type="password" class="form-control" id="password" name="password" value=""
                                         placeholder="Password">
-
+                                </div>
+                                <div class="col-md-12 form-group p_star">
+                                    <input type="password" class="form-control" id="repassword" name="repassword" value=""
+                                        placeholder=" COnfirm Password">
                                 </div>
                                 <div class="col-md-12 form-group">                                   
                                     <button type="submit" value="submit" class="btn_3">

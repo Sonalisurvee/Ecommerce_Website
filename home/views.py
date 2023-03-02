@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.models import auth, User
-from.models import Banner
+from .models import Banner
+from account.models import Account
 
 # Create your views here.
 def index(request):
@@ -30,3 +31,18 @@ def block_unblock(request,user_id):
         user.is_active=True
         user.save()
         return redirect(user_management)
+
+
+def profile(request):
+
+    if Account.objects.get(username='ck'):
+        dict={
+            'account': Account.objects.get(username='ck')
+        }
+        return render(request,'userpanel/profile.html',dict)
+    else:
+        return render(request,'userpanel/profile.html')
+
+
+def error_404(request,exception):
+    return render(request,'404.html')

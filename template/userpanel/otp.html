@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>OTP Page</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="style.css">
+</head>
+<style>
+    * {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-color: #f2f2f2;
+	font-family: Arial, sans-serif;
+}
+
+.container {
+	max-width: 500px;
+	margin: 50px auto;
+	background-color: #fff;
+	padding: 50px;
+	border-radius: 10px;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+	text-align: center;
+}
+
+h1 {
+	font-size: 36px;
+	margin-bottom: 30px;
+}
+
+form input[type="text"] {
+	width: 100%;
+	padding: 20px;
+	margin-bottom: 30px;
+	border: none;
+	border-radius: 5px;
+	font-size: 18px;
+	background-color: #f2f2f2;
+}
+
+form input[type="submit"] {
+	display: block;
+	width: 100%;
+	padding: 20px;
+	border: none;
+	border-radius: 5px;
+	font-size: 18px;
+	background-color: #007bff;
+	color: #fff;
+	cursor: pointer;
+	transition: background-color 0.3s ease-in-out;
+}
+
+form input[type="submit"]:hover {
+	background-color: #0069d9;
+}
+
+</style>
+<body>
+	<div class="container">
+		<h1>Enter OTP</h1>
+		<form action="{% url 'signup' %}">
+			<input type="text" placeholder="Enter OTP" maxlength="4" required>
+			<input type="submit" value="Submit">
+		</form>
+	</div>
+</body>
+</html>

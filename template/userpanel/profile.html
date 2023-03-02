@@ -2,25 +2,261 @@
 {% block title %}Profile{% endblock title %}
 {% block body %}
 
+<style>
+    .cap {
+        background-color: #795376;
+    }
+</style>
 
-    <!-- breadcrumb part start-->
-    <section class="breadcrumb_part">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="breadcrumb_iner">
-                        <h2>Product list</h2>
+<!-- breadcrumb part start-->
+<section class="breadcrumb_part">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb_iner">
+                    <h2>Product list</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- breadcrumb part end-->
+
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col">
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item "><a href="{% url 'index' %}">Home</a></li>
+                        {% comment %} <li class="breadcrumb-item"><a href="#">User</a></li> {% endcomment %}
+                        <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        {% for a in account %}
+        
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                            alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+                        <h5 class="my-3">John Smith</h5>
+                        {% comment %} <p class="text-muted mb-1">Full Stack Developer</p>
+                        <p class="text-muted mb-4">Bay Area, San Francisco, CA</p> {% endcomment %}
+                        <div class="d-flex justify-content-center mb-2">
+                            {% comment %} <button type="button" class="btn btn-primary">Follow</button> {% endcomment %}
+                            {% comment %} <button type="button" class="btn btn-outline-primary ms-1">Message</button> {%
+                            endcomment %}
+                        </div>
+                    </div>
+                </div>
+                {% comment %} <div class="card mb-4 mb-lg-0">
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush rounded-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                <i class="fas fa-globe fa-lg text-warning"></i>
+                                <p class="mb-0">https://mdbootstrap.com</p>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                <i class="fab fa-github fa-lg" style="color: #333333;"></i>
+                                <p class="mb-0">mdbootstrap</p>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
+                                <p class="mb-0">@mdbootstrap</p>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
+                                <p class="mb-0">mdbootstrap</p>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
+                                <p class="mb-0">mdbootstrap</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div> {% endcomment %}
+            </div>
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Full Name</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{a.username}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Email</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{a.email}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Phone</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{a.phone_number}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        {% comment %} <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Mobile</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">(098) 765-4321</p>
+                            </div>
+                        </div>
+                        <hr>{% endcomment %}
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Address</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-    <!-- breadcrumb part end-->
-    
-   
-  
-  
+        {% endfor %}
+
+        <button type="button" class="btn cap">Edit</button>
+    </div>
+</section>
 
 
+
+<button type="button" class="btn text-danger" data-bs-toggle="modal" data-bs-target="#delete_model-{{forloop.counter}}">
+    <i class="ri-delete-bin-4-line"></i>
+</button>
+<div class="modal fade" id="edit_model-{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
+                    Edit product</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="" enctype="multipart/form-data" method="POST"
+                    class="row g-2">
+                    {% csrf_token %}
+                    <div class="form-outline mb-3">
+                        <input name="product" value="{{p.product_name}}" type="text" id="form3Example1cg"
+                            class="form-control form-control-lg" />
+                        <label class="form-label" for="form3Example1cg">Product</label>
+                    </div>
+
+
+                    <div class="form-outline mb-3">
+
+
+                        <label class="form-label" for="form3Example3cg">Category</label>
+                        <select name="category" id="category">
+                            {% for c in categories %}
+                            <option value="{{ c.id }}">
+                                {{ c.cat_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-outline mb-3">
+                        <input name="image" value="{{ p.image }}" type="file" id="form3Example3cg"
+                            class="form-control form-control-lg" />
+                        <label class="form-label" for="form3Example3cg">Image</label>
+                    </div>
+
+
+                    <div class="form-outline mb-3">
+                        <input name="description" value="{{ p.product_description }}" type="text" id="form3Example3cg"
+                            class="form-control form-control-lg" />
+                        <label class="form-label" for="form3Example3cg">Description</label>
+                    </div>
+                    <div class="form-outline mb-3">
+                        <input name="stock" value="{{ p.stock }}" type="number" id="form3Example3cg"
+                            class="form-control form-control-lg" />
+                        <label class="form-label" for="form3Example3cg">Stock</label>
+                    </div>
+
+                    <div class="form-outline mb-3">
+                        <input name="price" value="{{ p.price }}" type="number" id="form3Example3cg"
+                            class="form-control form-control-lg" />
+                        <label class="form-label" for="form3Example3cg">Price</label>
+                    </div>
+                    <button type="submit" class="btn btn-success">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- feature part here -->
+<section class="feature_part section_padding">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-6">
+                <div class="feature_part_tittle">
+                    <h3>Credibly innovate granular
+                        internal or organic sources
+                        whereas standards.</h3>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="feature_part_content">
+                    <p>Seamlessly empower fully researched growth strategies and interoperable internal or “organic”
+                        sources. Credibly innovate granular internal or “organic” sources whereas high standards in
+                        web-readiness.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-3 col-sm-6">
+                <div class="single_feature_part">
+                    <img src="#" alt="#">
+                    <h4>Credit Card Support</h4>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="single_feature_part">
+                    <img src="#" alt="#">
+                    <h4>Online Order</h4>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="single_feature_part">
+                    <img src="" alt="#">
+                    <h4>Free Delivery</h4>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="single_feature_part">
+                    <img src="#" alt="no image">
+                    <h4>Product with Gift</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- feature part end -->
 
 {% endblock body %}

@@ -76,14 +76,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'signoproject.wsgi.application'
 
+AUTH_USER_MODEL = 'account.Account'
+
+
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME' : 'new_commerce',
+        'USER': 'postgres',
+        'PASSWORD': 'dsonalisurve',
+        'HOST': 'localhost',
+
     }
 }
 
@@ -136,3 +143,16 @@ STATICFILES_DIRS=[
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+
+
+
+
+LOGIN_URL='signin'
+LOGIN_REDIRECT_URL='home'
+EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_PORT=587
+EMAIL_HOST_USER='sonalisurve012@gmail.com'
+EMAIL_HOST_PASSWORD='qkgdhagxurejurdl'
+EMAIL_USE_TLS=True
