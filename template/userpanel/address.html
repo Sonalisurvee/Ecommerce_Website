@@ -1,0 +1,81 @@
+{% extends 'userpanel/userbase.html' %}
+{% block title %}login{% endblock title %}
+{% block body %}
+
+
+<style>
+    .cap {
+        background-color: #795376;
+    }
+    a{
+        color:black
+    }
+</style>
+
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col">
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'profile' %}">User
+                                Profile</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Address</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                            alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+                        <h5 class="my-3">{{ user.username }}</h5>
+                        <!-- <div class="d-flex justify-content-center mb-2">
+                            <button type="button" class="btn cap" data-toggle="modal" data-target="#deletModal">
+                                Edit
+                            </button>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <form method="post" action="" class="account-form" name="address_form" enctype="multipart/form-data">
+                    {% if from.error%}
+                    <div class="alert alert-primary" role="alert">
+                        Errror: Plese try agin
+                        {% endif %}
+                        {% csrf_token %}
+                        <label class="small fw-bold">{{ form.full_name.label }}</label>
+                        {{ form.full_name }}
+                        <label class="small fw-bold">{{ form.phone.label }}</label>
+                        {{ form.phone }}
+                        <label class="small fw-bold">{{ form.state.label }}</label>
+                        {{ form.state }}
+                        <label class="small fw-bold">{{ form.city.label }}</label>
+                        {{ form.city }}
+                        <label class="small fw-bold">{{ form.pincode.label }}</label>
+                        {{ form.pincode }}
+                        <label class="small fw-bold">{{ form.house_name.label }}</label>
+                        {{ form.house_name }}
+                        <button class="btn cap btn-block py-2 mb-4 mt-4 fw-bold w-100" type="button"
+                            value="submit" onclick="submitform()">Add Address</button>
+                </form>
+            </div>
+        </div>
+</section>
+
+<script>
+    function submitform() {
+        var form = document.getElementsByName("address_form")[0];
+        form.submit();
+        from.reset();
+        return false;
+    }
+</script>
+
+{% endblock body %}

@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 class  MyAccountManager(BaseUserManager):
     # to create a normal user
-    def create_user(self,first_name,last_name,username,email,password=None):
+    def create_user(self,first_name,last_name,username,email,password=None,phone_number=None):
         if not email:
             raise ValueError('User must have an email address')
         if not username:
@@ -16,6 +16,7 @@ class  MyAccountManager(BaseUserManager):
             first_name=first_name,
             last_name=last_name,
             username=username,
+            phone_number=phone_number,
             email=self.normalize_email(email),#normalize will convert the email into small letters 
         )
         # the things inside the user model are the things mentioned in the create_user function
@@ -62,7 +63,7 @@ class Account(AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
     # WE are setting email as our login custom way instead of the username
-    REQUIRED_FIELDS = ['username', 'first_name','last_name']
+    REQUIRED_FIELDS = ['first_name','last_name']
 
     # here in accounts we need to say to accounts that we are performing some fun in MyAccountManger so that acoount will userderstand 
     objects = MyAccountManager()
@@ -79,7 +80,23 @@ class Account(AbstractBaseUser):
         return True
     
 
+class Address(models.Model):
+    customer = models.ForeignKey(Account,on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=150)
+    phone = models.CharField(max_length=50)
+    pincode = models.CharField(max_length=50)
+    state = models.CharField(max_length=250)
+    city = models.CharField(max_length=250)
+    house_name = models.CharField(max_length=150)
+    delivery_instruction = models.CharField(max_length=150)    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    default = models.BooleanField(default=False)
 
+    class Meta:
+        verbose_name='Address'
+        verbose_name_plural='Addresses'
+        
 
 
 class UserOTP(models.Model):

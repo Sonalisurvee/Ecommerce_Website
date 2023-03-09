@@ -105,26 +105,26 @@
                                         method="POST" class="row g-2">
                                         {% csrf_token %}
                                         <div class="form-outline mb-3 ">
-                                            <input name="category" value="" type="text"
+                                            <input name="category" value="{{c.cat_name}}" type="text"
                                                 id="form3Example1cg" class="form-control form-control-lg" />
                                             <label class="form-label cap" for="form3Example1cg">Category</label>
                                         </div>
 
                                         <div class="form-outline mb-3">
-                                            <input name="slug" value="" type="text"
+                                            <input name="slug" value="{{c.slug}}" type="text"
                                                 id="form3Example1cg" class="form-control form-control-lg" />
                                             <label class="form-label" for="form3Example1cg">Slug</label>
                                         </div>
                                        
                                         <div class="form-outline mb-3">
-                                            <input name="image" type="file"
+                                            <input name="image" type="file" value="{{c.cat_image}}"
                                                 id="form3Example3cg" class="form-control form-control-lg" />
                                             <label class="form-label" for="form3Example3cg">Image</label>
                                         </div>
 
 
-                                        <div class="form-outline mb-3">
-                                            <input name="description" value=""
+                                        <div class="form-outline mb-3">                                            
+                                            <input name="description" value="{{c.description }}"
                                                 type="text" id="form3Example3cg"
                                                 class="form-control form-control-lg" />
                                             <label class="form-label" for="form3Example3cg">Description</label>

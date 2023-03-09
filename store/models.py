@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from category.models import Category
+from django.urls import reverse
+
 
 # Create your models here.
 class Product(models.Model):
@@ -18,6 +20,16 @@ class Product(models.Model):
     def __str__(self):
         return self.product_name
     
+    def get_url(self):
+        return reverse('product_details',args=[self.category.slug,self.slug])    
+    
+    #here self inside args is our Product model
+    # here category means category column
+    # here slug means the category slug presnt in the Category model
+
+    # here next self means Product model
+    #  slug menas te slug present n the Product model
+
 
 class Product_Image(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')

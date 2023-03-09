@@ -1,42 +1,74 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import messages
 from .models import Category
+from store.models import Product
 
-# Create your views here.
+# -----------------------------------Category --------------------------------
+
+
+def category_product(request):
+    category=Category.objects.filter(status=0)
+    dict_extra={
+        'category': category
+    }
+    return render(request,'category/extra.html',dict_extra)
+
+
+def category_view(request, slug):
+    if(Category.objects.filter(slug=slug,status=0)):
+        products = Product.objects.filter(category__name=slug)
+        category_name=Category.objects.filter(slug=slug).first()
+        context={'products': products,'category_name': category_name}
+        return render(request,'product/pcategory_management.html', context)
+    else:
+        messages.warning(request,"This category does not exist")
+        return redirect(category_product)
+      
+      
+# -----------------------------------Category-Delete,edit and add --------------------------------
+
+    
 def category_management(request):
     dict_cate={
         'cate': Category.objects.all().order_by('id')
     }
     return render(request,'category/category_management.html',dict_cate)
     
+
 def delete_category(request,cate_id):
     del_record = Category.objects.filter(id=cate_id)
     del_record.delete()
     return redirect(category_management)
 
-#---
+
 def update_category(request,cate_id):
-    category=request.POST['category']
-    description=request.POST['description']
-    update_category = Category.objects.get(id=cate_id)
-    #this update_c was given to get the perticular id wala img so that we can save it
+    products=get_object_or_404(Category,pk=cate_id)
+    if request.method == 'POST':
+        category=request.POST['category']
+        description=request.POST['description']
+        slug=request.POST['slug']  
+        try:
+            update_category = Category.objects.get(id=cate_id)
+            #this update_c was given to get the perticular id wala img so that we can save it
+            image=request.FILES['image']
+            update_category.cat_image=image
+            update_category.save()
+        except:
+            pass
 
-    image=request.FILES['image']
-    update_category.cat_image=image
-    update_category.save()
+        if Category.objects.filter(cat_name=category).exists():
+            messages.info(request,"This category already exists")
+            return redirect(category_management)
+        else:
+            update_category = Category.objects.filter(id=cate_id)  
+        # this update_c was given to filter all the id in the category        
+            update_category.update(cat_name=category,description=description,slug=slug)
+            return redirect(category_management)
 
-    slug=request.POST['slug']  
-    if Category.objects.filter(cat_name=category).exists():
-        messages.info(request,"This category already exists")
-        return redirect(category_management)
+        #here both the update_c were imp because both play 2 diff roles 
     else:
-        update_category = Category.objects.filter(id=cate_id)  
-    # this update_c was given to filter all the id in the category
-       
-        update_category.update(cat_name=category,description=description,slug=slug)
-        return redirect(category_management)
-
-    #here both the update_c were imp because both play 2 diff roles 
+        messages.info(request,'some field is empty')
+        return render(request,'category/category_management.html')
 
 
 def add_category(request):
@@ -58,22 +90,4 @@ def add_category(request):
         return redirect(add_category)
     
 
-
-    # def update_category(request,cate_id):
-    # category=request.POST['category']
-    # description=request.POST['description']
-    # update_category = Category.objects.get(id=cate_id)
-    # #this update_c was given to get the perticular id wala img so that we can save it
-
-    # image=request.FILES['image']
-    # update_category.cat_image=image
-    # update_category.save()
-
-    # slug=request.POST['slug']  
-    # update_category = Category.objects.filter(id=cate_id)  
-    # # this update_c was given to filter all the id in the category
-       
-    # update_category.update(cat_name=category,description=description,slug=slug)
-    # return redirect(category_management)
-
-    # #here both the update_c were imp because both play 2 diff roles 
+           

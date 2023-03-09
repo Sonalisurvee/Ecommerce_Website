@@ -1,0 +1,173 @@
+{% extends 'adminpanel/adminbase.html' %}
+{% block title %}Product{% endblock title %}
+{% block body %}
+
+<style>
+
+
+</style>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
+                <li class="breadcrumb-item active">Product</li>
+            </ol>
+        </nav>
+    </div>
+    <p class="text-center">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Product management</h5>
+
+            <!-- Table with hoverable rows -->
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">Banner name</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">discount</th>
+                        <th scope="col">Action</th>
+                    
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for b in banners %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{b.banner_name}}</td>
+                                             
+
+                        <td class="px-4 py-3">
+                        {% if b.banner_image %}
+
+                            <img src="{{ b.banner_image.url }}" alt="{{b.banner_name}}" style="width:100px; height:50px" >
+                        {% endif %}
+                            
+                        </td>
+
+
+                        <td>{{b.note}}</td>
+                        <td>{{b.discount}}</td>
+                        
+                        <td>
+                            <!-- <button type="button" class="btn text-danger" data-bs-toggle="modal"
+                            data-bs-target="#delete_model-{{forloop.counter}}">
+                            <i class="ri-delete-bin-4-line"></i>
+                        </button> -->
+                        <button type="button" class="btn text-warning" data-bs-toggle="modal"
+                            data-bs-target="#edit_model-{{forloop.counter}}">
+                            <i class="ri-pencil-line"></i>
+                        </button>
+                        </td>                    
+
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="delete_model-{{forloop.counter}}" tabindex="-1"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
+                                            Delete banner</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        are you sure to delete this <span class="text-danger">"{{b.banner_name}}"</span>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <form action="{% url 'banner_delete' b.id %}" style="float: right;"
+                                            method="post" class="float-right d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="edit_model-{{forloop.counter}}" tabindex="-1"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
+                                            Edit banner</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{% url 'banner_edit' b.id %}" enctype="multipart/form-data"
+                                            method="POST" class="row g-2">
+                                            {% csrf_token %}
+                                            <div class="form-outline mb-3">
+                                                <input name="name" value="{{b.banner_name}}" type="text"
+                                                    id="form3Example1cg" class="form-control form-control-lg" />
+                                                <label class="form-label" for="form3Example1cg">Banner name</label>
+                                            </div>                                      
+
+                                            <div class="form-outline mb-3">
+                                                <input name="image" value="{{ b.banner_image }}" type="file"
+                                                    id="form3Example3cg" class="form-control form-control-lg" />
+                                                <label class="form-label" for="form3Example3cg">Image</label>
+                                            </div>
+
+
+                                            <div class="form-outline mb-3">
+                                                <input name="description" value="{{ b.note }}"
+                                                    type="text" id="form3Example3cg"
+                                                    class="form-control form-control-lg" />
+                                                <label class="form-label" for="form3Example3cg">Description</label>
+                                            </div>
+                                           
+
+                                            <div class="form-outline mb-3">
+                                                <input name="discount" value="{{ b.discount }}" type="number"
+                                                    id="form3Example3cg" class="form-control form-control-lg" />
+                                                <label class="form-label" for="form3Example3cg">discount</label>
+                                            </div>
+                                            <button type="submit" class="btn btn-success">Update</button>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+            <!-- End Table with hoverable rows -->
+
+        </div>
+    </div>
+    </p>
+
+
+
+</main><!-- End #main -->
+
+
+
+{% endblock body %}
+
+
+

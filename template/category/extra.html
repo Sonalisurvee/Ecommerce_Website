@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>collections</h1>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Category</h1>
+                <hr>
+                <div class="row">
+                    {% for item in category %}
+                    <div class="col-md-3">
+                        <div class="card">
+                            <a href="{% url 'extraview' item.slug %}">
+                            <div class="card-body">
+                                <div class="category-image">
+                                    <img src="{{ item.cat_image.url }}" alt="cate imaeg" class="w-100" width="200px"/>
+                                </div>
+                                <h4 class="text-center">{{ item.cat_name }}</h4>
+                            </div>
+                        </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

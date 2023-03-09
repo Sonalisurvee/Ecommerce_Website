@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Category name</h1>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>{{category_name.cat_name}}</h1>
+                <hr>
+                <div class="row">
+                    {% for item in products %}
+                    <div class="col-md-3">
+                        <div class="card">
+                            <a href="#">
+                            <div class="card-body">
+                                <div class="category-image">
+                                    <img src="{{ item.image.url }}" alt="prodyct imaeg" class="w-100" width="200px"/>
+                                </div>
+                                <h4 class="text-center">{{ item.product_name }}</h4>
+                                <span>{{item.price}}</span>
+                            </div>
+                        </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

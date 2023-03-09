@@ -64,8 +64,10 @@ form input[type="submit"]:hover {
 <body>
 	<div class="container">
 		<h1>Enter OTP</h1>
-		<form action="{% url 'signup' %}">
-			<input type="text" placeholder="Enter OTP" maxlength="4" required>
+		<form action="{% url 'signup' %}" method="POST">
+			{% csrf_token %}
+			<input type="hidden" name="user" value="{{user.username}}">
+			<input type="text" name='otp' placeholder="Enter OTP" maxlength="4" required>
 			<input type="submit" value="Submit">
 		</form>
 	</div>

@@ -1,0 +1,133 @@
+
+@cache_control(no_cache=True,must_revalidate=True,no_store=True)            
+def signup(request):
+     user = None
+     if request.method == 'POST':
+          get_otp = request.POST.get('otp')
+          print(get_otp)
+
+          #====OTP Verification===
+          if get_otp:
+               get_user = request.POST.get('user')
+               user = Account.objects.get(username=get_user)
+               otp_1 = UserOTP.objects.filter(user=user).last().otp
+               print(user)
+               print(get_otp)
+               print(otp_1)
+               if int(get_otp) == otp_1 :
+                    user.is_active = True
+                    user.save()
+                    messages.success(request,f'Account created Successfully')
+                    return redirect(log_in)
+               else:
+                    user.delete()
+                    messages.warning(request,'You have entered a wrong OTP')
+                    return render(request, 'userpanel/login.html',{'otp':True, 'user':user})
+
+          # ===User registration====
+          else:
+               username = request.POST['username']
+               email = request.POST['email']
+               password1 = request.POST['password']
+               password2 = request.POST['repassword']
+          
+          if username and email and password1 and password2 != "":
+               if password1 == password2:
+                    if Account.objects.filter(email = email).exists():
+                         messages.info(request,'Email already exists')
+                         return redirect(signup)
+                    elif Account.objects.filter(username = username).exists():
+                         messages.info(request,'Username already exists')
+                         return redirect(signup)
+                    else:
+                         user = Account.objects.create_user(username=username,email=email,password=password1,first_name='Any',last_name='Name')
+                         user.set_password(password1)
+                         user.is_active = False
+                         user.save()
+                         user_otp = random.randint(1000,9999)
+                         UserOTP.objects.create(user=user,otp=user_otp)
+                         mess=f'Hello\t{user.username},\nYour OTP for the Account Verfication for Signora is {user_otp}\nThank You!'
+                         send_mail(
+                              "Welcome to Signora.Verify Your Account",
+                              mess,
+                              settings.EMAIL_HOST_USER,
+                              [user.email],
+                              fail_silently=False,
+                         )
+                         return render(request,'userpanel/otp.html',{'otp':True, 'user':user})
+               else:
+                    messages.info(request,"Password doesn't match")
+                    return redirect(signup)
+          else:
+               messages.info(request,"Some fields are empty")
+               return redirect(signup)
+     else:
+          return render(request,'userpanel/signup.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          <section class="breadcrumb_part">
+               <div class="container ">
+                   <div class="col-lg-8">
+                       <div class="card mb-4">
+                           <div class="card-body">
+                               <div class="row">
+                                   <div class="col-sm-3">
+                                       <p class="mb-0">First Name</p>
+                                   </div>
+                                   <div class="col-sm-9">
+                                       <p class="text-muted mb-0">{{ user.first_name }}</p>
+                                   </div>
+                               </div>
+                               <hr>
+                               <div class="row">
+                                   <div class="col-sm-3">
+                                       <p class="mb-0">Last Name</p>
+                                   </div>
+                                   <div class="col-sm-9">
+                                       <p class="text-muted mb-0">{{ user.last_name }}</p>
+                                   </div>
+                               </div>
+                               <hr>
+                               <div class="row">
+                                   <div class="col-sm-3">
+                                       <p class="mb-0">Email</p>
+                                   </div>
+                                   <div class="col-sm-9">
+                                       <p class="text-muted mb-0">{{ user.email }}</p>
+                                   </div>
+                               </div>
+                               <hr>
+                               <div class="row">
+                                   <div class="col-sm-3">
+                                       <p class="mb-0">Phone</p>
+                                   </div>
+                                   <div class="col-sm-9">
+                                       <p class="text-muted mb-0">{{ user.phone_number }}</p>
+                                   </div>
+                               </div>
+                               <hr>
+                               <!-- <div class="row">
+                                   <div class="col-sm-3">
+                                       <p class="mb-0">Address</p>
+                                   </div>
+                                   <div class="col-sm-9">
+                                       <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
+                                   </div>
+                               </div> -->
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </section>

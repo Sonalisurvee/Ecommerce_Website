@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'home',
     'category',
     'store',
+    'cart',
+    'wishlist',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'category.context_processors.menu_links'
             ],
         },
     },
@@ -141,6 +144,8 @@ STATICFILES_DIRS=[
     os.path.join(BASE_DIR,'static')
 ]
 
+
+# this is done so that wen we want to choose img file in sqlite database we should be able to choose one
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 

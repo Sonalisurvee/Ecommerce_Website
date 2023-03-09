@@ -1,0 +1,78 @@
+{% extends 'userpanel/userbase.html' %}
+{% block title %}Wishlist{% endblock title %}
+{% block body %}
+
+
+
+<!--================Cart Area =================-->
+<section class="cart_area section_padding">
+    <div class="container">
+        <div class="cart_inner">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Price</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for wishlist_item in wishlist_items %}
+                        <tr>
+                            <td>
+                                <div class="media">
+                                    <div class="d-flex">
+                                        <img src="{{ wishlist_item.product.image.url }}" alt="" />
+                                    </div>
+                                    <div class="media-body">
+                                        <p>{{ wishlist_item.product.product_name }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <h5>{{ wishlist_item.product.price }}</h5>
+                            </td>
+                           
+                            <td>
+                                <!-- <h5>{{ cart_item.sub_total }}</h5> -->
+
+                            </td>
+                            <td>
+                                <!-- <h5>{{ cart_item.sub_total }}</h5> -->
+                            </td>
+                            <td>
+                                <a class="btn_1" href="{% url 'remove_wishlistitem' wishlist_item.product.id %}">Remove</a>                            
+                            </td>
+                           
+                        </tr>
+                    {% endfor %}
+                        <hr>
+                        <tr class="bottom_button">
+                            <td>
+                                <a class="btn_1" href="{% url 'product_list' %}">Update wishlist</a>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                           
+                        </tr>
+                       
+                       
+                    </tbody>
+                </table>
+                <div class="checkout_btn_inner float-right">
+                    <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
+                    <!-- <a class="btn_1 checkout_btn_1" href="#">Proceed to checkout</a> -->
+                </div>
+            </div>
+        </div>
+</section>
+<!--================End Cart Area =================-->
+
+
+
+{% endblock body %}

@@ -6,6 +6,9 @@
     .cap {
         background-color: #795376;
     }
+    a{
+        color:black
+    }
 </style>
 
 <!-- breadcrumb part start-->
@@ -14,7 +17,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="breadcrumb_iner">
-                    <h2>Product list</h2>
+                    <h2>Profile</h2>
                 </div>
             </div>
         </div>
@@ -22,73 +25,54 @@
 </section>
 <!-- breadcrumb part end-->
 
+
 <section style="background-color: #eee;">
     <div class="container py-5">
         <div class="row">
             <div class="col">
                 <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
                     <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item "><a href="{% url 'index' %}">Home</a></li>
-                        {% comment %} <li class="breadcrumb-item"><a href="#">User</a></li> {% endcomment %}
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
                         <li class="breadcrumb-item active" aria-current="page">User Profile</li>
                     </ol>
                 </nav>
             </div>
         </div>
-        {% for a in account %}
-        
+
         <div class="row">
             <div class="col-lg-4">
                 <div class="card mb-4">
                     <div class="card-body text-center">
                         <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                             alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
-                        <h5 class="my-3">John Smith</h5>
-                        {% comment %} <p class="text-muted mb-1">Full Stack Developer</p>
-                        <p class="text-muted mb-4">Bay Area, San Francisco, CA</p> {% endcomment %}
+                        <h5 class="my-3">{{ user.username }}</h5>
                         <div class="d-flex justify-content-center mb-2">
-                            {% comment %} <button type="button" class="btn btn-primary">Follow</button> {% endcomment %}
-                            {% comment %} <button type="button" class="btn btn-outline-primary ms-1">Message</button> {%
-                            endcomment %}
+                            <button type="button" class="btn cap" data-toggle="modal" data-target="#deletModal">
+                                Edit
+                            </button>
                         </div>
                     </div>
                 </div>
-                {% comment %} <div class="card mb-4 mb-lg-0">
-                    <div class="card-body p-0">
-                        <ul class="list-group list-group-flush rounded-3">
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fas fa-globe fa-lg text-warning"></i>
-                                <p class="mb-0">https://mdbootstrap.com</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-github fa-lg" style="color: #333333;"></i>
-                                <p class="mb-0">mdbootstrap</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
-                                <p class="mb-0">@mdbootstrap</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                                <p class="mb-0">mdbootstrap</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                                <p class="mb-0">mdbootstrap</p>
-                            </li>
-                        </ul>
-                    </div>
-                </div> {% endcomment %}
             </div>
+
             <div class="col-lg-8">
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-3">
-                                <p class="mb-0">Full Name</p>
+                                <p class="mb-0">First Name</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">{{a.username}}</p>
+                                <p class="text-muted mb-0">{{ user.first_name }}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Last Name</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{ user.last_name }}</p>
                             </div>
                         </div>
                         <hr>
@@ -97,7 +81,7 @@
                                 <p class="mb-0">Email</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">{{a.email}}</p>
+                                <p class="text-muted mb-0">{{ user.email }}</p>
                             </div>
                         </div>
                         <hr>
@@ -106,157 +90,247 @@
                                 <p class="mb-0">Phone</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">{{a.phone_number}}</p>
+                                <p class="text-muted mb-0">{{ user.phone_number }}</p>
                             </div>
                         </div>
                         <hr>
-                        {% comment %} <div class="row">
-                            <div class="col-sm-3">
-                                <p class="mb-0">Mobile</p>
-                            </div>
-                            <div class="col-sm-9">
-                                <p class="text-muted mb-0">(098) 765-4321</p>
-                            </div>
-                        </div>
-                        <hr>{% endcomment %}
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-sm-3">
                                 <p class="mb-0">Address</p>
                             </div>
                             <div class="col-sm-9">
                                 <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
         </div>
+
+        {% if user_addresses %}
+        <h3>Your addresses</h3>
+        {% endif %} 
+
+        {% for a in user_addresses %}
+        {% if not a.id == default.default.id %}
+        <h3>{{forloop.counter}} and {{default.default.id}}</h3>
+        <div class="card  mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{a.house_name}}, {{a.pincode}}</h5>
+                <p class="card-text">{{a.city}}, </p>
+                <div>
+
+
+                    <!-- Button trigger modal -->
+                    {% comment %} <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                        data-bs-target="#address{{forloop.counter}}">
+                        <a href="{% url '' %}">
+                        View</a>
+                    </button> {% endcomment %}
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="address{{forloop.counter}}" data-bs-backdrop="static"
+                        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title fs-6" id="staticBackdropLabel">View address</h4>
+                                    <button type="button" class="btn btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <div class="row">
+                                        <div class="col-sm-5">
+                                            <p class="mb-0">House Name</p>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            {{ a.house_name}}
+                                        </div>
+                                    </div>
+                                    <hr>
+
+                                    <div class="row">
+                                        <div class="col-sm-5">
+                                            <p class="mb-0">City</p>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            {{ a.city}}
+                                        </div>
+                                    </div>
+                                    <hr>                                     
+
+                                    <div class="row">
+                                        <div class="col-sm-5">
+                                            <p class="mb-0">Pincode</p>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            {{ a.pincode}}
+                                        </div>
+                                    </div>
+                                    <hr>
+
+                                    
+                                    <div class="row">
+                                        <div class="col-sm-5">
+                                            <p class="mb-0">State</p>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            {{ a.state}}
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a class="btn btn-light" href="{% url 'edit_address' a.id  %}">
+                        Edit
+                      </a>                
+
+                    <a class="btn cap" data-bs-toggle="modal"
+                        data-bs-target="#deletaddress{{forloop.counter}}" href="{% url 'delete_address' a.id  %}">
+                        delete
+                    </a>
+
+                    <a class="btn btn-light" href="{% url 'default_address' a.id  %}">
+                        Default
+                      </a>
+
+                    <!--Edit Modal -->
+                    <div class="modal fade " id="deletaddress{{forloop.counter}}" tabindex="-1"
+                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="" id="exampleModalLabel">Delete</h5>
+                                    <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close"> <i
+                                            class="fa fa-cancel"></i>X </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Are you sure to delete Address <span class="text-primary">" {{a.house_name}}
+                                            ..."</span></p>
+                                    <form action="#" enctype="multipart/form-data" method="POST">
+                                        {% csrf_token %}
+                                        <div class="d-flex justify-content-center">
+                                            <button type="submit"
+                                                class="btn btn-danger btn-lg gradient-custom-4 w-50 text-light">Confirm</button>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% comment %} <a href="" class="btn btn-dark">Make it default</a> {% endcomment %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
         {% endfor %}
 
-        <button type="button" class="btn cap">Edit</button>
+
+
+        <button class="btn cap"><a href="{% url 'add_address' %}">Add new address</a></button>
+        </a>
+        <br>
+        <br>
+
+
+
+
+        <!-- <button type="button" class="btn cap" data-toggle="modal" data-target="#deletModal">
+            Add Address
+        </button>
+<hr><br>
+        <div class="container ">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">First Name</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{ user.first_name }}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <button>edit</button>
+                        <button>delete</button>
+                        <button>set as default address</button>
+                      
+                        
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+
+
+
+
     </div>
 </section>
 
 
 
-<button type="button" class="btn text-danger" data-bs-toggle="modal" data-bs-target="#delete_model-{{forloop.counter}}">
-    <i class="ri-delete-bin-4-line"></i>
-</button>
-<div class="modal fade" id="edit_model-{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+
+
+<!-- Modal to edit the details of user-->
+<div class="modal fade" id="deletModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
-                    Edit product</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="exampleModalLabel">Edit profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
-                <form action="" enctype="multipart/form-data" method="POST"
+                <form action="{% url 'update_profile' user.id %}" enctype="multipart/form-data" method="POST"
                     class="row g-2">
                     {% csrf_token %}
                     <div class="form-outline mb-3">
-                        <input name="product" value="{{p.product_name}}" type="text" id="form3Example1cg"
+                        <input name="fname" value="{{user.first_name}}" type="text" id="form3Example1cg"
                             class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Example1cg">Product</label>
+                        <label class="form-label" for="form3Example1cg">First name</label>
                     </div>
-
-
                     <div class="form-outline mb-3">
-
-
-                        <label class="form-label" for="form3Example3cg">Category</label>
-                        <select name="category" id="category">
-                            {% for c in categories %}
-                            <option value="{{ c.id }}">
-                                {{ c.cat_name }}
-                            </option>
-                            {% endfor %}
-                        </select>
+                        <input name="lname" value="{{user.last_name}}" type="text" id="form3Example1cg"
+                            class="form-control form-control-lg" />
+                        <label class="form-label" for="form3Example1cg">Last name</label>
                     </div>
 
                     <div class="form-outline mb-3">
-                        <input name="image" value="{{ p.image }}" type="file" id="form3Example3cg"
-                            class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Example3cg">Image</label>
-                    </div>
-
-
-                    <div class="form-outline mb-3">
-                        <input name="description" value="{{ p.product_description }}" type="text" id="form3Example3cg"
-                            class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Example3cg">Description</label>
-                    </div>
-                    <div class="form-outline mb-3">
-                        <input name="stock" value="{{ p.stock }}" type="number" id="form3Example3cg"
-                            class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Example3cg">Stock</label>
-                    </div>
-
-                    <div class="form-outline mb-3">
-                        <input name="price" value="{{ p.price }}" type="number" id="form3Example3cg"
-                            class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Example3cg">Price</label>
+                        <input name="number" value="{{ user.phone_number }}" type="tel" id="form3Example3cg"
+                            class="form-control form-control-lg" pattern="[0-9]{10}" />
+                        <label class="form-label" for="form3Example3cg">Phone number</label>
                     </div>
                     <button type="submit" class="btn btn-success">Update</button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- multiple address -->
 
 
-<!-- feature part here -->
-<section class="feature_part section_padding">
-    <div class="container">
-        <div class="row justify-content-between">
-            <div class="col-lg-6">
-                <div class="feature_part_tittle">
-                    <h3>Credibly innovate granular
-                        internal or organic sources
-                        whereas standards.</h3>
-                </div>
-            </div>
-            <div class="col-lg-5">
-                <div class="feature_part_content">
-                    <p>Seamlessly empower fully researched growth strategies and interoperable internal or “organic”
-                        sources. Credibly innovate granular internal or “organic” sources whereas high standards in
-                        web-readiness.</p>
-                </div>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-3 col-sm-6">
-                <div class="single_feature_part">
-                    <img src="#" alt="#">
-                    <h4>Credit Card Support</h4>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="single_feature_part">
-                    <img src="#" alt="#">
-                    <h4>Online Order</h4>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="single_feature_part">
-                    <img src="" alt="#">
-                    <h4>Free Delivery</h4>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="single_feature_part">
-                    <img src="#" alt="no image">
-                    <h4>Product with Gift</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- feature part end -->
+
+
+
+
 
 {% endblock body %}
