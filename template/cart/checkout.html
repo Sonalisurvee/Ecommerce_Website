@@ -1,0 +1,361 @@
+{% extends 'userpanel/userbase.html' %}
+{% block title %}Checkout{% endblock title %}
+{% block body %}
+
+<style>
+  form {
+    padding-top: 20px
+  }
+
+  .checkout_area input {
+    border: 1px solid black;
+  }
+
+
+  .checkout_area .form-control {
+    border: 1px solid black;
+  }
+
+  .returning_customer .form-control {
+    border: 1px solid black;
+  }
+
+  .cap {
+    background-color: #795376;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
+ 
+
+</style>
+
+
+<!-- breadcrumb part start-->
+<section class="breadcrumb_part">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="breadcrumb_iner">
+          <h2>checkout</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- breadcrumb part end-->
+
+<!--================Checkout Area =================-->
+<section class="checkout_area section_padding">
+  <div class="container">
+    <div class="returning_customer">
+      <div class="check_title">
+        <h2>
+          LOGIN
+          <!-- <a href="#">Click here to login</a> -->
+        </h2>
+      </div>
+      <p>
+        If you have shopped with us before, please enter your details in the
+        boxes below. If you are a new customer, please proceed to the
+        Billing & Shipping section.
+      </p>
+      <form class="row contact_form" action="#" method="post">
+        <div class="col-md-6 form-group p_star">
+          <input type="text" class="form-control" id="name" name="name" value=" " />
+          <span class="placeholder" data-placeholder="Username or Email"></span>
+        </div>
+        <div class="col-md-6 form-group p_star">
+          <input type="password" class="form-control" id="password" name="password" value="" />
+          <span class="placeholder" data-placeholder="Password"></span>
+        </div>
+        <div class="col-md-12 form-group">
+          <button type="submit" value="submit" class="btn_3">
+            log in
+          </button>
+          <a class="lost_pass" href="#">Lost your password?</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- ------------------------------------------------------- coupan-area---------------------------------------------------------------- -->
+
+    <!-- <div class="cupon_area">
+      <div class="check_title">
+        <h2>
+          COUPON
+          <a href="#">Click here to enter your code</a>
+        </h2>
+      </div>
+      <input type="text" placeholder="Enter coupon code" />
+      <a class="tp_btn" href="#">Apply Coupon</a>
+    </div> -->
+
+    <!-- ------------------------------------------------------- billing-area---------------------------------------------------------------- -->
+
+
+    <div class="billing_details">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="check_title">
+            <h2>Billing Details</h2>
+          </div>
+
+          <form class="row contact_form" action="#" method="post">
+            <div class="col-md-6 form-group p_star">
+              <input type="text" class="form-control" id="first" name="name" />
+              <span class="placeholder" data-placeholder="First name"></span>
+            </div>
+            <div class="col-md-6 form-group p_star">
+              <input type="text" class="form-control" id="last" name="name" />
+              <span class="placeholder" data-placeholder="Last name"></span>
+            </div>
+
+            <!-- ------------------------------------------------------- address-area---------------------------------------------------------------- -->
+
+
+          </form>
+          {% if user_addresses %}
+          <h3>Your addresses</h3>
+          {% endif %}
+
+          {% for a in user_addresses %}
+          {% if not a.id == default.default.id %}
+          <h3>{{forloop.counter}} and {{default.default.id}}</h3>
+          <div class="card  mb-3">
+            <div class="card-body">
+              <h5 class="card-title">{{a.house_name}}, {{a.pincode}}</h5>
+              <p class="card-text">{{a.city}}, </p>
+              <div>
+
+
+                <!-- Button trigger modal -->
+                {% comment %} <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                  data-bs-target="#address{{forloop.counter}}">
+                  <a href="{% url '' %}">
+                    View</a>
+                </button> {% endcomment %}
+
+                <!-- Modal -->
+                <div class="modal fade" id="address{{forloop.counter}}" data-bs-backdrop="static"
+                  data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h4 class="modal-title fs-6" id="staticBackdropLabel">View address</h4>
+                        <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+
+                        <div class="row">
+                          <div class="col-sm-5">
+                            <p class="mb-0">House Name</p>
+                          </div>
+                          <div class="col-sm-7">
+                            {{ a.house_name}}
+                          </div>
+                        </div>
+                        <hr>
+
+                        <div class="row">
+                          <div class="col-sm-5">
+                            <p class="mb-0">City</p>
+                          </div>
+                          <div class="col-sm-7">
+                            {{ a.city}}
+                          </div>
+                        </div>
+                        <hr>
+
+                        <div class="row">
+                          <div class="col-sm-5">
+                            <p class="mb-0">Pincode</p>
+                          </div>
+                          <div class="col-sm-7">
+                            {{ a.pincode}}
+                          </div>
+                        </div>
+                        <hr>
+
+
+                        <div class="row">
+                          <div class="col-sm-5">
+                            <p class="mb-0">State</p>
+                          </div>
+                          <div class="col-sm-7">
+                            {{ a.state}}
+                          </div>
+                        </div>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <a class="btn btn-light" href="{% url 'edit_address' a.id  %}">
+                  Edit
+                </a>
+
+                <a class="btn cap" data-bs-toggle="modal" data-bs-target="#deletaddress{{forloop.counter}}"
+                  href="{% url 'delete_address' a.id  %}">
+                  delete
+                </a>
+
+                <a class="btn btn-light" href="{% url 'default_address' a.id  %}">
+                  Default
+                </a>
+
+                <!--Edit Modal -->
+                <div class="modal fade " id="deletaddress{{forloop.counter}}" tabindex="-1"
+                  aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="" id="exampleModalLabel">Delete</h5>
+                        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close"> <i
+                            class="fa fa-cancel"></i>X </button>
+                      </div>
+                      <div class="modal-body">
+                        <p>Are you sure to delete Address <span class="text-primary">" {{a.house_name}}
+                            ..."</span></p>
+                        <form action="#" enctype="multipart/form-data" method="POST">
+                          {% csrf_token %}
+                          <div class="d-flex justify-content-center">
+                            <button type="submit"
+                              class="btn btn-danger btn-lg gradient-custom-4 w-50 text-light">Confirm</button>
+                          </div>
+
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% comment %} <a href="" class="btn btn-dark">Make it default</a> {% endcomment %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+
+
+
+          <button class="btn cap"><a href="{% url 'add_address' %}">Add new address</a></button>
+        </div>
+
+
+        <!-- ------------------------------------------------------- side bar for order ----------------------------------------------------------- -->
+
+        <div class="col-lg-6">
+          <div class="order_box">
+            <h2>Your Order</h2>
+
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Product</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Total</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                {% for cart_item in cart_items %}
+                <tr>
+                  <td>
+                    <div class="media">
+                      <div class="d-flex">
+                        <img src="{{ cart_item.product.image.url }}" alt="" width="100px"/>
+                      </div>
+                      <div class="media-body">
+                        <p>{{ cart_item.product.product_name }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <h5>{{ cart_item.product.price }}</h5>
+                  </td>
+                    <h5>{{ cart_item.product.quantity }}</h5>
+                  <td>
+                    
+                  </td>
+                  <td>
+                    <h5>{{ cart_item.sub_total }}</h5>
+                  </td>
+                </tr>
+                {% endfor %}
+                <hr>
+               
+
+              </tbody>
+            </table>
+
+                <hr>
+
+
+            <ul class="list list_2">
+              <li>
+                <a href="#">Total Price
+                  <span>$2160.00</span>
+                </a>
+              </li>
+              <li>
+                <a href="#">Tax
+                  <span>Flat rate: $50.00</span>
+                </a>
+              </li>
+              <li>
+                <a href="#">Grand
+                  <span>$2210.00</span>
+                </a>
+              </li>
+            </ul>
+            <div class="payment_item">
+              <div class="radion_btn">
+                <input type="radio" id="f-option5" name="selector" />
+                <label for="f-option5">Check payments</label>
+                <div class="check"></div>
+              </div>
+              <p>
+                Please send a check to Store Name, Store Street, Store Town,
+                Store State / County, Store Postcode.
+              </p>
+            </div>
+            <div class="payment_item active">
+              <div class="radion_btn">
+                <input type="radio" id="f-option6" name="selector" />
+                <label for="f-option6">Paypal </label>
+                <img src="img/product/single-product/card.jpg" alt="" />
+                <div class="check"></div>
+              </div>
+              <p>
+                Please send a check to Store Name, Store Street, Store Town,
+                Store State / County, Store Postcode.
+              </p>
+            </div>
+            {% comment %} <div class="creat_account">
+              <input type="checkbox" id="f-option4" name="selector" />
+              <label for="f-option4">I’ve read and accept the </label>
+              <a href="#">terms & conditions*</a>
+            </div> {% endcomment %}
+            <a class="btn_3" href="#">Proceed to Paypal</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--================End Checkout Area =================-->
+
+
+
+{% endblock body %}

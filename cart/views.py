@@ -13,27 +13,37 @@ def _cart_id(request):
     if not cart:
         cart = request.session.create()
     return cart
+ 
+
+#this cart id fun is created just assign our cart the session id ,wen log in there session id will be created and every userhas its own unqiue 
+# session id so every user will have its own cart so no one can have our cart items ,privacy will be maintained.
 
 
 
 def add_cart(request,product_id):
     product = Product.objects.get(id=product_id)
+
+# thus try block is created just to chech wethere cart is ther or not ,once cart is created we are able to add produtc to it
+
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
-        #it will match the cart id with the session id to get the cart
+        # cart_id=_cart_id(request),means it will assign cart id as with the session id or key and if cart does not exsit it will go y-to except condi
+        #it will match the cart id with the session id to get the cart,lile if we dint add any product in the cart the cart will be emoty ryt 
+        # so we nend to check whether that cart exists or not so we gave try and except here.
+
     except Cart.DoesNotExist: #wat if cart does not exist
         cart = Cart.objects.create( #if not exist it will create one cart
             cart_id=_cart_id(request)
         )
     cart.save()
 
-    # to add product in cart
+    # this try block is created to add products in cart
 
     try:
         cart_item = Cartitem.objects.get(product=product,cart=cart)
         cart_item.quantity+=1 #incrementing the quantity of prodiuct presnet in the cart
         cart_item.save()
-    except Cartitem.DoesNotExist:#if cart does not have any product thn create one
+    except Cartitem.DoesNotExist:#if cart does not have any product then create one
         cart_item = Cartitem.objects.create(
             product=product,
             quantity=1,#as there is no product in cart quantity will be 1 as it is the first product in cart
@@ -71,8 +81,9 @@ def remove_cartitem(request,product_id):
 
 def cart(request, total=0,quantity=0,cart_items=None):
     try:
-        cart = Cart.objects.get(cart_id=_cart_id(request))#it will match the cart id with the session id t get the cart
-        cart_items = Cartitem.objects.filter(cart=cart,is_active=True)
+        cart = Cart.objects.get(cart_id=_cart_id(request))#it will match the cart id with the session id to get the cart
+        cart_items = Cartitem.objects.filter(cart=cart,is_active=True)# is_axtive used to indicate whether a user account is active or not.
+
         for cart_item in cart_items:
             total += (cart_item.product.price * cart_item.quantity)
             quantity += cart_item.quantity
@@ -84,3 +95,27 @@ def cart(request, total=0,quantity=0,cart_items=None):
         'cart_items':cart_items,
     }    
     return render(request, 'cart/cart.html',context)
+
+
+
+
+# -----------------------------------Carts --------------------------------
+
+
+
+def checkout(request,total=0,quantity=0,cart_items=None):
+    try:
+        cart = Cart.objects.get(cart_id=_cart_id(request))#it will match the cart id with the session id to get the cart
+        cart_items = Cartitem.objects.filter(cart=cart,is_active=True)# is_axtive used to indicate whether a user account is active or not.
+
+        for cart_item in cart_items:
+            total += (cart_item.product.price * cart_item.quantity)
+            quantity += cart_item.quantity
+    except ObjectDoesNotExist:
+        pass
+    context = {
+        'total':total,
+        'quantity':quantity,
+        'cart_items':cart_items,
+    } 
+    return render(request,'cart/checkout.html',context) 

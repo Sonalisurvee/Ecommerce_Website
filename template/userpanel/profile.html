@@ -7,7 +7,7 @@
         background-color: #795376;
     }
     a{
-        color:black
+        color:black;
     }
 </style>
 
@@ -114,7 +114,7 @@
         {% for a in user_addresses %}
         {% if not a.id == default.default.id %}
         <h3>{{forloop.counter}} and {{default.default.id}}</h3>
-        <div class="card  mb-3">
+        <div class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title">{{a.house_name}}, {{a.pincode}}</h5>
                 <p class="card-text">{{a.city}}, </p>

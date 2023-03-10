@@ -117,7 +117,7 @@ def signup(request):
 
 @login_required(login_url='/login')
 def view_address(request):
-     addresses = Address.objects.filter(customer=request.user)
+     addresses = Address.objects.filter(customer=request.userr)
      # print(addresses)
      context = {
           'addresses': addresses,

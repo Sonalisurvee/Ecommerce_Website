@@ -104,7 +104,7 @@ def product_details(request, category_slug,product_slug):
 
 
 
-def single_product(request):
+def single_product(request):    
     return render(request,'product/single_product.html')
 
 
