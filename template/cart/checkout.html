@@ -28,8 +28,6 @@
     color: black;
     text-decoration: none;
   }
- 
-
 </style>
 
 
@@ -105,11 +103,11 @@
 
           <form class="row contact_form" action="#" method="post">
             <div class="col-md-6 form-group p_star">
-              <input type="text" class="form-control" id="first" name="name" />
+              <input type="text" class="form-control" id="first" name="fname" />
               <span class="placeholder" data-placeholder="First name"></span>
             </div>
             <div class="col-md-6 form-group p_star">
-              <input type="text" class="form-control" id="last" name="name" />
+              <input type="text" class="form-control" id="last" name="lname" />
               <span class="placeholder" data-placeholder="Last name"></span>
             </div>
 
@@ -118,12 +116,14 @@
 
           </form>
           {% if user_addresses %}
-          <h3>Your addresses</h3>
+          <div class="check_title">
+            <h2>Your Address</h2>
+          </div>
           {% endif %}
 
           {% for a in user_addresses %}
           {% if not a.id == default.default.id %}
-          <h3>{{forloop.counter}} and {{default.default.id}}</h3>
+          <h3 style="padding-top:15px">{{forloop.counter}} and {{default.default.id}}</h3>
           <div class="card  mb-3">
             <div class="card-body">
               <h5 class="card-title">{{a.house_name}}, {{a.pincode}}</h5>
@@ -255,8 +255,6 @@
         <div class="col-lg-6">
           <div class="order_box">
             <h2>Your Order</h2>
-
-
             <table class="table">
               <thead>
                 <tr>
@@ -264,7 +262,6 @@
                   <th scope="col">Price</th>
                   <th scope="col">Quantity</th>
                   <th scope="col">Total</th>
-
                 </tr>
               </thead>
               <tbody>
@@ -273,7 +270,7 @@
                   <td>
                     <div class="media">
                       <div class="d-flex">
-                        <img src="{{ cart_item.product.image.url }}" alt="" width="100px"/>
+                        <img src="{{ cart_item.product.image.url }}" alt="" width="100px" />
                       </div>
                       <div class="media-body">
                         <p>{{ cart_item.product.product_name }}</p>
@@ -283,28 +280,25 @@
                   <td>
                     <h5>{{ cart_item.product.price }}</h5>
                   </td>
-                    <h5>{{ cart_item.product.quantity }}</h5>
                   <td>
-                    
-                  </td>
+                  <h5>{{ cart_item.quantity }}</h5>
+                </td>                 
                   <td>
                     <h5>{{ cart_item.sub_total }}</h5>
                   </td>
                 </tr>
-                {% endfor %}
-                <hr>
-               
+
 
               </tbody>
             </table>
 
-                <hr>
+            <hr>
 
 
             <ul class="list list_2">
               <li>
                 <a href="#">Total Price
-                  <span>$2160.00</span>
+                  <span>${{ cart_item.sub_total }}</span>
                 </a>
               </li>
               <li>
@@ -314,10 +308,12 @@
               </li>
               <li>
                 <a href="#">Grand
-                  <span>$2210.00</span>
+                  <span>${{ cart_item.sub_total }}</span>
                 </a>
               </li>
             </ul>
+            {% endfor %}
+
             <div class="payment_item">
               <div class="radion_btn">
                 <input type="radio" id="f-option5" name="selector" />
@@ -346,6 +342,7 @@
               <label for="f-option4">I’ve read and accept the </label>
               <a href="#">terms & conditions*</a>
             </div> {% endcomment %}
+            <br>
             <a class="btn_3" href="#">Proceed to Paypal</a>
           </div>
         </div>

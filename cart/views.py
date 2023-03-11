@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from store.models import Product
 from .models import Cart,Cartitem
+from account.models import Address
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -55,21 +56,28 @@ def add_cart(request,product_id):
 
 
 
-def remove_cart(request,product_id):
-    cart = Cart.objects.get(cart_id=_cart_id(request))
+def remove_cart(request,product_id,cart_item_id):
     product = get_object_or_404(Product,id=product_id)
-    cart_item = Cartitem.objects.get(product=product,cart=cart)
-    if cart_item.quantity > 1:
-        cart_item.quantity -= 1
-        cart_item.save()
-    else:
-        cart_item.delete()
+    try:
+        if request.user.is_authenticated:
+            cart_item = Cartitem.objects.get(product=product,user=request.user,id=cart_item_id)
+    
+        else:
+            cart = Cart.objects.get(cart_id=_cart_id(request))
+            cart_item = Cartitem.objects.get(product=product,cart=cart,id=cart_item_id)
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.save()
+        else:
+            cart_item.delete()
+    except:
+        pass
     return redirect('cart')
 
 
 
 
-def remove_cartitem(request,product_id):
+def remove_cartitem(request,product_id):    
     cart = Cart.objects.get(cart_id=_cart_id(request))
     product = get_object_or_404(Product,id=product_id)
     cart_item = Cartitem.objects.get(product=product,cart=cart)
@@ -81,13 +89,19 @@ def remove_cartitem(request,product_id):
 
 def cart(request, total=0,quantity=0,cart_items=None):
     try:
-        cart = Cart.objects.get(cart_id=_cart_id(request))#it will match the cart id with the session id to get the cart
-        cart_items = Cartitem.objects.filter(cart=cart,is_active=True)# is_axtive used to indicate whether a user account is active or not.
-
+        print('Loading')
+        if request.user.is_authenticated:#fro login users
+            cart_items = Cartitem.objects.filter(user=request.user,is_active=True)
+            print(cart_items)
+        else:#fro not login users
+            cart = Cart.objects.get(cart_id=_cart_id(request))#it will match the cart id with the session id to get the cart
+            cart_items = Cartitem.objects.filter(cart=cart,is_active=True)# is_axtive used to indicate whether a user account is active or not.
+            print(cart_item)
         for cart_item in cart_items:
             total += (cart_item.product.price * cart_item.quantity)
             quantity += cart_item.quantity
     except ObjectDoesNotExist:
+        print("Cart item does not exist")
         pass
     context = {
         'total':total,
@@ -99,11 +113,13 @@ def cart(request, total=0,quantity=0,cart_items=None):
 
 
 
-# -----------------------------------Carts --------------------------------
+# ------------------------------------------------------Checkout ---------------------------------------------------
 
 
 
 def checkout(request,total=0,quantity=0,cart_items=None):
+    addresses = Address.objects.filter(customer=request.user)
+
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))#it will match the cart id with the session id to get the cart
         cart_items = Cartitem.objects.filter(cart=cart,is_active=True)# is_axtive used to indicate whether a user account is active or not.
@@ -116,6 +132,18 @@ def checkout(request,total=0,quantity=0,cart_items=None):
     context = {
         'total':total,
         'quantity':quantity,
-        'cart_items':cart_items,
-    } 
+        'cart_items':cart_items,  
+        'user_addresses': addresses,
+     }
+
     return render(request,'cart/checkout.html',context) 
+
+
+
+# ------------------------------------------------------order_success ---------------------------------------------------
+
+
+
+
+def order_success(request):
+    pass

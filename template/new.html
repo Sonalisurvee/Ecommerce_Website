@@ -1,133 +1,103 @@
-
-@cache_control(no_cache=True,must_revalidate=True,no_store=True)            
-def signup(request):
-     user = None
-     if request.method == 'POST':
-          get_otp = request.POST.get('otp')
-          print(get_otp)
-
-          #====OTP Verification===
-          if get_otp:
-               get_user = request.POST.get('user')
-               user = Account.objects.get(username=get_user)
-               otp_1 = UserOTP.objects.filter(user=user).last().otp
-               print(user)
-               print(get_otp)
-               print(otp_1)
-               if int(get_otp) == otp_1 :
-                    user.is_active = True
-                    user.save()
-                    messages.success(request,f'Account created Successfully')
-                    return redirect(log_in)
-               else:
-                    user.delete()
-                    messages.warning(request,'You have entered a wrong OTP')
-                    return render(request, 'userpanel/login.html',{'otp':True, 'user':user})
-
-          # ===User registration====
-          else:
-               username = request.POST['username']
-               email = request.POST['email']
-               password1 = request.POST['password']
-               password2 = request.POST['repassword']
-          
-          if username and email and password1 and password2 != "":
-               if password1 == password2:
-                    if Account.objects.filter(email = email).exists():
-                         messages.info(request,'Email already exists')
-                         return redirect(signup)
-                    elif Account.objects.filter(username = username).exists():
-                         messages.info(request,'Username already exists')
-                         return redirect(signup)
-                    else:
-                         user = Account.objects.create_user(username=username,email=email,password=password1,first_name='Any',last_name='Name')
-                         user.set_password(password1)
-                         user.is_active = False
-                         user.save()
-                         user_otp = random.randint(1000,9999)
-                         UserOTP.objects.create(user=user,otp=user_otp)
-                         mess=f'Hello\t{user.username},\nYour OTP for the Account Verfication for Signora is {user_otp}\nThank You!'
-                         send_mail(
-                              "Welcome to Signora.Verify Your Account",
-                              mess,
-                              settings.EMAIL_HOST_USER,
-                              [user.email],
-                              fail_silently=False,
-                         )
-                         return render(request,'userpanel/otp.html',{'otp':True, 'user':user})
-               else:
-                    messages.info(request,"Password doesn't match")
-                    return redirect(signup)
-          else:
-               messages.info(request,"Some fields are empty")
-               return redirect(signup)
-     else:
-          return render(request,'userpanel/signup.html')
+{% extends 'userpanel/userbase.html' %}
+{% load static %}
+{% block title %}Single product{% endblock title %}
+{% block body %}
 
 
+<!-- breadcrumb part start-->
+<!-- <section class="breadcrumb_part single_product_breadcrumb">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="breadcrumb_iner">
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+<!-- breadcrumb part end-->
+
+<!--================Single Product Area =================-->
+{% comment %} <div class="product_image_area">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-12">
+        <div class="product_img_slide owl-carousel">
+          <div class="single_product_img">
+            <img src="{{ single_product.image.url }}" alt="#" class="img-fluid">
+          </div>
+          <!-- <div class="single_product_img">
+            <img src="img/product/single_product.png" alt="#" class="img-fluid">
+          </div>
+          <div class="single_product_img">
+            <img src="img/product/single_product.png" alt="#" class="img-fluid">
+          </div> -->
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="single_product_text text-center">
+          <h3>{{ single_product.product_name }}</h3>
+          <p>{{ single_product.product_description }}
+          </p>
+          <div class="card_area">
+            <div class="product_count_area">
+
+              <p>Price : {{ single_product.price }}</p>
+            </div>
+            <div class="add_to_cart">
+              <a href="{% url 'add_cart' single_product.id %}" class="btn_3">add to cart</a>
+              <a href="{% url 'add_wishlist' single_product.id %}" class="btn_3">add to wishlist</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> {% endcomment %}
+<!--================End Single Product Area =================-->
+<style>
+  .card{border:none}.product{background-color: #eee}.brand{font-size: 13px}.act-price{color:red;font-weight: 700}.dis-price{text-decoration: line-through}.about{font-size: 14px}.color{margin-bottom:10px}label.radio{cursor: pointer}label.radio input{position: absolute;top: 0;left: 0;visibility: hidden;pointer-events: none}label.radio span{padding: 2px 9px;border: 2px solid #ff0000;display: inline-block;color: #ff0000;border-radius: 3px;text-transform: uppercase}label.radio input:checked+span{border-color: #ff0000;background-color: #ff0000;color: #fff}.btn-danger{background-color: #ff0000 !important;border-color: #ff0000 !important}.btn-danger:hover{background-color: #da0606 !important;border-color: #da0606 !important}.btn-danger:focus{box-shadow: none}.cart i{margin-right: 10px}
+</style>
+
+<div class="container-fluid mt-5 mb-5">
+  <div class="row d-flex justify-content-center">
+      <div class="col-md-10">
+          <div class="card">
+              <div class="row">
+                  <div class="col-md-6">
+                      <div class="images p-3">
+                          <div class="text-center p-4"> <img id="main-image" src="https://i.imgur.com/Dhebu4F.jpg" width="250" /> </div>
+                          <div class="thumbnail text-center"> <img onclick="change_image(this)" src="https://i.imgur.com/Rx7uKd0.jpg" width="70"> <img onclick="change_image(this)" src="https://i.imgur.com/Dhebu4F.jpg" width="70"> </div>
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="product p-4">
+                          <div class="d-flex justify-content-between align-items-center">
+                              <div class="d-flex align-items-center"> <i class="fa fa-long-arrow-left"></i> <span class="ml-1">Back</span> </div> <i class="fa fa-shopping-cart text-muted"></i>
+                          </div>
+                          <div class="mt-4 mb-3"> <span class="text-uppercase text-muted brand">Orianz</span>
+                              <h5 class="text-uppercase">Men's slim fit t-shirt</h5>
+                              <div class="price d-flex flex-row align-items-center"> <span class="act-price">$20</span>
+                                  <div class="ml-2"> <small class="dis-price">$59</small> <span>40% OFF</span> </div>
+                              </div>
+                          </div>
+                          <p class="about">Shop from a wide range of t-shirt from orianz. Pefect for your everyday use, you could pair it with a stylish pair of jeans or trousers complete the look.</p>
+                          <div class="sizes mt-5">
+                              <h6 class="text-uppercase">Size</h6> <label class="radio"> <input type="radio" name="size" value="S" checked> <span>S</span> </label> <label class="radio"> <input type="radio" name="size" value="M"> <span>M</span> </label> <label class="radio"> <input type="radio" name="size" value="L"> <span>L</span> </label> <label class="radio"> <input type="radio" name="size" value="XL"> <span>XL</span> </label> <label class="radio"> <input type="radio" name="size" value="XXL"> <span>XXL</span> </label>
+                          </div>
+                          <div class="cart mt-4 align-items-center"> <button class="btn btn-danger text-uppercase mr-2 px-4">Add to cart</button> <i class="fa fa-heart text-muted"></i> <i class="fa fa-share-alt text-muted"></i> </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
 
 
 
 
+{% endblock body %}
 
 
 
-
-
-
-
-
-          <section class="breadcrumb_part">
-               <div class="container ">
-                   <div class="col-lg-8">
-                       <div class="card mb-4">
-                           <div class="card-body">
-                               <div class="row">
-                                   <div class="col-sm-3">
-                                       <p class="mb-0">First Name</p>
-                                   </div>
-                                   <div class="col-sm-9">
-                                       <p class="text-muted mb-0">{{ user.first_name }}</p>
-                                   </div>
-                               </div>
-                               <hr>
-                               <div class="row">
-                                   <div class="col-sm-3">
-                                       <p class="mb-0">Last Name</p>
-                                   </div>
-                                   <div class="col-sm-9">
-                                       <p class="text-muted mb-0">{{ user.last_name }}</p>
-                                   </div>
-                               </div>
-                               <hr>
-                               <div class="row">
-                                   <div class="col-sm-3">
-                                       <p class="mb-0">Email</p>
-                                   </div>
-                                   <div class="col-sm-9">
-                                       <p class="text-muted mb-0">{{ user.email }}</p>
-                                   </div>
-                               </div>
-                               <hr>
-                               <div class="row">
-                                   <div class="col-sm-3">
-                                       <p class="mb-0">Phone</p>
-                                   </div>
-                                   <div class="col-sm-9">
-                                       <p class="text-muted mb-0">{{ user.phone_number }}</p>
-                                   </div>
-                               </div>
-                               <hr>
-                               <!-- <div class="row">
-                                   <div class="col-sm-3">
-                                       <p class="mb-0">Address</p>
-                                   </div>
-                                   <div class="col-sm-9">
-                                       <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
-                                   </div>
-                               </div> -->
-                           </div>
-                       </div>
-                   </div>
-               </div>
-           </section>

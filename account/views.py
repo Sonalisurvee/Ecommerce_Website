@@ -4,6 +4,8 @@ from django.contrib.auth.models import auth, User
 from django.contrib import messages
 from home.views import index
 from .models import Account,Address
+from cart.models import Cart,Cartitem
+from cart.views import _cart_id
 
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
@@ -16,6 +18,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 import random
 
+
 # -----------------------------------Accounts --------------------------------
 
 @cache_control(no_cache=True,must_revalidate=True,no_store=True)        
@@ -27,10 +30,26 @@ def log_in(request):
         password=request.POST['password']
         user=auth.authenticate(email=email,password=password)
         if user is not None:
-            auth.login(request,user)
-            if user.is_superadmin:
-                 return render(request, 'adminpanel/admin_index.html')
-            return redirect(index)
+          try:
+               print('try block')
+               carts = Cart.objects.get(cart_id=_cart_id(request))
+               print(carts)
+               is_cart_item_exists = Cartitem.objects.filter(cart=carts).exists()
+               print(is_cart_item_exists)
+               if is_cart_item_exists:
+                    cart_item = Cartitem.objects.filter(cart=carts)
+
+                    for item in cart_item:
+                         item.user = user
+                         item.save()
+          except:
+               print('except block')
+               pass
+
+          auth.login(request,user)
+          if user.is_superadmin:
+               return render(request, 'adminpanel/admin_index.html')
+          return redirect(index)
         else:
             messages.info(request,'Username or password is incorrect')
             return redirect(log_in)
@@ -117,14 +136,14 @@ def signup(request):
 
 @login_required(login_url='/login')
 def view_address(request):
-     addresses = Address.objects.filter(customer=request.userr)
+     addresses = Address.objects.filter(customer=request.user)
      # print(addresses)
      context = {
           'addresses': addresses,
      }
      return render(request,"userpanel/profile.html",context)
 
-
+@login_required
 def add_address(request):
      if request.method == "POST":
           address_form = UserAddressForm(data=request.POST)
@@ -137,7 +156,7 @@ def add_address(request):
           address_form = UserAddressForm()
      return render(request,"userpanel/address.html",{"form": address_form})
 
-
+@login_required
 def edit_address(request,id):
      if request.method == "POST":
           address=Address.objects.get(pk=id,customer=request.user)
@@ -149,13 +168,16 @@ def edit_address(request,id):
           address=Address.objects.get(pk=id,customer=request.user)
           address_form = UserAddressForm(instance = address)
      return render(request,"userpanel/address.html",{"form": address_form})
-               
+
+@login_required               
 def delete_address(request,id):
-    address=Address.objects.get(pk=id,customer=request.user).delete()
+    address=Address.objects.get(pk=id,customer=request.user)
+    address.delete()
     return redirect("profile")
-     
+
+@login_required       
 def default_address(request,id):
-    Address.objects.get(customer=request,default=True).update(default=False)
-    Address.objects.get(pk=id,customer=request).update(default=True)
+    Address.objects.filter(customer=request.user,default=True).update(default=False)
+    Address.objects.filter(pk=id,customer=request.user).update(default=True)
     return redirect('profile')
 
