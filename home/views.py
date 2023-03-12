@@ -115,3 +115,10 @@ def banner_edit(request,banner_id):
 
 def error_404(request,exception):
     return render(request,'404.html')
+
+
+# -----------------------------------------Order management-----------------------------------------
+
+
+def order_management(request):
+    return render(request,'adminpanel/oredr_management.html')

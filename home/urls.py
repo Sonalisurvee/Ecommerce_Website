@@ -23,5 +23,10 @@ urlpatterns = [
     path('banner_delete/<int:banner_id>/', views.banner_delete, name='banner_delete'),       
     path('banner_edit/<int:banner_id>/', views.banner_edit, name='banner_edit'),  
     
+    # order management
+
+    path('order_management', views.order_management, name='order_management'),       
+
+
 
 ]

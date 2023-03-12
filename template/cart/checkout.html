@@ -28,11 +28,24 @@
     color: black;
     text-decoration: none;
   }
+
+  .section_padding{
+    padding-top: 30px;
+  }
+
+  /* .clo{
+  }
+  .container-fluid{
+    padding-left: 0px;
+    padding-right: 0px;
+    background-color: #795376;
+    height: 150px;
+  } */
 </style>
 
 
 <!-- breadcrumb part start-->
-<section class="breadcrumb_part">
+<!-- <section class="breadcrumb_part">
   <div class="container">
     <div class="row">
       <div class="col-lg-12">
@@ -42,42 +55,16 @@
       </div>
     </div>
   </div>
-</section>
+</section> -->
 <!-- breadcrumb part end-->
 
 <!--================Checkout Area =================-->
+<div class="container-fluid">
+  <h3 class="text-center clo">Checkout</h3>
+  </div>
 <section class="checkout_area section_padding">
   <div class="container">
-    <div class="returning_customer">
-      <div class="check_title">
-        <h2>
-          LOGIN
-          <!-- <a href="#">Click here to login</a> -->
-        </h2>
-      </div>
-      <p>
-        If you have shopped with us before, please enter your details in the
-        boxes below. If you are a new customer, please proceed to the
-        Billing & Shipping section.
-      </p>
-      <form class="row contact_form" action="#" method="post">
-        <div class="col-md-6 form-group p_star">
-          <input type="text" class="form-control" id="name" name="name" value=" " />
-          <span class="placeholder" data-placeholder="Username or Email"></span>
-        </div>
-        <div class="col-md-6 form-group p_star">
-          <input type="password" class="form-control" id="password" name="password" value="" />
-          <span class="placeholder" data-placeholder="Password"></span>
-        </div>
-        <div class="col-md-12 form-group">
-          <button type="submit" value="submit" class="btn_3">
-            log in
-          </button>
-          <a class="lost_pass" href="#">Lost your password?</a>
-        </div>
-      </form>
-    </div>
-
+    
     <!-- ------------------------------------------------------- coupan-area---------------------------------------------------------------- -->
 
     <!-- <div class="cupon_area">
@@ -102,14 +89,12 @@
           </div>
 
           <form class="row contact_form" action="#" method="post">
-            <div class="col-md-6 form-group p_star">
-              <input type="text" class="form-control" id="first" name="fname" />
-              <span class="placeholder" data-placeholder="First name"></span>
+            <div class="col-md-12 form-group p_star">
+              <input type="text" class="form-control" id="first" name="fullname" />
+              
+              <span class="placeholder" data-placeholder="Full name">{{ name.full_name }}</span>
             </div>
-            <div class="col-md-6 form-group p_star">
-              <input type="text" class="form-control" id="last" name="lname" />
-              <span class="placeholder" data-placeholder="Last name"></span>
-            </div>
+            
 
             <!-- ------------------------------------------------------- address-area---------------------------------------------------------------- -->
 
@@ -126,6 +111,9 @@
           <h3 style="padding-top:15px">{{forloop.counter}} and {{default.default.id}}</h3>
           <div class="card  mb-3">
             <div class="card-body">
+              {% if a.default %}
+                Default
+                {% endif %}
               <h5 class="card-title">{{a.house_name}}, {{a.pincode}}</h5>
               <p class="card-text">{{a.city}}, </p>
               <div>
@@ -199,16 +187,16 @@
                   </div>
                 </div>
 
-                <a class="btn btn-light" href="{% url 'edit_address' a.id  %}">
+                <a class="btn btn-light" href="{% url 'edit_address' a.id 2 %}">
                   Edit
                 </a>
 
                 <a class="btn cap" data-bs-toggle="modal" data-bs-target="#deletaddress{{forloop.counter}}"
-                  href="{% url 'delete_address' a.id  %}">
+                  href="{% url 'delete_address' a.id 2 %}">
                   delete
                 </a>
 
-                <a class="btn btn-light" href="{% url 'default_address' a.id  %}">
+                <a class="btn btn-light" href="{% url 'default_address' a.id 2 %}">
                   Default
                 </a>
 
@@ -276,10 +264,11 @@
                         <p>{{ cart_item.product.product_name }}</p>
                       </div>
                     </div>
-                  </td>
+                  </td> 
                   <td>
                     <h5>{{ cart_item.product.price }}</h5>
                   </td>
+                 
                   <td>
                   <h5>{{ cart_item.quantity }}</h5>
                 </td>                 
@@ -288,31 +277,10 @@
                   </td>
                 </tr>
 
-
+                {% endfor %}
               </tbody>
-            </table>
+              </table>
 
-            <hr>
-
-
-            <ul class="list list_2">
-              <li>
-                <a href="#">Total Price
-                  <span>${{ cart_item.sub_total }}</span>
-                </a>
-              </li>
-              <li>
-                <a href="#">Tax
-                  <span>Flat rate: $50.00</span>
-                </a>
-              </li>
-              <li>
-                <a href="#">Grand
-                  <span>${{ cart_item.sub_total }}</span>
-                </a>
-              </li>
-            </ul>
-            {% endfor %}
 
             <div class="payment_item">
               <div class="radion_btn">

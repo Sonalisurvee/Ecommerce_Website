@@ -12,8 +12,8 @@ urlpatterns = [
 
     path('addresses', views.view_address, name='addresses'),   
     path('add_address', views.add_address, name='add_address'),   
-    path('addresses/edit_address/<int:id>', views.edit_address, name='edit_address'),   
-    path('addresses/delete_address/<int:id>', views.delete_address, name='delete_address'),   
-    path('addresses/default_address/<int:id>', views.default_address, name='default_address'),   
+    path('addresses/edit_address/<int:id>/<int:num>/', views.edit_address, name='edit_address'),   
+    path('addresses/delete_address/<int:id>/<int:nam>/', views.delete_address, name='delete_address'),   
+    path('addresses/default_address/<int:id>/<int:new>/', views.default_address, name='default_address'),   
         
 ]

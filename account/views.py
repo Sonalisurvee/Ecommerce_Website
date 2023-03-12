@@ -32,14 +32,15 @@ def log_in(request):
         if user is not None:
           try:
                print('try block')
-               carts = Cart.objects.get(cart_id=_cart_id(request))
-               print(carts)
-               is_cart_item_exists = Cartitem.objects.filter(cart=carts).exists()
+               cart = Cart.objects.get(cart_id=_cart_id(request))
+               print(cart)
+               is_cart_item_exists = Cartitem.objects.filter(cart=cart).exists()
                print(is_cart_item_exists)
                if is_cart_item_exists:
-                    cart_item = Cartitem.objects.filter(cart=carts)
+                    cart_item = Cartitem.objects.filter(cart=cart)
 
                     for item in cart_item:
+                         item.quantity += 1
                          item.user = user
                          item.save()
           except:
@@ -157,27 +158,36 @@ def add_address(request):
      return render(request,"userpanel/address.html",{"form": address_form})
 
 @login_required
-def edit_address(request,id):
+def edit_address(request,id,num):
      if request.method == "POST":
           address=Address.objects.get(pk=id,customer=request.user)
           address_form = UserAddressForm(instance = address,data=request.POST)
           if address_form.is_valid():
                address_form.save()
-               return HttpResponseRedirect(reverse("profile"))
+               if num ==1:
+                    return HttpResponseRedirect(reverse("profile"))
+               elif num ==2:
+                    return HttpResponseRedirect(reverse('checkout'))
      else:
           address=Address.objects.get(pk=id,customer=request.user)
           address_form = UserAddressForm(instance = address)
      return render(request,"userpanel/address.html",{"form": address_form})
 
 @login_required               
-def delete_address(request,id):
+def delete_address(request,id,nam):
     address=Address.objects.get(pk=id,customer=request.user)
     address.delete()
-    return redirect("profile")
+    if nam == 1:
+         return redirect('profile')
+    elif nam == 2:
+         return redirect('checkout')
 
 @login_required       
-def default_address(request,id):
+def default_address(request,id,new):
     Address.objects.filter(customer=request.user,default=True).update(default=False)
     Address.objects.filter(pk=id,customer=request.user).update(default=True)
-    return redirect('profile')
+    if new == 1:
+         return redirect('profile')
+    elif new == 2:
+         return redirect('checkout')
 

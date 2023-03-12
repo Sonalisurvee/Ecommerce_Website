@@ -1,103 +1,358 @@
 {% extends 'userpanel/userbase.html' %}
-{% load static %}
-{% block title %}Single product{% endblock title %}
+{% block title %}Checkout{% endblock title %}
 {% block body %}
+
+<style>
+  form {
+    padding-top: 20px
+  }
+
+  .checkout_area input {
+    border: 1px solid black;
+  }
+
+
+  .checkout_area .form-control {
+    border: 1px solid black;
+  }
+
+  .returning_customer .form-control {
+    border: 1px solid black;
+  }
+
+  .cap {
+    background-color: #795376;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
+</style>
 
 
 <!-- breadcrumb part start-->
-<!-- <section class="breadcrumb_part single_product_breadcrumb">
+<section class="breadcrumb_part">
   <div class="container">
     <div class="row">
       <div class="col-lg-12">
         <div class="breadcrumb_iner">
+          <h2>checkout</h2>
         </div>
       </div>
     </div>
   </div>
-</section> -->
+</section>
 <!-- breadcrumb part end-->
 
-<!--================Single Product Area =================-->
-{% comment %} <div class="product_image_area">
+<!--================Checkout Area =================-->
+<section class="checkout_area section_padding">
   <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-12">
-        <div class="product_img_slide owl-carousel">
-          <div class="single_product_img">
-            <img src="{{ single_product.image.url }}" alt="#" class="img-fluid">
-          </div>
-          <!-- <div class="single_product_img">
-            <img src="img/product/single_product.png" alt="#" class="img-fluid">
-          </div>
-          <div class="single_product_img">
-            <img src="img/product/single_product.png" alt="#" class="img-fluid">
-          </div> -->
-        </div>
+    <div class="returning_customer">
+      <div class="check_title">
+        <h2>
+          LOGIN
+          <!-- <a href="#">Click here to login</a> -->
+        </h2>
       </div>
-      <div class="col-lg-8">
-        <div class="single_product_text text-center">
-          <h3>{{ single_product.product_name }}</h3>
-          <p>{{ single_product.product_description }}
-          </p>
-          <div class="card_area">
-            <div class="product_count_area">
+      <p>
+        If you have shopped with us before, please enter your details in the
+        boxes below. If you are a new customer, please proceed to the
+        Billing & Shipping section.
+      </p>
+      <form class="row contact_form" action="#" method="post">
+        <div class="col-md-6 form-group p_star">
+          <input type="text" class="form-control" id="name" name="name" value=" " />
+          <span class="placeholder" data-placeholder="Username or Email"></span>
+        </div>
+        <div class="col-md-6 form-group p_star">
+          <input type="password" class="form-control" id="password" name="password" value="" />
+          <span class="placeholder" data-placeholder="Password"></span>
+        </div>
+        <div class="col-md-12 form-group">
+          <button type="submit" value="submit" class="btn_3">
+            log in
+          </button>
+          <a class="lost_pass" href="#">Lost your password?</a>
+        </div>
+      </form>
+    </div>
 
-              <p>Price : {{ single_product.price }}</p>
+    <!-- ------------------------------------------------------- coupan-area---------------------------------------------------------------- -->
+
+    <!-- <div class="cupon_area">
+      <div class="check_title">
+        <h2>
+          COUPON
+          <a href="#">Click here to enter your code</a>
+        </h2>
+      </div>
+      <input type="text" placeholder="Enter coupon code" />
+      <a class="tp_btn" href="#">Apply Coupon</a>
+    </div> -->
+
+    <!-- ------------------------------------------------------- billing-area---------------------------------------------------------------- -->
+
+
+    <div class="billing_details">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="check_title">
+            <h2>Billing Details</h2>
+          </div>
+
+          <form class="row contact_form" action="#" method="post">
+            <div class="col-md-6 form-group p_star">
+              <input type="text" class="form-control" id="first" name="fname" />
+              <span class="placeholder" data-placeholder="First name"></span>
             </div>
-            <div class="add_to_cart">
-              <a href="{% url 'add_cart' single_product.id %}" class="btn_3">add to cart</a>
-              <a href="{% url 'add_wishlist' single_product.id %}" class="btn_3">add to wishlist</a>
+            <div class="col-md-6 form-group p_star">
+              <input type="text" class="form-control" id="last" name="lname" />
+              <span class="placeholder" data-placeholder="Last name"></span>
             </div>
+
+            <!-- ------------------------------------------------------- address-area---------------------------------------------------------------- -->
+
+
+          </form>
+          {% if user_addresses %}
+          <div class="check_title">
+            <h2>Your Address</h2>
+          </div>
+          {% endif %}
+
+          {% for a in user_addresses %}
+          {% if not a.id == default.default.id %}
+          <h3 style="padding-top:15px">{{forloop.counter}} and {{default.default.id}}</h3>
+          <div class="card  mb-3">
+            <div class="card-body">
+              <h5 class="card-title">{{a.house_name}}, {{a.pincode}}</h5>
+              <p class="card-text">{{a.city}}, </p>
+              <div>
+
+
+                <!-- Button trigger modal -->
+                {% comment %} <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                  data-bs-target="#address{{forloop.counter}}">
+                  <a href="{% url '' %}">
+                    View</a>
+                </button> {% endcomment %}
+
+                <!-- Modal -->
+                <div class="modal fade" id="address{{forloop.counter}}" data-bs-backdrop="static"
+                  data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h4 class="modal-title fs-6" id="staticBackdropLabel">View address</h4>
+                        <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+
+                        <div class="row">
+                          <div class="col-sm-5">
+                            <p class="mb-0">House Name</p>
+                          </div>
+                          <div class="col-sm-7">
+                            {{ a.house_name}}
+                          </div>
+                        </div>
+                        <hr>
+
+                        <div class="row">
+                          <div class="col-sm-5">
+                            <p class="mb-0">City</p>
+                          </div>
+                          <div class="col-sm-7">
+                            {{ a.city}}
+                          </div>
+                        </div>
+                        <hr>
+
+                        <div class="row">
+                          <div class="col-sm-5">
+                            <p class="mb-0">Pincode</p>
+                          </div>
+                          <div class="col-sm-7">
+                            {{ a.pincode}}
+                          </div>
+                        </div>
+                        <hr>
+
+
+                        <div class="row">
+                          <div class="col-sm-5">
+                            <p class="mb-0">State</p>
+                          </div>
+                          <div class="col-sm-7">
+                            {{ a.state}}
+                          </div>
+                        </div>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <a class="btn btn-light" href="{% url 'edit_address' a.id  %}">
+                  Edit
+                </a>
+
+                <a class="btn cap" data-bs-toggle="modal" data-bs-target="#deletaddress{{forloop.counter}}"
+                  href="{% url 'delete_address' a.id  %}">
+                  delete
+                </a>
+
+                <a class="btn btn-light" href="{% url 'default_address' a.id  %}">
+                  Default
+                </a>
+
+                <!--Edit Modal -->
+                <div class="modal fade " id="deletaddress{{forloop.counter}}" tabindex="-1"
+                  aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="" id="exampleModalLabel">Delete</h5>
+                        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close"> <i
+                            class="fa fa-cancel"></i>X </button>
+                      </div>
+                      <div class="modal-body">
+                        <p>Are you sure to delete Address <span class="text-primary">" {{a.house_name}}
+                            ..."</span></p>
+                        <form action="#" enctype="multipart/form-data" method="POST">
+                          {% csrf_token %}
+                          <div class="d-flex justify-content-center">
+                            <button type="submit"
+                              class="btn btn-danger btn-lg gradient-custom-4 w-50 text-light">Confirm</button>
+                          </div>
+
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% comment %} <a href="" class="btn btn-dark">Make it default</a> {% endcomment %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+
+
+
+          <button class="btn cap"><a href="{% url 'add_address' %}">Add new address</a></button>
+        </div>
+
+
+        <!-- ------------------------------------------------------- side bar for order ----------------------------------------------------------- -->
+
+        <div class="col-lg-6">
+          <div class="order_box">
+            <h2>Your Order</h2>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Product</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for cart_item in cart_items %}
+                <tr>
+                  <td>
+                    <div class="media">
+                      <div class="d-flex">
+                        <img src="{{ cart_item.product.image.url }}" alt="" width="100px" />
+                      </div>
+                      <div class="media-body">
+                        <p>{{ cart_item.product.product_name }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <h5>{{ cart_item.product.price }}</h5>
+                  </td>
+                  <td>
+                  <h5>{{ cart_item.quantity }}</h5>
+                </td>                 
+                  <td>
+                    <h5>{{ cart_item.sub_total }}</h5>
+                  </td>
+                </tr>
+
+
+              </tbody>
+            </table>
+
+            <hr>
+
+
+            <ul class="list list_2">
+              <li>
+                <a href="#">Total Price
+                  <span>${{ cart_item.sub_total }}</span>
+                </a>
+              </li>
+              <li>
+                <a href="#">Tax
+                  <span>Flat rate: $50.00</span>
+                </a>
+              </li>
+              <li>
+                <a href="#">Grand
+                  <span>${{ cart_item.sub_total }}</span>
+                </a>
+              </li>
+            </ul>
+            {% endfor %}
+
+            <div class="payment_item">
+              <div class="radion_btn">
+                <input type="radio" id="f-option5" name="selector" />
+                <label for="f-option5">Check payments</label>
+                <div class="check"></div>
+              </div>
+              <p>
+                Please send a check to Store Name, Store Street, Store Town,
+                Store State / County, Store Postcode.
+              </p>
+            </div>
+            <div class="payment_item active">
+              <div class="radion_btn">
+                <input type="radio" id="f-option6" name="selector" />
+                <label for="f-option6">Paypal </label>
+                <img src="img/product/single-product/card.jpg" alt="" />
+                <div class="check"></div>
+              </div>
+              <p>
+                Please send a check to Store Name, Store Street, Store Town,
+                Store State / County, Store Postcode.
+              </p>
+            </div>
+            {% comment %} <div class="creat_account">
+              <input type="checkbox" id="f-option4" name="selector" />
+              <label for="f-option4">I’ve read and accept the </label>
+              <a href="#">terms & conditions*</a>
+            </div> {% endcomment %}
+            <br>
+            <a class="btn_3" href="#">Proceed to Paypal</a>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div> {% endcomment %}
-<!--================End Single Product Area =================-->
-<style>
-  .card{border:none}.product{background-color: #eee}.brand{font-size: 13px}.act-price{color:red;font-weight: 700}.dis-price{text-decoration: line-through}.about{font-size: 14px}.color{margin-bottom:10px}label.radio{cursor: pointer}label.radio input{position: absolute;top: 0;left: 0;visibility: hidden;pointer-events: none}label.radio span{padding: 2px 9px;border: 2px solid #ff0000;display: inline-block;color: #ff0000;border-radius: 3px;text-transform: uppercase}label.radio input:checked+span{border-color: #ff0000;background-color: #ff0000;color: #fff}.btn-danger{background-color: #ff0000 !important;border-color: #ff0000 !important}.btn-danger:hover{background-color: #da0606 !important;border-color: #da0606 !important}.btn-danger:focus{box-shadow: none}.cart i{margin-right: 10px}
-</style>
+</section>
 
-<div class="container-fluid mt-5 mb-5">
-  <div class="row d-flex justify-content-center">
-      <div class="col-md-10">
-          <div class="card">
-              <div class="row">
-                  <div class="col-md-6">
-                      <div class="images p-3">
-                          <div class="text-center p-4"> <img id="main-image" src="https://i.imgur.com/Dhebu4F.jpg" width="250" /> </div>
-                          <div class="thumbnail text-center"> <img onclick="change_image(this)" src="https://i.imgur.com/Rx7uKd0.jpg" width="70"> <img onclick="change_image(this)" src="https://i.imgur.com/Dhebu4F.jpg" width="70"> </div>
-                      </div>
-                  </div>
-                  <div class="col-md-6">
-                      <div class="product p-4">
-                          <div class="d-flex justify-content-between align-items-center">
-                              <div class="d-flex align-items-center"> <i class="fa fa-long-arrow-left"></i> <span class="ml-1">Back</span> </div> <i class="fa fa-shopping-cart text-muted"></i>
-                          </div>
-                          <div class="mt-4 mb-3"> <span class="text-uppercase text-muted brand">Orianz</span>
-                              <h5 class="text-uppercase">Men's slim fit t-shirt</h5>
-                              <div class="price d-flex flex-row align-items-center"> <span class="act-price">$20</span>
-                                  <div class="ml-2"> <small class="dis-price">$59</small> <span>40% OFF</span> </div>
-                              </div>
-                          </div>
-                          <p class="about">Shop from a wide range of t-shirt from orianz. Pefect for your everyday use, you could pair it with a stylish pair of jeans or trousers complete the look.</p>
-                          <div class="sizes mt-5">
-                              <h6 class="text-uppercase">Size</h6> <label class="radio"> <input type="radio" name="size" value="S" checked> <span>S</span> </label> <label class="radio"> <input type="radio" name="size" value="M"> <span>M</span> </label> <label class="radio"> <input type="radio" name="size" value="L"> <span>L</span> </label> <label class="radio"> <input type="radio" name="size" value="XL"> <span>XL</span> </label> <label class="radio"> <input type="radio" name="size" value="XXL"> <span>XXL</span> </label>
-                          </div>
-                          <div class="cart mt-4 align-items-center"> <button class="btn btn-danger text-uppercase mr-2 px-4">Add to cart</button> <i class="fa fa-heart text-muted"></i> <i class="fa fa-share-alt text-muted"></i> </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
-
+<!--================End Checkout Area =================-->
 
 
 
 {% endblock body %}
-
-
-

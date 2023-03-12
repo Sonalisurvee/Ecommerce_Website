@@ -9,6 +9,15 @@
     a{
         color:black;
     }
+    .breadcrumb_part{
+        height: 100px;
+    }
+    .breadcrumb_iner h3{
+        font-size:40px;
+    }
+    .clo{
+        text-align: center;
+    }
 </style>
 
 <!-- breadcrumb part start-->
@@ -17,7 +26,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="breadcrumb_iner">
-                    <h2>Profile</h2>
+                    <h3>Profile</h3>
                 </div>
             </div>
         </div>
@@ -38,7 +47,7 @@
                 </nav>
             </div>
         </div>
-
+       
         <div class="row">
             <div class="col-lg-4">
                 <div class="card mb-4">
@@ -108,7 +117,10 @@
         </div>
 
         {% if user_addresses %}
-        <h3>Your addresses</h3>
+        <nav aria-label="breadcrumb mb-0" class="bg-light rounded-3 p-3 mb-4">
+
+        <h3 class="text-center">Your Address</h3>
+           </nav>
         {% endif %} 
 
         {% for a in user_addresses %}
@@ -117,23 +129,24 @@
         <div class="card mb-3">
             <div class="card-body">
                 {% if a.default %}
-                <button>Default</button>
+                    Default
+                    <hr>
                 {% endif %}
                 <h5 class="card-title">{{a.house_name}}, {{a.pincode}}</h5>
                 <p class="card-text">{{a.city}}, </p>
                 <div>
 
 
-                    <a class="btn btn-light" href="{% url 'edit_address' a.id  %}">
+                    <a class="btn btn-light" href="{% url 'edit_address' a.id 1 %}">
                         Edit
                       </a>                
 
                     <a class="btn cap" data-bs-toggle="modal"
-                    data-bs-target="#delete_model-{{forloop.counter}}" href="{% url 'delete_address' a.id  %}">
+                    data-bs-target="#delete_model-{{forloop.counter}}" href="{% url 'delete_address' a.id 1 %}">
                         Delete
                     </a>
 
-                    <a class="btn btn-light" href="{% url 'default_address' a.id  %}">
+                    <a class="btn btn-light" href="{% url 'default_address' a.id 1 %}">
                         Default
                       </a>
 

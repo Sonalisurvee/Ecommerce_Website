@@ -1,8 +1,11 @@
-from django.shortcuts import render,redirect,get_object_or_404
+from django.shortcuts import render,redirect,get_object_or_404,HttpResponse
 from .models import Product
 from category.models import Category
+from cart.models import Cart,Cartitem
+from cart.views import _cart_id
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
+from django.db.models import Q
 
 
 # -----------------------------------Product-Delete,edit and add --------------------------------
@@ -66,6 +69,23 @@ def add_product(request):
   
     else:
         return redirect(add_product)
+    
+
+# -----------------------------------Search --------------------------------
+
+
+def search(request):
+    if 'keyword' in request.GET:
+        keyword = request.GET['keyword']
+        if keyword:#if keyword checks whethe there is something in to search
+            products = Product.objects.order_by('-created_at').filter(Q(product_description__icontains=keyword) | Q(product_name__icontains=keyword))
+            product_count=products.count()
+
+    context = {
+        'products': products,
+        'product_count': product_count
+    }
+    return render(request,'product/product_list.html',context)
 
 
 # -----------------------------------Product-listing --------------------------------
@@ -95,10 +115,18 @@ def product_list(request,category_slug=None):
 def product_details(request, category_slug,product_slug):
     try:
         single_product = Product.objects.get(category__slug=category_slug,slug=product_slug)
+
+        if request.user.is_authenticated:
+            in_cart = Cartitem.objects.filter(user=request.user,product=single_product).exists()
+        else:
+            in_cart = Cartitem.objects.filter(cart__cart_id=_cart_id(request),product=single_product).exists()
+        # here cart__cart_id is ,cart is the colum in Cartitem whisch is the foreign key an dwant cart_id from CArt table so we gave double underscore  __ 
+       
     except Exception as e:
         raise e    
     context={
         'single_product': single_product,
+        'in_cart': in_cart,
     }
     return render(request,'product/single_product.html',context)
 
