@@ -6,6 +6,8 @@ from home.views import index
 from .models import Account,Address
 from cart.models import Cart,Cartitem
 from cart.views import _cart_id
+from wishlist.models import Wishlist,WishlistItem
+from wishlist.views import _wishlist_id
 
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
@@ -46,6 +48,24 @@ def log_in(request):
           except:
                print('except block')
                pass
+
+          try:
+               print('try block')
+               wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
+               print(wishlist)
+               is_wish_item_exists = WishlistItem.objects.filter(wishlist=wishlist).exists()
+               print(is_wish_item_exists)
+               if is_wish_item_exists:
+                    wishlist_item = WishlistItem.objects.filter(wishlist=wishlist)
+
+                    for item in wishlist_item:
+                         item.user = user
+                         item.save()
+          except:
+               print('except block')
+               pass
+
+         
 
           auth.login(request,user)
           if user.is_superadmin:

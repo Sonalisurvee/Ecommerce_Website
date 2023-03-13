@@ -1,9 +1,10 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from store.models import Product
-from .models import Cart,Cartitem
+from .models import Cart,Cartitem,Coupon
 from account.models import Address
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 
 
@@ -110,6 +111,8 @@ def remove_cartitem(request,product_id,cart_item_id):
 
 
 def cart(request, total=0,quantity=0,cart_items=None):
+     
+    
     try:
         print('Loading')
         if request.user.is_authenticated:#fro login users
@@ -126,7 +129,8 @@ def cart(request, total=0,quantity=0,cart_items=None):
         grand_total =  total + tax
     except ObjectDoesNotExist:
         print("Cart item does not exist")
-        pass
+        pass         
+
     context = {
         'total':total,
         'quantity':quantity,
@@ -135,7 +139,6 @@ def cart(request, total=0,quantity=0,cart_items=None):
         'grand_total':grand_total,
     }    
     return render(request, 'cart/cart.html',context)
-
 
 
 
@@ -150,51 +153,121 @@ def checkout(request,total=0,quantity=0,cart_items=None):
 
 # thus try block is created just to chech wethere cart is ther or not ,once cart is created we are able to add produtc to it
     if current_user.is_authenticated:
-        print("if auth")
         try:
-            print("tyr")
             cart_items = Cartitem.objects.filter(user=current_user,is_active=True)# is_axtive used to indicate whether a user account is active or not.
+            total = 0
+            quantity = 0
             for cart_item in cart_items:
                 total += (cart_item.product.price * cart_item.quantity)
                 quantity += cart_item.quantity
+            tax = (2 * total)/100            
+            grand_tot = total + tax
         except ObjectDoesNotExist:
             pass
+
+         # -----------------Coupon-----------------
+
+        # if request.method == 'POST':
+        #     print("coupon if")
+        #     coupon = request.POST.get('coupon')
+        #     coupon_obj = Coupon.objects.filter(coupan_code__icontains = coupon)
+        #     print('hello')
+        #     print(coupon_obj)
+        #     print('jjjj')          
+            
+        #     if not coupon_obj.exists():
+        #         print('in valiud')
+        #         messages.warning(request, 'in valid coupon')
+        #         return redirect(checkout)
+            
+        #     if cart_item.coupon:# checking wether cartitem table has coupon or not ,coupon exists or not
+        #         print('coupan exit')
+        #         messages.warning(request, 'coupon already exists')
+        #         return redirect(checkout)       
+                  
+
+        #     for cart_itemm in cart_items:
+        #         total += (cart_itemm.product.price * cart_itemm.quantity)
+        #         quantity += cart_itemm.quantity
+        #         grand_tot = total - coupon_obj.discount_price
+
+        #     # print(f"cart_item: {cart_item}")
+        #     # print(f"grand_total: {cart_item.grand_total()}")
+       
+        #     if grand_tot > coupon_obj.first().minimum_amount:
+        #         messages.warning(request, f"Amount should be greater than {coupon_obj.first().minimum_amount}")
+        #         return redirect(checkout)
+
+        if request.method == 'POST':
+            coupon = request.POST.get('coupon')
+            coupon_obj = Coupon.objects.filter(coupan_code__icontains = coupon)
+
+            if not coupon_obj.exists():
+                messages.warning(request, 'Invalid coupon')
+                return redirect(checkout)
+
+            if cart_item.coupon:
+                messages.warning(request, 'Coupon already exists')
+                return redirect(checkout)
+
+            # for cart_itemm in cart_items:
+            #     total = (cart_itemm.product.price * cart_itemm.quantity)
+            #     quantity = cart_itemm.quantity
+            #     grand_tot = total - coupon_obj[0].discount_price
+            #     print(cart_itemm.product.price)
+            #     print(cart_itemm.quantity)
+            #     print(total,'one')
+            #     print(quantity,'two')
+            #     print(grand_tot,'dfghj')
+
+            if grand_tot < coupon_obj[0].minimum_amount:
+                messages.warning(request, f"Amount should be greater than {coupon_obj[0].minimum_amount}")
+                return redirect(checkout)
+                        
+            if coupon_obj[0].is_expired:
+                messages.warning(request, 'Coupan had been expired')
+                return redirect(checkout)                
+
+
+            cart_item.coupon = coupon_obj[0]#both if statement ontop fails then coupon_obj will get stored in cart_item.coupan,[0]?
+            print(cart_item)
+            cart_item.save()    
+            messages.success(request,'coupan applied')
+            return redirect(checkout)  
+        
+         # -----------------Coupon-end----------------
+                  
+        if cart_item.coupon:
+            grand_tot = (total - cart_item.coupon.discount_price) + tax
+
         context = {
             'total':total,
             'quantity':quantity,
             'cart_items':cart_items,  
+            'cart_item':cart_item,  
             'user_addresses': addresses,
             'name':name,
+            'grand_tot':grand_tot,
+            'tax':tax
         }
     else:
-        pass
-  
+        pass 
 
-    # try:
-    #     cart = Cart.objects.get(cart_id=_cart_id(request))#it will match the cart id with the session id to get the cart
-    #     cart_items = Cartitem.objects.filter(cart=cart,is_active=True)# is_axtive used to indicate whether a user account is active or not.
-
-    #     for cart_item in cart_items:
-    #         total += (cart_item.product.price * cart_item.quantity)
-    #         quantity += cart_item.quantity
-       
-    # except ObjectDoesNotExist:
-    #     pass
-    # context = {
-    #     'total':total,
-    #     'quantity':quantity,
-    #     'cart_items':cart_items,  
-    #     'user_addresses': addresses,
-               
-    #  }
 
     return render(request,'cart/checkout.html',context) 
 
 
+def remove_coupan(request,cart_id):
+    cart = Cartitem.objects.get(id=cart_id)
+    cart.coupon = None
+    cart.save()
+    messages.success(request,'coupan removed')
+    return redirect(checkout) 
+    
 
 # ------------------------------------------------------order_success ---------------------------------------------------
 
 
 
 def order_success(request):
-    pass
+    return render(request,'cart/order_success.html') 

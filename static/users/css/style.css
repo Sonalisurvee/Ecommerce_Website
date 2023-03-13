@@ -2921,7 +2921,7 @@ ul {
 @media only screen and (min-width: 992px) and (max-width: 1200px) {
   /* line 133, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
   .product_image_area .single_product_text {
-    margin: 50px 0 80px;
+    margin: 10px 0 20px;
   }
 }
 

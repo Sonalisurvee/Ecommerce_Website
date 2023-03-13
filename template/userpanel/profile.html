@@ -6,17 +6,21 @@
     .cap {
         background-color: #795376;
     }
-    a{
-        color:black;
+
+    a {
+        color: black;
+
     }
-    .breadcrumb_part{
+
+    .breadcrumb_part {
         height: 100px;
     }
-    .breadcrumb_iner h3{
-        font-size:40px;
-    }
-    .clo{
-        text-align: center;
+
+    .breadcrumb_iner h3 {
+        font-size: 35px;
+        line-height: 1.2;
+        color: #fff;
+        font-weight: 500;        
     }
 </style>
 
@@ -47,7 +51,7 @@
                 </nav>
             </div>
         </div>
-       
+
         <div class="row">
             <div class="col-lg-4">
                 <div class="card mb-4">
@@ -119,18 +123,18 @@
         {% if user_addresses %}
         <nav aria-label="breadcrumb mb-0" class="bg-light rounded-3 p-3 mb-4">
 
-        <h3 class="text-center">Your Address</h3>
-           </nav>
-        {% endif %} 
+            <h3 class="text-center">Your Address</h3>
+        </nav>
+        {% endif %}
 
         {% for a in user_addresses %}
         {% if not a.id == default.default.id %}
-        <h3>{{forloop.counter}} and {{default.default.id}}</h3>
+        <!-- <h3>{{forloop.counter}} address {{default.default.id}}</h3> -->
         <div class="card mb-3">
             <div class="card-body">
                 {% if a.default %}
-                    Default
-                    <hr>
+                Default
+                <hr>
                 {% endif %}
                 <h5 class="card-title">{{a.house_name}}, {{a.pincode}}</h5>
                 <p class="card-text">{{a.city}}, </p>
@@ -139,48 +143,43 @@
 
                     <a class="btn btn-light" href="{% url 'edit_address' a.id 1 %}">
                         Edit
-                      </a>                
+                    </a>
 
-                    <a class="btn cap" data-bs-toggle="modal"
-                    data-bs-target="#delete_model-{{forloop.counter}}" href="{% url 'delete_address' a.id 1 %}">
+                    <a class="btn cap" data-bs-toggle="modal" data-bs-target="#delete_model-{{forloop.counter}}"
+                        href="{% url 'delete_address' a.id 1 %}">
                         Delete
                     </a>
 
                     <a class="btn btn-light" href="{% url 'default_address' a.id 1 %}">
                         Default
-                      </a>
+                    </a>
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="delete_model-{{forloop.counter}}" tabindex="-1"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
-                                            Delete Product</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        are you sure to delete <span class="text-danger">"{{p.product_name}}"</span>
+                    <!-- Modal -->
+                    <div class="modal fade" id="delete_model-{{forloop.counter}}" tabindex="-1"
+                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
+                                        Delete Product</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    are you sure to delete <span class="text-danger">"{{p.product_name}}"</span>
 
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                        <form action="" style="float: right;"
-                                            method="post" class="float-right d-inline">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-primary">Delete</button>
-                                        </form>
-                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <form action="" style="float: right;" method="post" class="float-right d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary">Delete</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-
-                    <!--Edit Modal -->
-                   
-                    {% comment %} <a href="" class="btn btn-dark">Make it default</a> {% endcomment %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -189,45 +188,10 @@
 
 
 
-        <button class="btn cap"><a href="{% url 'add_address' %}">Add new address</a></button>
+        <a class="btn cap" href="{% url 'add_address' %}">Add new address</a></button>
         </a>
         <br>
         <br>
-
-
-
-
-        <!-- <button type="button" class="btn cap" data-toggle="modal" data-target="#deletModal">
-            Add Address
-        </button>
-<hr><br>
-        <div class="container ">
-            <div class="col-lg-8">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <p class="mb-0">First Name</p>
-                            </div>
-                            <div class="col-sm-9">
-                                <p class="text-muted mb-0">{{ user.first_name }}</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <button>edit</button>
-                        <button>delete</button>
-                        <button>set as default address</button>
-                      
-                        
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
-
-
-
-
     </div>
 </section>
 

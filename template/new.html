@@ -1,358 +1,59 @@
-{% extends 'userpanel/userbase.html' %}
-{% block title %}Checkout{% endblock title %}
-{% block body %}
-
-<style>
-  form {
-    padding-top: 20px
-  }
-
-  .checkout_area input {
-    border: 1px solid black;
-  }
+from django.shortcuts import render,redirect,get_object_or_404
+from store.models import Product
+from .models import Wishlist,WishlistItem
+from django.core.exceptions import ObjectDoesNotExist
 
 
-  .checkout_area .form-control {
-    border: 1px solid black;
-  }
-
-  .returning_customer .form-control {
-    border: 1px solid black;
-  }
-
-  .cap {
-    background-color: #795376;
-  }
-
-  a {
-    color: black;
-    text-decoration: none;
-  }
-</style>
+# -----------------------------------Wishlist-Delete,view and add --------------------------------
 
 
-<!-- breadcrumb part start-->
-<section class="breadcrumb_part">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="breadcrumb_iner">
-          <h2>checkout</h2>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- breadcrumb part end-->
-
-<!--================Checkout Area =================-->
-<section class="checkout_area section_padding">
-  <div class="container">
-    <div class="returning_customer">
-      <div class="check_title">
-        <h2>
-          LOGIN
-          <!-- <a href="#">Click here to login</a> -->
-        </h2>
-      </div>
-      <p>
-        If you have shopped with us before, please enter your details in the
-        boxes below. If you are a new customer, please proceed to the
-        Billing & Shipping section.
-      </p>
-      <form class="row contact_form" action="#" method="post">
-        <div class="col-md-6 form-group p_star">
-          <input type="text" class="form-control" id="name" name="name" value=" " />
-          <span class="placeholder" data-placeholder="Username or Email"></span>
-        </div>
-        <div class="col-md-6 form-group p_star">
-          <input type="password" class="form-control" id="password" name="password" value="" />
-          <span class="placeholder" data-placeholder="Password"></span>
-        </div>
-        <div class="col-md-12 form-group">
-          <button type="submit" value="submit" class="btn_3">
-            log in
-          </button>
-          <a class="lost_pass" href="#">Lost your password?</a>
-        </div>
-      </form>
-    </div>
-
-    <!-- ------------------------------------------------------- coupan-area---------------------------------------------------------------- -->
-
-    <!-- <div class="cupon_area">
-      <div class="check_title">
-        <h2>
-          COUPON
-          <a href="#">Click here to enter your code</a>
-        </h2>
-      </div>
-      <input type="text" placeholder="Enter coupon code" />
-      <a class="tp_btn" href="#">Apply Coupon</a>
-    </div> -->
-
-    <!-- ------------------------------------------------------- billing-area---------------------------------------------------------------- -->
+def _wishlist_id(request):
+    wishlist = request.session.session_key
+    if not wishlist:
+        wishlist = request.session.create()
+    return wishlist
 
 
-    <div class="billing_details">
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="check_title">
-            <h2>Billing Details</h2>
-          </div>
+def add_wishlist(request,product_id):
+    product = Product.objects.get(id=product_id)
+    try:
+        wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
+    except Wishlist.DoesNotExist: 
+        wishlist = Wishlist.objects.create( 
+            wishlist_id=_wishlist_id(request)
+        )
+    wishlist.save()  
 
-          <form class="row contact_form" action="#" method="post">
-            <div class="col-md-6 form-group p_star">
-              <input type="text" class="form-control" id="first" name="fname" />
-              <span class="placeholder" data-placeholder="First name"></span>
-            </div>
-            <div class="col-md-6 form-group p_star">
-              <input type="text" class="form-control" id="last" name="lname" />
-              <span class="placeholder" data-placeholder="Last name"></span>
-            </div>
-
-            <!-- ------------------------------------------------------- address-area---------------------------------------------------------------- -->
-
-
-          </form>
-          {% if user_addresses %}
-          <div class="check_title">
-            <h2>Your Address</h2>
-          </div>
-          {% endif %}
-
-          {% for a in user_addresses %}
-          {% if not a.id == default.default.id %}
-          <h3 style="padding-top:15px">{{forloop.counter}} and {{default.default.id}}</h3>
-          <div class="card  mb-3">
-            <div class="card-body">
-              <h5 class="card-title">{{a.house_name}}, {{a.pincode}}</h5>
-              <p class="card-text">{{a.city}}, </p>
-              <div>
+    try:
+        wishlist_item = WishlistItem.objects.get(product=product,wishlist=wishlist)
+        wishlist_item.save()
+    except WishlistItem.DoesNotExist:
+        wishlist_item = WishlistItem.objects.create(
+            product=product,
+            wishlist=wishlist
+        )
+        wishlist_item.save()
+    return redirect('wishlist')
 
 
-                <!-- Button trigger modal -->
-                {% comment %} <button type="button" class="btn btn-light" data-bs-toggle="modal"
-                  data-bs-target="#address{{forloop.counter}}">
-                  <a href="{% url '' %}">
-                    View</a>
-                </button> {% endcomment %}
-
-                <!-- Modal -->
-                <div class="modal fade" id="address{{forloop.counter}}" data-bs-backdrop="static"
-                  data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h4 class="modal-title fs-6" id="staticBackdropLabel">View address</h4>
-                        <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close">
-                          <i class="fa fa-times"></i>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-
-                        <div class="row">
-                          <div class="col-sm-5">
-                            <p class="mb-0">House Name</p>
-                          </div>
-                          <div class="col-sm-7">
-                            {{ a.house_name}}
-                          </div>
-                        </div>
-                        <hr>
-
-                        <div class="row">
-                          <div class="col-sm-5">
-                            <p class="mb-0">City</p>
-                          </div>
-                          <div class="col-sm-7">
-                            {{ a.city}}
-                          </div>
-                        </div>
-                        <hr>
-
-                        <div class="row">
-                          <div class="col-sm-5">
-                            <p class="mb-0">Pincode</p>
-                          </div>
-                          <div class="col-sm-7">
-                            {{ a.pincode}}
-                          </div>
-                        </div>
-                        <hr>
+def remove_wishlistitem(request,product_id):
+    wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
+    product = get_object_or_404(Product,id=product_id)
+    wishlist_item = WishlistItem.objects.get(product=product,wishlist=wishlist)
+    wishlist_item.delete()
+    return redirect('wishlist')
 
 
-                        <div class="row">
-                          <div class="col-sm-5">
-                            <p class="mb-0">State</p>
-                          </div>
-                          <div class="col-sm-7">
-                            {{ a.state}}
-                          </div>
-                        </div>
+def wishlist(request,wishlist_items=None):
+    try:
+        wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
+        wishlist_items = WishlistItem.objects.filter(wishlist=wishlist,is_active=True)
+        
+    except ObjectDoesNotExist:
+        pass
 
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <a class="btn btn-light" href="{% url 'edit_address' a.id  %}">
-                  Edit
-                </a>
-
-                <a class="btn cap" data-bs-toggle="modal" data-bs-target="#deletaddress{{forloop.counter}}"
-                  href="{% url 'delete_address' a.id  %}">
-                  delete
-                </a>
-
-                <a class="btn btn-light" href="{% url 'default_address' a.id  %}">
-                  Default
-                </a>
-
-                <!--Edit Modal -->
-                <div class="modal fade " id="deletaddress{{forloop.counter}}" tabindex="-1"
-                  aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="" id="exampleModalLabel">Delete</h5>
-                        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close"> <i
-                            class="fa fa-cancel"></i>X </button>
-                      </div>
-                      <div class="modal-body">
-                        <p>Are you sure to delete Address <span class="text-primary">" {{a.house_name}}
-                            ..."</span></p>
-                        <form action="#" enctype="multipart/form-data" method="POST">
-                          {% csrf_token %}
-                          <div class="d-flex justify-content-center">
-                            <button type="submit"
-                              class="btn btn-danger btn-lg gradient-custom-4 w-50 text-light">Confirm</button>
-                          </div>
-
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {% comment %} <a href="" class="btn btn-dark">Make it default</a> {% endcomment %}
-              </div>
-            </div>
-          </div>
-          {% endif %}
-          {% endfor %}
-
-
-
-          <button class="btn cap"><a href="{% url 'add_address' %}">Add new address</a></button>
-        </div>
-
-
-        <!-- ------------------------------------------------------- side bar for order ----------------------------------------------------------- -->
-
-        <div class="col-lg-6">
-          <div class="order_box">
-            <h2>Your Order</h2>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th scope="col">Product</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Quantity</th>
-                  <th scope="col">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for cart_item in cart_items %}
-                <tr>
-                  <td>
-                    <div class="media">
-                      <div class="d-flex">
-                        <img src="{{ cart_item.product.image.url }}" alt="" width="100px" />
-                      </div>
-                      <div class="media-body">
-                        <p>{{ cart_item.product.product_name }}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <h5>{{ cart_item.product.price }}</h5>
-                  </td>
-                  <td>
-                  <h5>{{ cart_item.quantity }}</h5>
-                </td>                 
-                  <td>
-                    <h5>{{ cart_item.sub_total }}</h5>
-                  </td>
-                </tr>
-
-
-              </tbody>
-            </table>
-
-            <hr>
-
-
-            <ul class="list list_2">
-              <li>
-                <a href="#">Total Price
-                  <span>${{ cart_item.sub_total }}</span>
-                </a>
-              </li>
-              <li>
-                <a href="#">Tax
-                  <span>Flat rate: $50.00</span>
-                </a>
-              </li>
-              <li>
-                <a href="#">Grand
-                  <span>${{ cart_item.sub_total }}</span>
-                </a>
-              </li>
-            </ul>
-            {% endfor %}
-
-            <div class="payment_item">
-              <div class="radion_btn">
-                <input type="radio" id="f-option5" name="selector" />
-                <label for="f-option5">Check payments</label>
-                <div class="check"></div>
-              </div>
-              <p>
-                Please send a check to Store Name, Store Street, Store Town,
-                Store State / County, Store Postcode.
-              </p>
-            </div>
-            <div class="payment_item active">
-              <div class="radion_btn">
-                <input type="radio" id="f-option6" name="selector" />
-                <label for="f-option6">Paypal </label>
-                <img src="img/product/single-product/card.jpg" alt="" />
-                <div class="check"></div>
-              </div>
-              <p>
-                Please send a check to Store Name, Store Street, Store Town,
-                Store State / County, Store Postcode.
-              </p>
-            </div>
-            {% comment %} <div class="creat_account">
-              <input type="checkbox" id="f-option4" name="selector" />
-              <label for="f-option4">I’ve read and accept the </label>
-              <a href="#">terms & conditions*</a>
-            </div> {% endcomment %}
-            <br>
-            <a class="btn_3" href="#">Proceed to Paypal</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!--================End Checkout Area =================-->
-
-
-
-{% endblock body %}
+    context = {        
+        'wishlist_items':wishlist_items,
+    }
+    
+    return render(request, 'wishlist/wishlist.html',context)

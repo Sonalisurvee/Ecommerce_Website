@@ -94,11 +94,7 @@ def search(request):
 
 def product_list(request,category_slug=None):
     categories=None
-    products=None
-    if request.method == 'POST':
-        search = request.POST['search']         
-        searchresult = Product.objects.filter(product_name=search)           
-        return render(request,'product/product_search.html',{'result':searchresult})      
+    products=None        
     if category_slug != None:#wat if slug is there
         categories=get_object_or_404(Category, slug=category_slug)
         products=Product.objects.filter(category=categories, is_available=True)
@@ -115,6 +111,7 @@ def product_list(request,category_slug=None):
 def product_details(request, category_slug,product_slug):
     try:
         single_product = Product.objects.get(category__slug=category_slug,slug=product_slug)
+        cat=Product.objects.get(slug=product_slug)
 
         if request.user.is_authenticated:
             in_cart = Cartitem.objects.filter(user=request.user,product=single_product).exists()
@@ -127,6 +124,7 @@ def product_details(request, category_slug,product_slug):
     context={
         'single_product': single_product,
         'in_cart': in_cart,
+        'cat':cat,
     }
     return render(request,'product/single_product.html',context)
 

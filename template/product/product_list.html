@@ -3,44 +3,43 @@
 {% block body %}
 
 <style>
-    .cap {
-        width: 400px;
-        /* adjust as needed */
-        height: 400px;
-        /* adjust as needed */
-        position: relative;
-        overflow: hidden;
-    }
-
-    .cap img {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        max-width: 100%;
-        max-height: 100%;
-    }
-
     .single_product_item .cont {
         text-align: right;
         padding-right: 45px;
     }
+
+    .section_padding {
+        padding-top: 30px;
+    }
+
+    .breadcrumb_part {
+        height: 100px;
+    }
+
+    .breadcrumb_iner h3 {
+        font-size: 35px;
+        line-height: 1.2;
+        color: #fff;
+        font-weight: 500;
+    }
 </style>
 
-
+<section class="breadcrumb_part">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb_iner">
+                    <h3>Store</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <!-- product list part start-->
 <section class="product_list section_padding">
     <div class="container">
         <div class="col-md-6">
             <div class="row product_sidebar">
-                <!-- <div class="single_sedebar">
-                    <form action="#" method="post">
-                        {% csrf_token %}
-                        <input type="search" name="search" placeholder="Search keyword">
-                        <i class="ti-search"></i>
-                    </form>
-                </div> -->
-
                 <div class="single_sedebar col-md-6">
                     <div class="select_option">
                         <div class="select_option_list">Category <i class="right fas fa-caret-down"></i> </div>
@@ -60,15 +59,15 @@
                             <p><a href="#">Type 3</a></p>
                             <p><a href="#">Type 4</a></p>
                         </div>
-                    </div>
+                    </div>                    
                 </div>
-
             </div>
         </div>
 
 
         <div class="col-md-12">
-            <h1>{{product_count}} items found</h1>
+            <h3>{{product_count}} items found</h3>
+
             <div class="product_list">
                 <div class="row">
                     {% for p in products %}

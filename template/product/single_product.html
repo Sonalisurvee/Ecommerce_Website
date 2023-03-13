@@ -4,18 +4,100 @@
 {% block body %}
 
 <style>
-  .img-fluid{max-width:100%;height:auto}
-  .product_count_area {
-    display: flex;
-    align-items: left;
-    justify-content: center;
+  .img-fluid {
+    max-width: 100%;
+    height: auto
   }
-  
-  /* line 168, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
-  .card_area .product_count_area p {
-    margin-top: 0 !important;
-    color: #795376;
+  @media only screen and (min-width: 992px) and (max-width: 1200px) {
+  /* line 133, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
+  .product_image_area .single_product_text {
+    margin: 6px 0 10px;
   }
+} 
+.product_image_area .single_product_text {
+  margin: 10px 0 20px;
+}
+
+@media (max-width: 991px) {
+  /* line 133, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
+  .product_image_area .single_product_text {
+    margin: 20px 0 30px;
+  }
+}
+/* line 141, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
+.product_image_area .single_product_text h3 {
+  font-size: 40px;
+}
+
+@media (max-width: 991px) {
+  /* line 141, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
+  .product_image_area .single_product_text h3 {
+    font-size: 25px;
+  }
+  /* line 145, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
+  .product_image_area .single_product_text h3 br {
+    display: none;
+  }
+}
+
+/* line 150, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
+.product_image_area .single_product_text p {
+  margin-top: 10px;
+  font-size: 18px;
+  color: black;
+}
+
+@media (max-width: 991px) {
+  /* line 150, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
+  .product_image_area .single_product_text p {
+    margin-top: 20px;
+  }
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1200px) {
+  /* line 150, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
+  .product_image_area .single_product_text p {
+    margin-top: 20px;
+  }
+} 
+.card_ara .product_count_area p {
+  color: black;
+  font-size: 18px;
+  margin-bottom: 90px;
+}  
+
+.btn_3 {
+  display: inline-block;
+  padding: 18px 36px;
+  border-radius: 5px;
+  background-color: #fff;
+  border: 1px solid #B08EAD;
+  font-size: 15px;
+  font-weight: 700;
+  color: #B08EAD;
+  /* color: #B08EAD; */
+  text-transform: uppercase;
+  font-weight: 400;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+}
+
+/* line 56, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_button.scss */
+.btn_3:hover {
+  background-color: #B08EAD;
+  color: #fff;
+}
+.breadcrumb{background-color:transparent;
+padding: 3px 3px;
+}
+
+.breadcrumb-item:hover::before{text-decoration:underline}
+.breadcrumb-item+
+.breadcrumb-item:hover::before{text-decoration:none}
+.breadcrumb-item.active{color:black}
+.breadcrumb-item a{
+  color: black;
+}
 </style>
 
 <!-- breadcrumb part start-->
@@ -49,34 +131,43 @@
         </div>
       </div>
       <div class="col-lg-6">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+              <a href="{% url 'product_list' %}" li class="breadcrumb-item active" aria-current="page">Store</li></a>
+
+              <a href="{{category.get_url}}"li class="breadcrumb-item active" aria-current="page">{{cat.slug}}</li></a>
+
+              <li class="breadcrumb-item active" aria-current="page">{{single_product.product_name}}</li>
+          </ol>
+      </nav>
         <div class="single_product_text">
           <h3>{{ single_product.product_name }}</h3>
-          <p>{{ single_product.product_description }}
-          </p>
-          <div class="card_area">
+          <p>{{ single_product.product_description }}</p>
+          <div class="card_ara">
             <div class="product_count_area">
-
               <p>Price : {{ single_product.price }}</p>
             </div>
             <div class="add_to_cart">
-              {% if single_product.stock <= 0 %}
-                <a href="#" class="text-danger btn_3">Out of stock</a>
-              {% else %}
-                {% if in_cart %}
-                  <a href="#" class="btn_3">Added to cart</a>
-                  <a href="{% url 'cart' %}" class="btn_3">View cart</a>
+              {% if single_product.stock <= 0 %} <a href="#" class="text-danger btn_3">Out of stock</a>
                 {% else %}
-                  <a href="{% url 'add_cart' single_product.id %}" class="btn_3">Add to cart</a>
-                  <a href="{% url 'checkout' %}" class="btn_3">Buy Now</a>
+
+                {% if in_cart %}
+                <a href="#" class="btn_3">Added to cart</a>
+                <a href="{% url 'cart' %}" class="btn_3">View cart</a>
+                {% else %}
+                <a href="{% url 'add_cart' single_product.id %}" class="btn_3 ">Add to cart</a>
+                <a href="{% url 'checkout' %}" class="btn_3">Buy Now</a>
                 {% endif %}
-              {% endif %}
+
+                {% endif %}
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div> 
+</div>
 <!--================End Single Product Area =================-->
 
 
@@ -84,6 +175,3 @@
 
 
 {% endblock body %}
-
-
-
