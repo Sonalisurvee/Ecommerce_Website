@@ -11,3 +11,5 @@ class CartitemAdmin(admin.ModelAdmin):
 admin.site.register(Cart,CartAdmin)
 admin.site.register(Cartitem,CartitemAdmin)
 admin.site.register(Coupon)
+admin.site.register(Order)
+admin.site.register(OrderItem)

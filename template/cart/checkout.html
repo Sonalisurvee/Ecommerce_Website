@@ -43,7 +43,6 @@
     color: #fff;
     font-weight: 500;
   }
-
 </style>
 
 
@@ -99,7 +98,7 @@
             <h2>Billing Details</h2>
           </div>
 
-          <form class="row contact_form" action="#" method="post">
+          <form class="row contact_form" action="" method="post">
             <div class="col-md-12 form-group p_star">
               <input type="text" class="form-control" id="first" name="fullname" />
 
@@ -131,76 +130,7 @@
               <h5 class="card-title">{{a.house_name}}, {{a.pincode}}</h5>
               <p class="card-text">{{a.city}}, </p>
               <div>
-
-
-                <!-- Button trigger modal -->
-                {% comment %} <button type="button" class="btn btn-light" data-bs-toggle="modal"
-                  data-bs-target="#address{{forloop.counter}}">
-                  <a href="{% url '' %}">
-                    View</a>
-                </button> {% endcomment %}
-
-                <!-- Modal -->
-                <div class="modal fade" id="address{{forloop.counter}}" data-bs-backdrop="static"
-                  data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h4 class="modal-title fs-6" id="staticBackdropLabel">View address</h4>
-                        <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close">
-                          <i class="fa fa-times"></i>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-
-                        <div class="row">
-                          <div class="col-sm-5">
-                            <p class="mb-0">House Name</p>
-                          </div>
-                          <div class="col-sm-7">
-                            {{ a.house_name}}
-                          </div>
-                        </div>
-                        <hr>
-
-                        <div class="row">
-                          <div class="col-sm-5">
-                            <p class="mb-0">City</p>
-                          </div>
-                          <div class="col-sm-7">
-                            {{ a.city}}
-                          </div>
-                        </div>
-                        <hr>
-
-                        <div class="row">
-                          <div class="col-sm-5">
-                            <p class="mb-0">Pincode</p>
-                          </div>
-                          <div class="col-sm-7">
-                            {{ a.pincode}}
-                          </div>
-                        </div>
-                        <hr>
-
-
-                        <div class="row">
-                          <div class="col-sm-5">
-                            <p class="mb-0">State</p>
-                          </div>
-                          <div class="col-sm-7">
-                            {{ a.state}}
-                          </div>
-                        </div>
-
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
+             
                 <a class="btn btn-light m-1" href="{% url 'edit_address' a.id 2 %}">
                   Edit
                 </a>
@@ -297,14 +227,14 @@
 
             {% if cart_item.coupon %}
             <hr>
-                <button type="submit" class="tp_btn" href="#">Applied Coupon</button>
-                {% if cart_item.coupon %}
-                <a href="{% url 'remove_coupan' cart_item.id %}" class="btn btn-success">{{ cart_item.coupon.coupan_code }}</a>
-                <br>
-                <hr>
-                {% endif %}
+            <button type="submit" class="tp_btn" href="#">Applied Coupon</button>
+            {% if cart_item.coupon %}
+            <a href="{% url 'remove_coupan' cart_item.id %}" class="btn btn-success">{{ cart_item.coupon.coupan_code }}</a>
+            <br>
+            <hr>
             {% endif %}
-             
+            {% endif %}
+
 
             <ul class="list list_2">
               <li>
@@ -333,7 +263,8 @@
             <div class="payment_item">
               <hr>
               <h2 class="text-center">Payment</h2>
-              <div class="radion_btn">
+              <p class="text-center">Cash On Delivery</p>
+              <!-- <div class="radion_btn">
                 <input type="radio" id="f-option5" name="selector" />
                 <label for="f-option5">Check payments</label>
                 <div class="check"></div>
@@ -354,19 +285,14 @@
                 Please send a check to Store Name, Store Street, Store Town,
                 Store State / County, Store Postcode.
               </p>
+            </div>       -->
+              <br>
+              <a class="btn_3" href="{% url 'placeorder' %}?cart_id={{cart_item.cart.id}}">Proceed to Paypal</a>
             </div>
-            {% comment %} <div class="creat_account">
-              <input type="checkbox" id="f-option4" name="selector" />
-              <label for="f-option4">I’ve read and accept the </label>
-              <a href="#">terms & conditions*</a>
-            </div> {% endcomment %}
-            <br>
-            <a class="btn_3" href="#">Proceed to Paypal</a>
           </div>
         </div>
       </div>
     </div>
-  </div>
 </section>
 
 <!--================End Checkout Area =================-->

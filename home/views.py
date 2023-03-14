@@ -3,6 +3,8 @@ from django.contrib import messages
 from .models import Banner
 from account.models import Account,Address
 from category.models import Category
+from cart.models import Coupon,Order,OrderItem
+from store.models import Product
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -120,5 +122,110 @@ def error_404(request,exception):
 # -----------------------------------------Order management-----------------------------------------
 
 
-def order_management(request):
-    return render(request,'adminpanel/oredr_management.html')
+def order_management(request, order_id=0):
+    if request.method == 'POST':
+        order = Order.objects.get(id=order_id)
+        status = request.POST['order_status']
+        order.status = status
+        order.save()
+        return redirect(order_management) 
+
+    dict_order = {
+        'order': Order.objects.all().order_by('id'),
+        'statuses' : Order.orderstatuses
+    }
+    return render(request,'adminpanel/order_management.html',dict_order)
+
+
+
+# -----------------------------------------Coupan management-----------------------------------------
+
+
+def coupan_management(request):
+    dict_coupon = {
+        'coupon':Coupon.objects.all().order_by('id')
+    }
+    return render(request,'adminpanel/coupan_management.html',dict_coupon)
+
+
+def delete_coupon(request,coupan_id):
+    del_record = Coupon.objects.filter(id=coupan_id)
+    del_record.delete()
+    return redirect(coupan_management)
+
+
+def update_coupon(request,coupan_id):
+    coupon=get_object_or_404(Coupon,pk=coupan_id)
+    if request.method == 'POST':
+        coupan=request.POST['coupan']
+        discount=request.POST['discount']
+        minimum=request.POST['minimum']  
+     
+        if Coupon.objects.filter(coupan_code=coupon).exists():
+            messages.info(request,"This coupon already exists")
+            return redirect(coupan_management)
+        else:
+            update_coupon = Coupon.objects.filter(id=coupan_id)  
+            update_coupon.update(coupan_code=coupan,discount_price=discount,minimum_amount=minimum)
+            return redirect(coupan_management)
+    else:
+        messages.info(request,'some field is empty')
+        return render(request,'adminpanel/coupan_management.html')
+
+
+def add_coupon(request):
+    if request.method == 'POST':
+        couponn = request.POST['coupon']
+        print(couponn)
+        discount = request.POST['discount']
+        print(discount)
+        minimum=request.POST['minimum'] 
+        print(minimum)
+
+        if Coupon.objects.filter(coupan_code=couponn).exists():
+            messages.info(request,"This coupon already exists")
+            return redirect(coupan_management)
+        else:
+            coupan = Coupon.objects.create(coupan_code=couponn,discount_price=discount,minimum_amount=minimum)
+            coupan.save()           
+        return redirect(coupan_management)   
+  
+    else:
+        messages.info(request,'some field is empty')
+        return redirect(add_coupon)
+    
+
+def expired(request,coupan_id):
+    c=get_object_or_404(Coupon,id=coupan_id) #is user that we are checking exits then it will store it in the user variable else it will throw man 404 error
+    if c.is_expired:
+        c.is_expired=False#just converting the active status of the user to inaction
+        c.save()
+        return redirect(coupan_management)
+    else:
+        c.is_expired=True
+        c.save()
+        return redirect(coupan_management)                                                   
+    
+
+
+# -----------------------------------------Order management user side-----------------------------------------
+
+
+
+# def orders(request):
+#     orders = Order.objects.filter(user = request.user)
+#     for order in orders:
+#         orderlist = OrderItem.objects.filter(order=orders)
+#         for item in orderlist:
+#             prodocut = item.product
+#             payment_method = order.payment_mode
+#             status = order.status
+#             totat = order.total_price
+
+#     dict_order ={
+#         'orders':orders,
+#         'orderlist':orderlist,
+#     }
+
+
+#     return render(request,'userpanel/order_list.html',dict_order)

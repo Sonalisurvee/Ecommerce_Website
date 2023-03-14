@@ -7,6 +7,15 @@ urlpatterns = [
     path('', views.index, name='index'),  
     path('admin/', views.admin_index, name='admin_index'),  
 
+    # coupon management
+
+    path('admin/coupan_management', views.coupan_management, name='coupan_management'),  
+    path('admin/delete_coupon/<int:coupan_id>', views.delete_coupon, name='delete_coupon'),
+    path('admin/update_coupon/<int:coupan_id>/', views.update_coupon, name='update_coupon'),
+    path('admin/expired/<int:coupan_id>/', views.expired, name='expired'),
+    path('admin/add_coupon', views.add_coupon, name='add_coupon'),
+   
+
     #user profile
 
     path('profile/', views.profile, name="profile"),  
@@ -25,7 +34,13 @@ urlpatterns = [
     
     # order management
 
-    path('order_management', views.order_management, name='order_management'),       
+    path('order_management/', views.order_management, name='order_management'),       
+
+    path('order_management/<int:order_id>/', views.order_management, name='order_management'),       
+    
+    
+    
+    # path('orders/', views.orders, name="orders"),  
 
 
 

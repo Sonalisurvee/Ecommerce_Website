@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from store.models import Product
-from .models import Cart,Cartitem,Coupon
+from .models import Cart,Cartitem,Coupon,Order,OrderItem
 from account.models import Address
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
@@ -30,13 +30,14 @@ def add_cart(request,product_id):
 
 # thus try block is created just to chech wethere cart is ther or not ,once cart is created we are able to add produtc to it
     if current_user.is_authenticated:
-    
+        cart,_ = Cart.objects.get_or_create(cart_id=_cart_id(request))
         is_cart_item_exists = Cartitem.objects.filter(product=product, user=current_user).exists()
         if is_cart_item_exists:
             cart_item = Cartitem.objects.get(product=product,user=current_user)
             cart_item.quantity+=1 #incrementing the quantity of prodiuct presnet in the cart
         else:
             cart_item = Cartitem.objects.create( #if not exist it will create one cart
+            cart = cart,
             product=product,
             user = current_user,
             quantity = 1
@@ -111,7 +112,6 @@ def remove_cartitem(request,product_id,cart_item_id):
 
 
 def cart(request, total=0,quantity=0,cart_items=None):
-     
     
     try:
         print('Loading')
@@ -165,38 +165,6 @@ def checkout(request,total=0,quantity=0,cart_items=None):
         except ObjectDoesNotExist:
             pass
 
-         # -----------------Coupon-----------------
-
-        # if request.method == 'POST':
-        #     print("coupon if")
-        #     coupon = request.POST.get('coupon')
-        #     coupon_obj = Coupon.objects.filter(coupan_code__icontains = coupon)
-        #     print('hello')
-        #     print(coupon_obj)
-        #     print('jjjj')          
-            
-        #     if not coupon_obj.exists():
-        #         print('in valiud')
-        #         messages.warning(request, 'in valid coupon')
-        #         return redirect(checkout)
-            
-        #     if cart_item.coupon:# checking wether cartitem table has coupon or not ,coupon exists or not
-        #         print('coupan exit')
-        #         messages.warning(request, 'coupon already exists')
-        #         return redirect(checkout)       
-                  
-
-        #     for cart_itemm in cart_items:
-        #         total += (cart_itemm.product.price * cart_itemm.quantity)
-        #         quantity += cart_itemm.quantity
-        #         grand_tot = total - coupon_obj.discount_price
-
-        #     # print(f"cart_item: {cart_item}")
-        #     # print(f"grand_total: {cart_item.grand_total()}")
-       
-        #     if grand_tot > coupon_obj.first().minimum_amount:
-        #         messages.warning(request, f"Amount should be greater than {coupon_obj.first().minimum_amount}")
-        #         return redirect(checkout)
 
         if request.method == 'POST':
             coupon = request.POST.get('coupon')
@@ -210,15 +178,6 @@ def checkout(request,total=0,quantity=0,cart_items=None):
                 messages.warning(request, 'Coupon already exists')
                 return redirect(checkout)
 
-            # for cart_itemm in cart_items:
-            #     total = (cart_itemm.product.price * cart_itemm.quantity)
-            #     quantity = cart_itemm.quantity
-            #     grand_tot = total - coupon_obj[0].discount_price
-            #     print(cart_itemm.product.price)
-            #     print(cart_itemm.quantity)
-            #     print(total,'one')
-            #     print(quantity,'two')
-            #     print(grand_tot,'dfghj')
 
             if grand_tot < coupon_obj[0].minimum_amount:
                 messages.warning(request, f"Amount should be greater than {coupon_obj[0].minimum_amount}")
@@ -236,7 +195,42 @@ def checkout(request,total=0,quantity=0,cart_items=None):
             return redirect(checkout)  
         
          # -----------------Coupon-end----------------
-                  
+
+
+        # if request.method == 'POST':
+        #     coupons = request.POST.get('coupons')
+        #     if coupons:
+        #         coupon_codes = coupons.split(',')
+        #     else:
+        #         coupon_codes = []
+        #     for coupon_code in coupon_codes:
+        #         coupon_obj = Coupon.objects.filter(coupan_code__icontains=coupon_code)
+
+        #         if not coupon_obj.exists():
+        #             messages.warning(request, f'Invalid coupon: {coupon_code}')
+        #             continue
+
+        #         if cart_item.coupon == coupon_obj[0]:
+        #             messages.warning(request, f'Coupon {coupon_code} already exists')
+        #             continue
+
+        #         if grand_tot < coupon_obj[0].minimum_amount:
+        #             messages.warning(request, f"Amount should be greater than {coupon_obj[0].minimum_amount} for coupon {coupon_code}")
+        #             continue
+
+        #         if coupon_obj[0].is_expired:
+        #             messages.warning(request, f'Coupon {coupon_code} has expired')
+        #             continue
+
+        #         cart_item.coupon = coupon_obj[0]
+        #         cart_item.save()
+        #         messages.success(request, f'Coupon {coupon_code} applied')
+
+        #     return redirect(checkout)
+                       
+        #  # -----------------Coupon-end----------------
+
+        
         if cart_item.coupon:
             grand_tot = (total - cart_item.coupon.discount_price) + tax
 
@@ -265,9 +259,35 @@ def remove_coupan(request,cart_id):
     return redirect(checkout) 
     
 
+def placeorder(request):
+
+    cart_id = request.GET.get('cart_id')
+
+    cart = Cart.objects.get(id=cart_id)
+    cartitem = Cartitem.objects.filter(cart=cart )
+    print(cartitem)
+
+    address = Address.objects.get(customer=request.user,default=True)
+
+    sub_total = 0
+    for item in cartitem:
+        sub_total+= item.product.price * item.quantity
+
+    gst = (2 * sub_total)/100
+    total = gst + sub_total
+
+    order = Order.objects.create(user=request.user,address=address,total_price=total)
+    order.save()
+    for item in cartitem:
+        orderitem = OrderItem.objects.create( order=order , quantity=item.quantity , product=item.product , price=item.product.price )
+
+    context = {
+        'order_id' : order.id
+    }
+
+    return render(request,'cart/order_success.html',context)
+
+
 # ------------------------------------------------------order_success ---------------------------------------------------
 
 
-
-def order_success(request):
-    return render(request,'cart/order_success.html') 

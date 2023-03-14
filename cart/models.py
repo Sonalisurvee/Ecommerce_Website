@@ -1,6 +1,6 @@
 from django.db import models
 from store.models import Product
-from account.models import Account
+from account.models import Account,Address
 
 # Create your models here.
 
@@ -10,7 +10,8 @@ class Coupon(models.Model):
     discount_price = models.IntegerField(default=100)
     minimum_amount = models.IntegerField(default=500)
 
-
+    def __unicode__(self):
+        return self.coupan_code
 
 class Cart(models.Model):
     cart_id = models.CharField(max_length=250,blank=True)
@@ -31,33 +32,38 @@ class Cartitem(models.Model):
     def sub_total(self):
         return self.product.price * self.quantity
    
-    # def grand_total(self):
-    #     if self.coupon:
-    #         return self.product.price * self.quantity - coupon.discount_price
-        
-
-
-    def grand_total(self):
-        cart_items = self.cart_items.all()
-        price = []
-        for cart_itemm in cart_items:
-            price += (cart_itemm.product.price * cart_itemm.quantity)
-        if self.coupon:
-            return price - self.coupon.discount_price
-        # return total or 0  # return 0 if total is None or False
-
-
-    # def get_cart_total(self):
-    #     if self.coupon:
-    #         return sum()
-            
-   
-
     def __unicode__(self):
         return self.product
-    
+
+class Order(models.Model):
+    user = models.ForeignKey(Account,on_delete=models.CASCADE,null=True)
+    address = models.ForeignKey(Address,on_delete=models.CASCADE)    
+    total_price = models.FloatField(null=False)
+    PAYMENT_CHOICES = (
+        ('cod', 'Cash on Delivery'),
+    )
+    payment_mode = models.CharField(max_length=150, choices=PAYMENT_CHOICES, default='cod')
+    payment_id = models.CharField(max_length=250,null=True)
+    orderstatuses = (
+        ('Pending','Pending'),
+        ('Out for Shipping','Out for Shipping'),
+        ('Completed','Completed'),
+    )
+    status = models.CharField(max_length=150,choices=orderstatuses,default='Pending') 
+    message = models.TextField(null=True)
+    tracking_no = models.CharField(max_length=150,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
+    def __str__(self):
+        return str(self.address)
 
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order,on_delete=models.CASCADE)
+    product = models.ForeignKey(Product,on_delete=models.CASCADE)
+    price = models.FloatField(null=False)
+    quantity = models.IntegerField(null=False)
 
-
+    def __unicode__(self):
+        return self.id

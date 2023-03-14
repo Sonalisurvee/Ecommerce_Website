@@ -1,4 +1,5 @@
 {% extends 'userpanel/userbase.html' %}
+{% load static %}
 {% block title %}login{% endblock title %}
 {% block body %}
 <div class="container mt-4 mb-4">
@@ -10,9 +11,9 @@
                         <div class="text-center order-details">
                             <span class="font-weight-bold fs-25">Your order has been received</span><br><br><br>
                             <div class="d-flex justify-content-center mb-5 flex-column align-items-center">
-                                <span class="check1"><img src="#" class="w-100 h-100" alt=""></span><br>
+                                <span class="check1"><img src="{% static 'users/truck.avif' %}" class="w-50 h-50" alt=""></span><br>
                                 <span class="font-weight-bold fs-20">Thank you for your purchase!</span>
-                                <small class="mt-2 fs-15">Your order ID is : 12345678</small>
+                                <small class="mt-2 fs-15">Your order ID is : {{order_id}}</small>
                             </div>
                             <a href="{% url 'index' %}"><button class="btn btn-danger order-button">CONTINUE SHOPPING</button></a>
                         </div>
