@@ -1,4 +1,5 @@
 {% extends 'userpanel/userbase.html' %}
+{% load static %}
 {% block title %}cart{% endblock title %}
 {% block body %}
 
@@ -35,10 +36,12 @@
 <!--================Cart Area =================-->
 <section class="cart_area section_padding">    
     <div class="container">
-        {% if not cart_items %}
-        <div class="text-center">
+          <br>
+          {% if not cart_items %}
+        <div class="text-center p-3">
             <h3>Your cart is empty</h3>
-            <a class="btn_1" href="#">Continue Shopping</a>
+            <img src="{% static 'users/imgg/cart1.jpg' %}" alt="#" width="350px">
+            <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
         </div>
         {% else %}
         <div class="cart_inner">

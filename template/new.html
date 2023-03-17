@@ -1,59 +1,108 @@
-from django.shortcuts import render,redirect,get_object_or_404
-from store.models import Product
-from .models import Wishlist,WishlistItem
-from django.core.exceptions import ObjectDoesNotExist
+{% extends 'userpanel/userbase.html' %}
+{% load static %}
+{% block title %}Wishlist{% endblock title %}
+{% block body %}
 
-
-# -----------------------------------Wishlist-Delete,view and add --------------------------------
-
-
-def _wishlist_id(request):
-    wishlist = request.session.session_key
-    if not wishlist:
-        wishlist = request.session.create()
-    return wishlist
-
-
-def add_wishlist(request,product_id):
-    product = Product.objects.get(id=product_id)
-    try:
-        wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
-    except Wishlist.DoesNotExist: 
-        wishlist = Wishlist.objects.create( 
-            wishlist_id=_wishlist_id(request)
-        )
-    wishlist.save()  
-
-    try:
-        wishlist_item = WishlistItem.objects.get(product=product,wishlist=wishlist)
-        wishlist_item.save()
-    except WishlistItem.DoesNotExist:
-        wishlist_item = WishlistItem.objects.create(
-            product=product,
-            wishlist=wishlist
-        )
-        wishlist_item.save()
-    return redirect('wishlist')
-
-
-def remove_wishlistitem(request,product_id):
-    wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
-    product = get_object_or_404(Product,id=product_id)
-    wishlist_item = WishlistItem.objects.get(product=product,wishlist=wishlist)
-    wishlist_item.delete()
-    return redirect('wishlist')
-
-
-def wishlist(request,wishlist_items=None):
-    try:
-        wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
-        wishlist_items = WishlistItem.objects.filter(wishlist=wishlist,is_active=True)
-        
-    except ObjectDoesNotExist:
-        pass
-
-    context = {        
-        'wishlist_items':wishlist_items,
+<style>
+    .section_padding {
+        padding: 10px 10px;
     }
-    
-    return render(request, 'wishlist/wishlist.html',context)
+
+    .breadcrumb_part {
+        height: 100px;
+    }
+
+    .breadcrumb_iner h3 {
+        font-size: 35px;
+        line-height: 1.2;
+        color: #fff;
+        font-weight: 500;
+    }
+</style>
+
+<!-- breadcrumb part start-->
+<section class="breadcrumb_part">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb_iner">
+                    <h3>Wishlist</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- breadcrumb part end -->
+
+
+
+<!--================Cart Area =================-->
+<section class="cart_area section_padding">
+    <div class="container">
+        {% if not wishlist_items %}
+        <div class="text-center p-3">
+            <h3>Your wislist is empty</h3>
+            <br>
+            <img src="{% static 'users/imgg/wishlist.png' %}" alt="#" width="450px">
+            <br><br>
+            <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
+        </div>
+        {% else %}
+        <div class="row cart_inner">
+            <div class="col-md-10 table-responsive">
+                <table class="table">
+                    <hr>
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Price</th>
+                            {% comment %} <th scope="col"></th> {% endcomment %}
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for wishlist_item in wishlist_items %}
+                        <tr>
+                            <td>
+                                <div class="media">
+                                    <div class="d-flex">
+                                        <img src="{{ wishlist_item.product.image.url }}" alt="" />
+                                    </div>
+                                    <div class="media-body">
+                                        <p>{{ wishlist_item.product.product_name }}</p>
+                                        <p>{{ wishlist_item.product.product_description }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <h5>{{ wishlist_item.product.price }}</h5>
+                            </td>
+                            {% endfor %}
+                            {% endif %}
+                            {% comment %} <td>
+                                <a class="btn_1"
+                                    href="{% url 'remove_wishlistitem' wishlist_item.product.id wishlist_item.id %}">Remove</a>
+                            </td> {% endcomment %}
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% for wishlist_item in wishlist_items %}
+
+            <div class="col-md-2">
+                <a class="btn_1" href="{% url 'remove_wishlistitem' wishlist_item.product.id wishlist_item.id %}">Remove</a>
+            </div>
+            {% endfor %}
+            
+            <div class="checkout_btn_inner float-right">
+                <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
+                <!-- <a class="btn_1 checkout_btn_1" href="#">Proceed to checkout</a> -->
+            </div>
+        </div>
+</section>
+<!--================End Cart Area =================-->
+
+
+
+{% endblock body %}

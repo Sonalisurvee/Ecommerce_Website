@@ -1,0 +1,35 @@
+Ecommerce-
+    account-
+        login
+        logout
+        signup
+        multiple address-edit,delete,default
+    cart-
+        cart-add,remove cart and cartitems 
+        checkout
+        coupan-remmove
+        placeorder
+    category-
+        cate management-delete,update,add
+    home-
+        index       
+        admin_index
+        coupan management-delte,update,expired,add coupon
+        profile-update
+        user management-block,unblock
+        banner management-delete,edit
+        error 404 in views
+        order management
+    Store-
+        product management-delete,update,add
+        search
+        product list
+        single product
+    wishlist-
+        wishlist-add,remove
+
+
+
+        
+
+    

@@ -213,19 +213,6 @@ def expired(request,coupan_id):
 
 
 # def orders(request):
-#     orders = Order.objects.filter(user = request.user)
-#     for order in orders:
-#         orderlist = OrderItem.objects.filter(order=orders)
-#         for item in orderlist:
-#             prodocut = item.product
-#             payment_method = order.payment_mode
-#             status = order.status
-#             totat = order.total_price
-
-#     dict_order ={
-#         'orders':orders,
-#         'orderlist':orderlist,
-#     }
 
 
-#     return render(request,'userpanel/order_list.html',dict_order)
+#     return render(request,'new.html')

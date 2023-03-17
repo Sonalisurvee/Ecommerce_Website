@@ -1,4 +1,5 @@
 {% extends 'userpanel/userbase.html' %}
+{% load static %}
 {% block title %}Wishlist{% endblock title %}
 {% block body %}
 
@@ -16,6 +17,19 @@
    color: #fff;
    font-weight: 500;
  }
+ @media screen and (max-width: 768px) {
+
+ .btn_1{
+    padding: 10px 9px;
+    font-size: 12px;
+
+ }
+.cart_area .btn_1 {
+    margin-bottom: 3px;
+
+}
+}
+ 
 </style>
 
 <!-- breadcrumb part start-->
@@ -37,6 +51,15 @@
 <!--================Cart Area =================-->
 <section class="cart_area section_padding">
     <div class="container">
+        {% if not wishlist_items %}
+        <div class="text-center p-3">
+            <h3>Your wislist is empty</h3>
+            <br>
+            <img src="{% static 'users/imgg/wishlist.png' %}" alt="#" width="450px">
+            <br><br>
+            <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
+        </div>
+        {% else %}
         <div class="cart_inner">
             <div class="table-responsive">
                 <table class="table">
@@ -45,8 +68,7 @@
                         <tr>
                             <th scope="col">Product</th>
                             <th scope="col">Price</th>
-                            <th scope="col"></th>
-                            <th scope="col"></th>
+                           
                             <th scope="col"></th>
 
                         </tr>
@@ -61,27 +83,20 @@
                                     </div>
                                     <div class="media-body">
                                         <p>{{ wishlist_item.product.product_name }}</p>
+                                        <p>{{ wishlist_item.product.product_description }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <h5>{{ wishlist_item.product.price }}</h5>
                             </td>
-                           
-                            <td>
-                                <!-- <h5>{{ cart_item.sub_total }}</h5> -->
-
-                            </td>
-                            <td>
-                                <!-- <h5>{{ cart_item.sub_total }}</h5> -->
-                            </td>
+                          
                             <td>
                                 <a class="btn_1" href="{% url 'remove_wishlistitem' wishlist_item.product.id wishlist_item.id %}">Remove</a>                            
                             </td>
                            
                         </tr>
-                    {% endfor %}
-                        
+                    {% endfor %}                        
                        
                     </tbody>
                 </table>
@@ -89,6 +104,8 @@
                     <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
                     <!-- <a class="btn_1 checkout_btn_1" href="#">Proceed to checkout</a> -->
                 </div>
+                {% endif %}
+
             </div>
         </div>
 </section>

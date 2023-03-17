@@ -122,9 +122,12 @@ padding: 3px 3px;
           <div class="single_product_img">
             <img src="{{ single_product.image.url }}" alt="#" class="img-fluid">
           </div>
-          <!-- <div class="single_product_img">
-            <img src="img/product/single_product.png" alt="#" class="img-fluid">
+          {% for im in products %}
+          <div class="single_product_img">
+            <img src="{{ im.productimage.url}}" alt="#" class="img-fluid">
           </div>
+          {% endfor %}
+          <!-- 
           <div class="single_product_img">
             <img src="img/product/single_product.png" alt="#" class="img-fluid">
           </div> -->

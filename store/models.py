@@ -2,12 +2,13 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from category.models import Category
 from django.urls import reverse
+from django.utils.text import slugify
 
 
 # Create your models here.
 class Product(models.Model):
-    product_name = models.CharField(max_length=200)
-    slug=models.SlugField(unique=True)
+    product_name = models.CharField(max_length=200,unique=True)
+    slug=models.SlugField(unique=True,null=True,blank=True)
     image = models.ImageField(upload_to='product_images',default='404.png')
     category = models.ForeignKey(Category,on_delete=models.CASCADE)
     product_description = models.TextField(blank=True)
@@ -16,6 +17,11 @@ class Product(models.Model):
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.product_name)
+        super(Product ,self).save(*args , **kwargs)
+
 
     def __str__(self):
         return self.product_name
@@ -36,5 +42,6 @@ class Product_Image(models.Model):
     productimage = models.ImageField(upload_to='product_images',default='404.png')
 
 
-    # def __str__(self):
-    #     return self.product
+
+    def __str__(self):
+        return f'{self.product.product_name}'

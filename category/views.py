@@ -1,29 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import messages
 from .models import Category
-from store.models import Product
-
-# -----------------------------------Category --------------------------------
-
-
-def category_product(request):
-    category=Category.objects.filter(status=0)
-    dict_extra={
-        'category': category
-    }
-    return render(request,'category/extra.html',dict_extra)
-
-
-def category_view(request, slug):
-    if(Category.objects.filter(slug=slug,status=0)):
-        products = Product.objects.filter(category__name=slug)
-        category_name=Category.objects.filter(slug=slug).first()
-        context={'products': products,'category_name': category_name}
-        return render(request,'product/pcategory_management.html', context)
-    else:
-        messages.warning(request,"This category does not exist")
-        return redirect(category_product)
-      
+from store.models import Product    
       
 # -----------------------------------Category-Delete,edit and add --------------------------------
 

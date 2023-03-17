@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404,HttpResponse
-from .models import Product
+from .models import Product,Product_Image
 from category.models import Category
 from cart.models import Cart,Cartitem
 from cart.views import _cart_id
@@ -8,7 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 
 
-# -----------------------------------Product-Delete,edit and add --------------------------------
+# -----------------------------------Product Management-Delete,edit and add --------------------------------
 
 
 def product_management(request):
@@ -42,8 +42,16 @@ def update_product(request,product_id):
         cat_instance = Category.objects.get(id=category)
          
         update_prod=Product.objects.filter(id=product_id)
-        update_prod.update(product_name=product,category=cat_instance,product_description=product_description,stock=stock,price=price)
-        context = {'product': products, 'categories': categories}
+        update_prod.update(
+            product_name=product,
+            category=cat_instance,
+            product_description=product_description,
+            stock=stock,price=price
+            )
+        context = {
+            'product': products, 
+            'categories': categories,
+            }
         return redirect(product_management)
     else:    
         messages.info(request,'some field is empty')
@@ -60,11 +68,32 @@ def add_product(request):
         category=request.POST['category']#here only the id of categorywill be stored
         stock=request.POST['stock']
         price=request.POST['price']
+
+        multi_imaeg = request.FILES.getlist('imagess')
+
+
         cat_instance = Category.objects.get(id=category)#for admin to view our category ,as cate is the forign key in product for we have to assig suprate instance for it so 
         # because we dint gave any related name to the category and now the id stored in the category will be stored in the category instance
         # 
-        prod = Product.objects.create(product_name=productname,image=product_image,category=cat_instance,stock=stock,price=price,slug=slug,product_description=description)
-        prod.save()           
+        prod = Product.objects.create(
+            product_name=productname,
+            image=product_image,
+            category=cat_instance,
+            stock=stock,price=price,
+            slug=slug,
+            product_description=description
+            )
+        
+        # this for loop i gave after multi_iamge then i got error saying 
+        # The error message indicates that you are trying to assign a string value to the product field of the Product_Image model, but it expects an instance of the Product model.
+        # To fix this,first create an instance of the 'Product' model, and then use that instance (prod) to create the Product_Image instances.
+        # basically we stored the other data and now we are able to assign a name in product colum of 'Product_image' model
+        # before the error was like cant assign name to product as there was no product exist or we dint add
+        for image in multi_imaeg:
+            Product_Image.objects.create(
+                product=prod, 
+                productimage=image
+                )      
         return redirect(product_management)
   
     else:
@@ -91,7 +120,8 @@ def search(request):
 # -----------------------------------Product-listing --------------------------------
 
 
-
+# this is to view all the products and get perticuler cate product (by giving cate slug)
+# category_slug=None gave because we r listng all products and perticular product ,so if cate_slug is empty then id wll list all product and ro avoid error
 def product_list(request,category_slug=None):
     categories=None
     products=None        
@@ -108,30 +138,38 @@ def product_list(request,category_slug=None):
 # -----------------------------------Product-Details --------------------------------
 
 
+
+# Basically this is the view fun for viewing the details of single product 
+
 def product_details(request, category_slug,product_slug):
     try:
         single_product = Product.objects.get(category__slug=category_slug,slug=product_slug)
-        cat=Product.objects.get(slug=product_slug)
+        #this will show the single product based on the cate slug and prod slug 
 
+        cat=Product.objects.get(slug=product_slug)
+        # this will only shows the cate matching product
+
+
+        # this is for added to cart option in the template 
         if request.user.is_authenticated:
             in_cart = Cartitem.objects.filter(user=request.user,product=single_product).exists()
         else:
             in_cart = Cartitem.objects.filter(cart__cart_id=_cart_id(request),product=single_product).exists()
-        # here cart__cart_id is ,cart is the colum in Cartitem whisch is the foreign key an dwant cart_id from CArt table so we gave double underscore  __ 
+        # here cart__cart_id is ,cart is the colum in Cartitem which is the foreign key and want cart_id from CArt table so we gave double underscore  __ 
        
+
+    # if somebody enters wrong slug of product or try to search for anything n urls then it will raie an exception 
+    # instead of raise e we can give the link to our 404 error page or any other link 
     except Exception as e:
         raise e    
+        
+        
+    products = Product_Image.objects.filter(product=single_product)    
+    
     context={
         'single_product': single_product,
         'in_cart': in_cart,
         'cat':cat,
+        'products':products
     }
     return render(request,'product/single_product.html',context)
-
-
-
-def single_product(request):    
-    return render(request,'product/single_product.html')
-
-
-

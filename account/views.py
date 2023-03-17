@@ -66,14 +66,16 @@ def log_in(request):
                pass
 
          
-
           auth.login(request,user)
+          
           if user.is_superadmin:
                return render(request, 'adminpanel/admin_index.html')
+          
           return redirect(index)
         else:
             messages.info(request,'Username or password is incorrect')
-            return redirect(log_in)
+            return HttpResponseRedirect(request.path_info)
+
     else:
         return render(request,'userpanel\login.html')
     

@@ -3,6 +3,19 @@
 {% block body %}
 
 <style>
+.cap{
+   
+  width: 100px; /* set the width of the div */
+  height: 80px; /* set the height of the div */
+  overflow: hidden;
+}
+
+img {
+  max-width: 100%; /* set the maximum width of the image to 100% */
+  max-height: 100%; /* set the maximum height of the image to 100% */
+  object-fit: cover;
+}
+
 
 
 </style>
@@ -45,7 +58,7 @@
                         <td>{{p.category}}</td>
 
                         {% if p.image %}
-                        <td class="px-4 py-3">
+                        <td class="px-2 py-1 cap">
                             <img src="{{ p.image.url }}" alt="{{p.product_name}}" style="width:100px; height:50px">
                         </td>
                         {% endif %}
@@ -119,8 +132,6 @@
 
 
                                             <div class="form-outline mb-3">
-
-
                                                 <label class="form-label" for="form3Example3cg">Category</label>
                                                 <select name="category" id="category">
                                                     {% for c in categories %}
@@ -208,11 +219,15 @@
                         <div class="form-outline mb-3">
                             <input required name="image" type="file" id="form3Example1cg"
                                 class="form-control form-control-lg" />
-                            <label class="form-label" for="form3Example1cg">Image</label>
+                            <label class="form-label" for="form3Example1cg">Thumbnail Image</label>
                         </div>
-                        -
                         <div class="form-outline mb-3">
-                            <input required name="slug" type="text" id="form3Example1cg"
+                            <input name="imagess" type="file" id="form3Example1cg"
+                                class="form-control form-control-lg" multiple/>
+                            <label class="form-label" for="form3Example1cg">Additional images</label>
+                        </div>
+                        <div class="form-outline mb-3">
+                            <input name="slug" type="text" id="form3Example1cg"
                                 class="form-control form-control-lg" />
                             <label class="form-label" for="form3Example1cg">Slug</label>
                         </div>
