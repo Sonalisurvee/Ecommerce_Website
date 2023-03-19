@@ -33,11 +33,8 @@ def log_in(request):
         user=auth.authenticate(email=email,password=password)
         if user is not None:
           try:
-               print('try block')
                cart = Cart.objects.get(cart_id=_cart_id(request))
-               print(cart)
                is_cart_item_exists = Cartitem.objects.filter(cart=cart).exists()
-               print(is_cart_item_exists)
                if is_cart_item_exists:
                     cart_item = Cartitem.objects.filter(cart=cart)
 
@@ -50,11 +47,8 @@ def log_in(request):
                pass
 
           try:
-               print('try block')
                wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
-               print(wishlist)
                is_wish_item_exists = WishlistItem.objects.filter(wishlist=wishlist).exists()
-               print(is_wish_item_exists)
                if is_wish_item_exists:
                     wishlist_item = WishlistItem.objects.filter(wishlist=wishlist)
 
@@ -75,6 +69,7 @@ def log_in(request):
         else:
             messages.info(request,'Username or password is incorrect')
             return HttpResponseRedirect(request.path_info)
+     #    itmwill goo login page
 
     else:
         return render(request,'userpanel\login.html')

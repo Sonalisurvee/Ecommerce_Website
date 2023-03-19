@@ -153,6 +153,7 @@ def checkout(request,total=0,quantity=0,cart_items=None):
 
 # thus try block is created just to chech wethere cart is ther or not ,once cart is created we are able to add produtc to it
     if current_user.is_authenticated:
+        context = {}
         try:
             cart_items = Cartitem.objects.filter(user=current_user,is_active=True)# is_axtive used to indicate whether a user account is active or not.
             total = 0
@@ -291,3 +292,5 @@ def placeorder(request):
 # ------------------------------------------------------order_success ---------------------------------------------------
 
 
+def order_confirmation(request):
+    return render(request,'cart/order_confirmation.html')

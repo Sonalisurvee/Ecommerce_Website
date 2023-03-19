@@ -5,7 +5,20 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 
-# Create your models here.
+class ColorVariant(models.Model):
+   color_name = models.CharField(max_length=100)
+   price = models.IntegerField(default=0)
+
+   def __str__(self):
+        return self.color_name
+
+class SizeVariant(models.Model):
+   size_name = models.CharField(max_length=100)
+   price = models.IntegerField(default=0)
+
+   def __str__(self):
+        return self.size_name
+
 class Product(models.Model):
     product_name = models.CharField(max_length=200,unique=True)
     slug=models.SlugField(unique=True,null=True,blank=True)
@@ -17,6 +30,11 @@ class Product(models.Model):
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    color_variant = models.ManyToManyField(ColorVariant,blank=True)
+    size_variant = models.ManyToManyField(SizeVariant,blank=True)
+
+
+
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.product_name)
@@ -25,7 +43,15 @@ class Product(models.Model):
 
     def __str__(self):
         return self.product_name
+
+# this funtion is used to add the price according to the size
+    def get_product_price_by_size(self ,size):
+        return self.price + SizeVariant.objects.get(size_name = size).price
     
+    # self.price is the exsiting price nd we r adding this price with the new sizevar
+    # price,we gave .price in the end because 
+
+
     def get_url(self):
         return reverse('product_details',args=[self.category.slug,self.slug])    
     
@@ -41,7 +67,6 @@ class Product_Image(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     productimage = models.ImageField(upload_to='product_images',default='404.png')
 
-
-
     def __str__(self):
         return f'{self.product.product_name}'
+

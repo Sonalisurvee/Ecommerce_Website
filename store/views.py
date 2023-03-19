@@ -142,13 +142,15 @@ def product_list(request,category_slug=None):
 # Basically this is the view fun for viewing the details of single product 
 
 def product_details(request, category_slug,product_slug):
+    context = {}
     try:
+        # size=request.Get.get('size')
+
         single_product = Product.objects.get(category__slug=category_slug,slug=product_slug)
         #this will show the single product based on the cate slug and prod slug 
 
         cat=Product.objects.get(slug=product_slug)
         # this will only shows the cate matching product
-
 
         # this is for added to cart option in the template 
         if request.user.is_authenticated:
@@ -158,18 +160,31 @@ def product_details(request, category_slug,product_slug):
         # here cart__cart_id is ,cart is the colum in Cartitem which is the foreign key and want cart_id from CArt table so we gave double underscore  __ 
        
 
+        if request.GET.get('size'):
+            size = request.GET.get('size')
+            price = single_product.get_product_price_by_size(size)
+            context['selected_size'] = size
+            context['updates_price'] = price
+            # updates_price = price
+            # name 'updates_price' is not defined,this error i got wen i gave update_p outside the context.and i got this because 
+
+
+
     # if somebody enters wrong slug of product or try to search for anything n urls then it will raie an exception 
     # instead of raise e we can give the link to our 404 error page or any other link 
     except Exception as e:
         raise e    
         
         
+        
     products = Product_Image.objects.filter(product=single_product)    
     
-    context={
+    context.update({
         'single_product': single_product,
         'in_cart': in_cart,
         'cat':cat,
-        'products':products
-    }
+        'products':products,
+    })
+    print(context)
+
     return render(request,'product/single_product.html',context)

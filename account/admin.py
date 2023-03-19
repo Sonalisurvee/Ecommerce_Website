@@ -5,8 +5,12 @@ from .models import Account,Address
 
 # Register your models here.
 
-class AccountAdmin(UserAdmin):
-    list_display = ('email', 'first_name', 'last_name','username','last_joined','is_active',)
+class AccountAdmin(admin.ModelAdmin):
+    list_display = ('email', 'first_name', 'last_name','username','last_login','is_active',)
 
-admin.site.register(Account)
-admin.site.register(Address)
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ('full_name','phone','state','house_name','default')
+
+
+admin.site.register(Account, AccountAdmin)
+admin.site.register(Address, AddressAdmin)
