@@ -1,8 +1,8 @@
 from django.shortcuts import render,redirect,get_object_or_404,HttpResponse
 from .models import Product,Product_Image
 from category.models import Category
-from cart.models import Cart,Cartitem
-from cart.views import _cart_id
+from cart.models import CartItems,Cartt
+# from cart.views import _cart_id
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
@@ -89,6 +89,9 @@ def add_product(request):
         # To fix this,first create an instance of the 'Product' model, and then use that instance (prod) to create the Product_Image instances.
         # basically we stored the other data and now we are able to assign a name in product colum of 'Product_image' model
         # before the error was like cant assign name to product as there was no product exist or we dint add
+
+
+        
         for image in multi_imaeg:
             Product_Image.objects.create(
                 product=prod, 
@@ -152,12 +155,10 @@ def product_details(request, category_slug,product_slug):
         cat=Product.objects.get(slug=product_slug)
         # this will only shows the cate matching product
 
-        # this is for added to cart option in the template 
-        if request.user.is_authenticated:
-            in_cart = Cartitem.objects.filter(user=request.user,product=single_product).exists()
-        else:
-            in_cart = Cartitem.objects.filter(cart__cart_id=_cart_id(request),product=single_product).exists()
-        # here cart__cart_id is ,cart is the colum in Cartitem which is the foreign key and want cart_id from CArt table so we gave double underscore  __ 
+        # user = request.user
+        # cart= Cartt.objects.get_or_create(user = user,is_paid = False)        
+        # in_cart = CartItems.objects.filter(carts=cart, products=single_product).exists()
+        
        
 
         if request.GET.get('size'):
@@ -171,17 +172,18 @@ def product_details(request, category_slug,product_slug):
 
 
     # if somebody enters wrong slug of product or try to search for anything n urls then it will raie an exception 
-    # instead of raise e we can give the link to our 404 error page or any other link 
+    # instead of raise e we can give the link to our 404 error page or any other link .
     except Exception as e:
         raise e    
         
         
+
         
     products = Product_Image.objects.filter(product=single_product)    
     
     context.update({
         'single_product': single_product,
-        'in_cart': in_cart,
+        # 'in_cart': in_cart,
         'cat':cat,
         'products':products,
     })

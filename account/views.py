@@ -4,8 +4,7 @@ from django.contrib.auth.models import auth, User
 from django.contrib import messages
 from home.views import index
 from .models import Account,Address
-from cart.models import Cart,Cartitem
-from cart.views import _cart_id
+# from cart.models import Cart,Cartitem
 from wishlist.models import Wishlist,WishlistItem
 from wishlist.views import _wishlist_id
 
@@ -31,20 +30,7 @@ def log_in(request):
         email=request.POST['username']
         password=request.POST['password']
         user=auth.authenticate(email=email,password=password)
-        if user is not None:
-          try:
-               cart = Cart.objects.get(cart_id=_cart_id(request))
-               is_cart_item_exists = Cartitem.objects.filter(cart=cart).exists()
-               if is_cart_item_exists:
-                    cart_item = Cartitem.objects.filter(cart=cart)
-
-                    for item in cart_item:
-                         item.quantity += 1
-                         item.user = user
-                         item.save()
-          except:
-               print('except block')
-               pass
+        if user is not None:       
 
           try:
                wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))

@@ -1,0 +1,143 @@
+{% extends 'userpanel/userbase.html' %}
+{% load static %}
+{% block title %}cart 2{% endblock title %}
+{% block body %}
+
+<style>
+     .section_padding {
+    padding: 10px 10px;
+  }
+  .breadcrumb_part {
+    height: 100px;
+  }
+
+  .breadcrumb_iner h3 {
+    font-size: 35px;
+    line-height: 1.2;
+    color: #fff;
+    font-weight: 500;
+  }
+</style>
+
+<!-- breadcrumb part start-->
+<section class="breadcrumb_part">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="breadcrumb_iner">
+            <h3>Cart</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- breadcrumb part end -->
+  
+<!--================Cart Area =================-->
+<section class="cart_area section_padding">    
+    <div class="container">
+          <br>
+          {% if not cart_items %}
+        <div class="text-center p-3">
+            <h3>Your cart is empty</h3>
+            <img src="{% static 'users/imgg/cart1.jpg' %}" alt="#" width="350px">
+            <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
+        </div>
+        {% else %}
+        <div class="cart_inner">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Total</th>
+                            <th scope="col"></th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cart_item in cart_items %}
+                        <tr>
+                            <td>
+                                 <div class="media">
+                                    <div class="d-flex">
+                                        <a href="{{ cart_item.products.get_url }}">
+                                            <img src="{{ cart_item.products.image.url }}" alt="dsf" /></a>
+                                    </div>
+                                    <div class="media-body">
+                                        <p>{{ cart_item.products.product_name }}</p>
+                                <h5>Size : {{ cart_item.size_variant.size_name }}</h5>
+
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <h5>{{ cart_item.get_product_price }}</h5>
+                            </td>
+
+                            <td>
+                                <div class="product_count">
+                                    <span class="input-number-decrement"><a
+                                            href="{% url 'remove_cartt' cart_item.products.id cart_item.id %}"><i
+                                                class="ti-minus"></i></span></a>
+
+                                    <input class="input-number" type="text" value="{{ cart_item.quantity }}" min="0">
+
+                                    <span class="input-number-increment"><a
+                                            href="{% url 'add_to_cart' cart_item.products.id %}?variant={{ cart_item.size_variant.size_name }}"><i
+                                                class="ti-plus"></i></span></a>
+                                </div>
+                            </td>
+
+                            <td>
+                                <h5>{{ cart_item.sub_total }}</h5>
+                            </td>
+                            <td>
+                                <a class="btn_1" href="{% url 'remove_cartitems' cart_item.products.id cart_item.id %}">Remove</a>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                        <hr>
+                        <tr class="bottom_button">
+                            <td>
+                                <a class="btn_1" href="{% url 'product_list' %}">Update Cart</a>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <h5>Sub total</h5>
+                                <h5>Tax</h5>
+                                <h5>Grand total</h5>
+                            </td>
+                            <td>
+                                <h5>$ {{ cart.get_cart_total }}</h5>
+                                <h5>$ {{ cart.get_tax }}</h5>
+                                <h5>$ {{ cart.get_grand_total }}</h5>
+                            </td>
+                            <!--<td>
+                                 <div class="cupon_text float-right">
+                                    <a class="btn_1" href="{% url 'product_list' %}">Close Coupon</a>
+                                </div> 
+                            </td>-->
+                        </tr>
+                      
+
+                    </tbody>
+                </table>
+                <div class="checkout_btn_inner float-right">
+                    <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
+                    <a class="btn_1 checkout_btn_1" href="{% url 'checkout' %}">Proceed to checkout</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+</section>
+<!--================End Cart Area =================-->
+
+
+
+{% endblock body %}

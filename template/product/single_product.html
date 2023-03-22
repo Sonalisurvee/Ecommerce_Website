@@ -8,7 +8,6 @@
     max-width: 100%;
     height: auto
   }
-
   @media only screen and (min-width: 992px) and (max-width: 1200px) {
 
     /* line 133, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
@@ -18,27 +17,27 @@
   }
 
   .product_image_area .single_product_text {
-    margin: 10px 0 20px;
+    margin: 8px 0 20px;
   }
 
   @media (max-width: 991px) {
 
     /* line 133, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
     .product_image_area .single_product_text {
-      margin: 20px 0 30px;
+      margin: 18px 0 30px;
     }
   }
 
   /* line 141, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
   .product_image_area .single_product_text h3 {
-    font-size: 40px;
+    font-size: 38px;
   }
 
   @media (max-width: 991px) {
 
     /* line 141, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
     .product_image_area .single_product_text h3 {
-      font-size: 25px;
+      font-size: 23px;
     }
 
     /* line 145, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
@@ -68,12 +67,14 @@
     .product_image_area .single_product_text p {
       margin-top: 0px;
     }
+  
   }
 
   .card_ara .product_count_area p {
-    color: black;
-    font-size: 16px;
-    /* margin-bottom: 90px; */
+    color: #693964;
+    /* color: white; */
+    font-size: 20px;
+  font-weight: bold;
   }
 
   .btn_3 {
@@ -112,12 +113,26 @@
   }
 
   .breadcrumb-item.active {
-    color: black
+    color: rgb(87, 76, 76);
   }
 
   .breadcrumb-item a {
-    color: black;
+    color: rgb(87, 76, 76);
   }
+
+
+
+.newradio .col{
+  padding-left: 1px;
+  padding-right: 10px;
+
+}
+.btn-secondary{
+  padding: 4px;
+  
+}
+
+
 </style>
 
 <!-- breadcrumb part start-->
@@ -136,7 +151,7 @@
 <!--================Single Product Area =================-->
 <div class="product_image_area">
   <div class="container">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center imagecontext">
       <div class="col-lg-6">
         <div class="product_img_slide owl-carousel">
           <div class="single_product_img">
@@ -147,11 +162,7 @@
             <img src="{{ im.productimage.url}}" alt="#" class="img-fluid">
           </div>
           {% endfor %}
-
-          <!-- 
-          <div class="single_product_img">
-            <img src="img/product/single_product.png" alt="#" class="img-fluid">
-          </div> -->
+         
         </div>
       </div>
       <div class="col-lg-6">
@@ -164,95 +175,57 @@
         </nav>
         <div class="single_product_text">
           <h3>{{ single_product.product_name }}</h3>
+          
           <p>{{ single_product.product_description }}</p>
           <div class="card_ara">
             <div class="product_count_area">
               {% if updates_price %}
-              <p>Price : {{ updates_price }}</p>
-          {% else %}
-
-              <p>Price : {{ single_product.price }}</p>
-          {% endif %}
-          
-            </div>
-            <div>
-              <p>Categoty : {{single_product.category}}</p>
-            </div>
-
-
-
-            {% comment %} The difference between {% if single_product.size_variant.count %} and {% if
-            single_product.size_variant %} is in what they are checking for in the single_product object.
-
-            {% if single_product.size_variant %} checks if size_variant exists in the single_product object and is
-            truthy. This means that even if size_variant exists but is empty or has a value of None, the condition will
-            still evaluate to True.
-
-            On the other hand, {% if single_product.size_variant.count %} checks if size_variant exists in the
-            single_product object, is iterable and has at least one element. If size_variant is an empty iterable (e.g.
-            an empty list or tuple), the condition will evaluate to False.
-
-            So if single_product.size_variant is guaranteed to always exist and have at least one element, then the two
-            conditions will evaluate to the same thing. However, if there's a possibility that size_variant may be empty
-            or None, using {% if single_product.size_variant.count %}
-            may be more appropriate to avoid potential errors or unexpected behavior in your code. {% endcomment %}
-
-
-            {% comment %} count() is used to check the length of the object set {% endcomment %}
-            {% if single_product.size_variant.count %}
-            <div>
-              <h1>wertyui</h1>
-              {% for size in single_product.size_variant.all %}
-
-
-              {% comment %} {% for size in single_product.size_variant %}
-              The error message " 'ManyRelatedManager' object is not iterable" occurs when you try to
-              iterate over a ManyToManyField related object set that is still a manager, and not yet
-              evaluated as a list or queryset.
-
-              To fix this error, you need to make sure that you are iterating over the actual list
-              or queryset of related objects, and not the ManyRelatedManager object itself.
-
-              In this code, single_product.size_variant.all returns the actual list or queryset of
-              related size objects, which you can then iterate over using a for loop.
-
-              Make sure that you also check that the size_variant related object set is not empty
-              before attempting to iterate over it, as an empty set will also raise
-              the same error. You can do this by checking the length of the related object
-              set using the count() method:
-
-              {% endcomment %}
-
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" onchange="get_correct_price('{{size.size_name}}')" 
-                {% if selected_size == size.size_name %} checked {% endif %} type="radio"
-                  name="inlineRadioOptions" id="inlineRadio1" value="option1">
-                <label class="form-check-label" for="inlineRadio1">{{ size.size_name }}</label>
-              </div>
-              {% endfor %}
-            </div>
-            {% endif %}
-
-
-
-          
-
-
-           
-            <div class="add_to_cart">
-              {% if single_product.stock <= 0 %} 
-                <a href="#" class="text-danger btn_3">Out of stock</a>
+              <p>${{ updates_price }}</p>
               {% else %}
 
+              <p>${{ single_product.price }}</p>
+              {% endif %}
+            </div>
+            <div class="row">
+              <p class="col-md-4">Categoty : {{single_product.category}}</p>
+              <!-- {% if single_product.stock <= 0 %}
+              <p class="col-md-4 col-sm-6">Available : <i style="color:red">Out of stock</i></p>
+              {% else %}
+              <p class="col-md-4 col-sm-6">Available : In stock</p>
+              {% endif %} -->
+            </div>
+
+            <hr>
+
+<div class="newradio pt-2">
+            {% if single_product.size_variant.count %}
+            <div class="row container pl-3">
+              <p class="col">Size : </p>
+              {% for size in single_product.size_variant.all %}
+                <div class="col btn-group btn-group-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                  <input required type="radio" name="options" id="suv" autocomplete="off" onchange="get_correct_price('{{size.size_name}}')" {% if selected_size == size.size_name %} checked {% endif %}>{{ size.size_name }}
+                  </label>
+                </div>
+              {% endfor %}           
+              </div>
+            {% endif %}
+          </div>
+
+            <div class="add_to_cart pt-3">             
+
+             
                 {% if in_cart %}
-                  <a href="#" class="btn_3">Added to cart</a>
+                  <a href="#" class="btn_3 ">Added to cart</a>
                   <a href="{% url 'cart' %}" class="btn_3">View cart</a>
                 {% else %}
-                  <a href="{% url 'add_cart' single_product.id %}" class="btn_3 ">Add to cart</a>
-                  <a href="{% url 'checkout' %}" class="btn_3">Buy Now</a>
+                <a href="{% url 'add_to_cart' single_product.id %}?variant={{selected_size}}" class="btn_3">Add to
+                  cart</a>
+                  <a href="{% url 'add_wishlist' single_product.id %}" class="btn_3 mx-2">Wishlist</a>
+
                 {% endif %}
 
-              {% endif %}
+
             </div>
           </div>
         </div>
@@ -261,6 +234,323 @@
   </div>
 </div>
 <!--================End Single Product Area =================-->
+
+
+
+ <!--================Product Description Area =================-->
+  <section class="product_description_area">
+    <div class="container">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+            aria-selected="true">Description</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+            aria-selected="false">Specification</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab" aria-controls="review"
+            aria-selected="false">Reviews</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <p>
+            Beryl Cook is one of Britain’s most talented and amusing artists
+            .Beryl’s pictures feature women of all shapes and sizes enjoying
+            themselves .Born between the two world wars, Beryl Cook eventually
+            left Kendrick School in Reading at the age of 15, where she went
+            to secretarial school and then into an insurance office. After
+            moving to London and then Hampton, she eventually married her next
+            door neighbour from Reading, John Cook. He was an officer in the
+            Merchant Navy and after he left the sea in 1956, they bought a pub
+            for a year before John took a job in Southern Rhodesia with a
+            motor company. Beryl bought their young son a box of watercolours,
+            and when showing him how to use it, she decided that she herself
+            quite enjoyed painting. John subsequently bought her a child’s
+            painting set for her birthday and it was with this that she
+            produced her first significant work, a half-length portrait of a
+            dark-skinned lady with a vacant expression and large drooping
+            breasts. It was aptly named ‘Hangover’ by Beryl’s husband and
+          </p>
+          <p>
+            It is often frustrating to attempt to plan meals that are designed
+            for one. Despite this fact, we are seeing more and more recipe
+            books and Internet websites that are dedicated to the act of
+            cooking for one. Divorce and the death of spouses or grown
+            children leaving for college are all reasons that someone
+            accustomed to cooking for more than one would suddenly need to
+            learn how to adjust all the cooking practices utilized before into
+            a streamlined plan of cooking that is more efficient for one
+            person creating less
+          </p>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>
+                    <h5>Color</h5>
+                  </td>
+                  <td>
+                    <h5>128mm</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <h5>Style (cate)</h5>
+                  </td>
+                  <td>
+                    <h5>508mm</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <h5>Gender  </h5>
+                  </td>
+                  <td>
+                    <h5>Female</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <h5>stock  </h5>
+                  </td>
+                  <td>1
+                    <h5>52gm</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <h5>Quality checking</h5>
+                  </td>
+                  <td>
+                    <h5>yes</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <h5>Freshness Duration</h5>
+                  </td>
+                  <td>
+                    <h5>03days</h5>
+                  </td>
+                </tr>
+               
+                
+              </tbody>
+            </table>
+          </div>
+        </div>
+       
+        <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="row total_rate">
+                <div class="col-6">
+                  <div class="box_total">
+                    <h5>Overall</h5>
+                    <h4>4.0</h4>
+                    <h6>(03 Reviews)</h6>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="rating_list">
+                    <h3>Based on 3 Reviews</h3>
+                    <ul class="list">
+                      <li>
+                        <a href="#">5 Star
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i> 01</a>
+                      </li>
+                      <li>
+                        <a href="#">4 Star
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i> 01</a>
+                      </li>
+                      <li>
+                        <a href="#">3 Star
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i> 01</a>
+                      </li>
+                      <li>
+                        <a href="#">2 Star
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i> 01</a>
+                      </li>
+                      <li>
+                        <a href="#">1 Star
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i> 01</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="review_list">
+                <div class="review_item">
+                  <div class="media">
+                    <div class="d-flex">
+                      <img src="img/product/single-product/review-1.png" alt="" />
+                    </div>
+                    <div class="media-body">
+                      <h4>Blake Ruiz</h4>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </div>
+                  </div>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                    sed do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo
+                  </p>
+                </div>
+                <div class="review_item">
+                  <div class="media">
+                    <div class="d-flex">
+                      <img src="img/product/single-product/review-2.png" alt="" />
+                    </div>
+                    <div class="media-body">
+                      <h4>Blake Ruiz</h4>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </div>
+                  </div>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                    sed do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo
+                  </p>
+                </div>
+                <div class="review_item">
+                  <div class="media">
+                    <div class="d-flex">
+                      <img src="img/product/single-product/review-3.png" alt="" />
+                    </div>
+                    <div class="media-body">
+                      <h4>Blake Ruiz</h4>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </div>
+                  </div>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                    sed do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="review_box">
+                <h4>Add a Review</h4>
+                <p>Your Rating:</p>
+                <ul class="list">
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-star"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-star"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-star"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-star"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-star"></i>
+                    </a>
+                  </li>
+                </ul>
+                <p>Outstanding</p>
+                <form class="row contact_form" action="contact_process.php" method="post" novalidate="novalidate">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <input type="text" class="form-control" name="name" placeholder="Your Full name" />
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <input type="email" class="form-control" name="email" placeholder="Email Address" />
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <input type="text" class="form-control" name="number" placeholder="Phone Number" />
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <textarea class="form-control" name="message" rows="1" placeholder="Review"></textarea>
+                    </div>
+                  </div>
+                  <div class="col-md-12 text-right">
+                    <button type="submit" value="submit" class="btn_3">
+                      Submit Now
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--================End Product Description Area =================-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <script>
   function get_correct_price(size) {

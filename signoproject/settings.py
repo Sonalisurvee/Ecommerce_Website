@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'store',
     'cart',
     'wishlist',
+    'adminpanel',
 ]
 
 MIDDLEWARE = [
@@ -161,3 +162,7 @@ EMAIL_PORT=587
 EMAIL_HOST_USER='sonalisurve012@gmail.com'
 EMAIL_HOST_PASSWORD='qkgdhagxurejurdl'
 EMAIL_USE_TLS=True
+
+
+KEY = 'rzp_test_a0WKFGxNpEjkyL'
+SECRET_KEY = 'k7q1VWdctZVX6sZe9p9FWGpJ'

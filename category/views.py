@@ -69,3 +69,5 @@ def add_category(request):
     
 
            
+def simply(request):
+        return render(request,'category/simply.html')
