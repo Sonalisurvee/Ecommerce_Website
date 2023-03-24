@@ -8,8 +8,8 @@ from decimal  import Decimal
 class Coupon(models.Model):
     coupan_code = models.CharField(max_length=20)
     is_expired = models.BooleanField(default=True)
-    discount_price = models.IntegerField(default=100)
-    minimum_amount = models.IntegerField(default=500)
+    discount_price = models.PositiveIntegerField(default=100)
+    minimum_amount = models.PositiveIntegerField(default=500)
 
     def __unicode__(self):
         return self.coupan_code
@@ -19,9 +19,14 @@ class Cartt(models.Model):
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL,null=True,blank=True)
     user = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='carts')
     is_paid = models.BooleanField(default=False)
+    razorpay_order_id = models.CharField(max_length=100 ,null=True, blank=True,unique=True)
+
 
     def __unicode__(self):
         return self.user
+  
+    # Payment details
+    # razorpay_order_id = models.CharField(max_length=100 ,null=True, blank=True,unique=True)
 
 
     def get_cart_total(self):
@@ -84,62 +89,51 @@ class CartItems(models.Model):
     
     
 
+# for invioce and for order payment hign we neeeded this
+class Payment(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    transaction_id = models.CharField(max_length=100)
+    cart_total = models.PositiveIntegerField()
+    tax = models.PositiveIntegerField()
+    grand_total = models.PositiveIntegerField()
+    payment_method = models.CharField(max_length=30, default='RazorPay')
+    is_paid = models.BooleanField(default=True)
+    paid_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return self.transaction_id
+    
+
+class Order(models.Model):
+    order_id = models.CharField(max_length=100, unique=True)
+    user = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True)
+    delivery_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, null=True, blank=True)
+    ordered_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f'{self.id} of {self.user}'
 
 
+class OrderItem(models.Model):
+    STATUS = (
+        ('Ordered', 'Ordered'),
+        ('Shipped', 'Shipped'),
+        ('Out for delivery', 'Out for delivery'),
+        ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled'),
+        ('Refunded', 'Refunded')
+    )
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    variant = models.CharField(max_length=100, null=True,blank=True)
+    order_status = models.CharField(max_length=20, choices=STATUS, default='Ordered')
+    item_price = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
+    item_total = models.PositiveIntegerField()
 
-
-
-
-
-
-
-
-
-
-# ----------------------------new----------------------------------
-
-
-
-
-
-
-# class Order(models.Model):
-#     order_id = models.CharField(max_length=100, unique=True)
-#     user = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True)
-#     delivery_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
-#     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, null=True, blank=True)
-#     ordered_date = models.DateTimeField(auto_now_add=True)
-
-#     def __str__(self) -> str:
-#         return f'{self.id} of {self.user}'
-
-
-# class OrderItem(models.Model):
-#     STATUS = (
-#         ('Ordered', 'Ordered'),
-#         ('Shipped', 'Shipped'),
-#         ('Out for delivery', 'Out for delivery'),
-#         ('Delivered', 'Delivered'),
-#         ('Cancelled', 'Cancelled'),
-#         ('Refunded', 'Refunded')
-#     )
-#     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-#     variant = models.CharField(max_length=100, null=True,blank=True)
-#     order_status = models.CharField(max_length=20, choices=STATUS, default='Ordered')
-#     item_price = models.PositiveIntegerField()
-#     quantity = models.PositiveIntegerField()
-#     item_total = models.PositiveIntegerField()
-
-#     def __str__(self):
-#         return self.product.product_name
-
-
-
-
-
-
-
+    def __str__(self):
+        return self.product.product_name
 
 
 

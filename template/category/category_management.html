@@ -4,7 +4,24 @@
 <style>
     .cap p:first-letter {
         text-transform: capitalize;
-      }      
+      }  
+.capp{
+   
+  width: 100px; /* set the width of the div */
+  height: 80px; /* set the height of the div */
+  overflow: hidden;
+}
+
+img {
+  max-width: 100%; /* set the maximum width of the image to 100% */
+  max-height: 100%; /* set the maximum height of the image to 100% */
+  object-fit: cover;
+}
+
+td.des {
+  width: 40%; /* or any other percentage or fixed value */
+}
+ 
 </style>
 
   <main id="main" class="main">
@@ -21,6 +38,7 @@
         <div class="card">
             <div class="card-body">
               <h5 class="card-title">Category management</h5>
+              {% include 'message.html' %}
 
               <!-- Table with hoverable rows -->
               <table class="table table-hover">
@@ -39,22 +57,22 @@
                   <tr>
                     <th scope="row">{{ forloop.counter }}</th>
                     <td>{{c.cat_name}}</td>
-                    <td>{{c.description}}</td>
+                    <td class="des">{{c.description}}</td>
                     {% if c.cat_image %}
-                    <td class="px-4 py-3">                               
+                    <td class="px-4 py-3 capp">                               
                         <img src="{{ c.cat_image.url }}" alt="{{c.cat_name}}" style="width:100px; height:50px;" >                                    
                     </td>
                     {% endif %} 
                     <td>{{c.slug}}</td>
 
-                    <td>
-                        <button type="button" class="btn text-danger" data-bs-toggle="modal"
-                        data-bs-target="#delete_model-{{forloop.counter}}">
-                        <i class="ri-delete-bin-4-line"></i>
-                    </button>
+                    <td>                        
                     <button type="button" class="btn text-warning" data-bs-toggle="modal"
                         data-bs-target="#edit_model-{{forloop.counter}}">
                         <i class="ri-pencil-line"></i>
+                    </button>
+                    <button type="button" class="btn text-danger" data-bs-toggle="modal"
+                        data-bs-target="#delete_model-{{forloop.counter}}">
+                        <i class="ri-delete-bin-4-line"></i>
                     </button>
                     </td>                    
 
@@ -109,22 +127,25 @@
                                                 id="form3Example1cg" class="form-control form-control-lg" />
                                             <label class="form-label cap" for="form3Example1cg">Category</label>
                                         </div>
-
-                                        <div class="form-outline mb-3">
-                                            <input name="slug" value="{{c.slug}}" type="text"
-                                                id="form3Example1cg" class="form-control form-control-lg" />
-                                            <label class="form-label" for="form3Example1cg">Slug</label>
-                                        </div>
-                                       
+                                     
                                         <div class="form-outline mb-3">
                                             <input name="image" type="file" value="{{c.cat_image}}"
                                                 id="form3Example3cg" class="form-control form-control-lg" />
                                             <label class="form-label" for="form3Example3cg">Image</label>
                                         </div>
 
+                                        
+                                        <div class="form-outline mb-3">
+                                            <label class="form-label" for="imagePreview">Image Preview</label>
+                                            <br>
+                                            <img src="{{ c.cat_image.url }}" alt="{{c.cat_name}}" style="width:100px; height:100px;" >                                    
+
+                                        </div>
+                                        
+
 
                                         <div class="form-outline mb-3">                                            
-                                            <input name="description" value="{{c.description }}"
+                                            <input required name="description" value="{{c.description }}"
                                                 type="text" id="form3Example3cg"
                                                 class="form-control form-control-lg" />
                                             <label class="form-label" for="form3Example3cg">Description</label>

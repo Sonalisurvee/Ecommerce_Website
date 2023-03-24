@@ -6,6 +6,8 @@ from cart.models import CartItems,Cartt
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
+from decimal import Decimal
+
 
 
 # -----------------------------------Product Management-Delete,edit and add --------------------------------
@@ -40,7 +42,16 @@ def update_product(request,product_id):
         stock=request.POST['stock']
         price=request.POST['price']
         cat_instance = Category.objects.get(id=category)
-         
+
+        if int(stock) < 0:
+            messages.info(request,"Negative values are not allowed.")
+            return redirect(product_management)
+
+
+        if Decimal(price).quantize(Decimal('1')) < 0:
+            messages.info(request, "Negative values are not allowed.")
+            return redirect(product_management)
+
         update_prod=Product.objects.filter(id=product_id)
         update_prod.update(
             product_name=product,

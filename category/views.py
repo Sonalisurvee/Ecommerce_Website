@@ -20,11 +20,19 @@ def delete_category(request,cate_id):
 
 
 def update_category(request,cate_id):
-    products=get_object_or_404(Category,pk=cate_id)
+    category1=Category.objects.get(id=cate_id)
     if request.method == 'POST':
         category=request.POST['category']
         description=request.POST['description']
-        slug=request.POST['slug']  
+
+
+        # here description was not getting updated because of if condinti given to the cat_name = category.exists, so we saved the description before onyly
+        category1.description = description
+        category1.save()
+        # this i gave here for auto slug generation as slug is generated auto in because we gave save slug in the models
+        category1.cat_name = category
+        category1.save()
+         
         try:
             update_category = Category.objects.get(id=cate_id)
             #this update_c was given to get the perticular id wala img so that we can save it
@@ -34,13 +42,17 @@ def update_category(request,cate_id):
         except:
             pass
 
+        if not category:
+            messages.info(request, 'Category field is empty')
+            return redirect(category_management)
+
         if Category.objects.filter(cat_name=category).exists():
             messages.info(request,"This category already exists")
             return redirect(category_management)
         else:
             update_category = Category.objects.filter(id=cate_id)  
         # this update_c was given to filter all the id in the category        
-            update_category.update(cat_name=category,description=description,slug=slug)
+            update_category.update(cat_name=category,description=description)
             return redirect(category_management)
 
         #here both the update_c were imp because both play 2 diff roles 

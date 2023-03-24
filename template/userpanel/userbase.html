@@ -50,6 +50,8 @@
                                     <a class="nav-link" href="{% url 'product_list' %}">Store</a>
                                 </li> 
                                
+                                {% if not user.is_authenticated %}
+
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="blog.html" id="navbarDropdown_3"
                                         role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -58,10 +60,28 @@
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdown_2">
                                         <a class="dropdown-item" href="{% url 'log_in' %}">login</a>
                                         <a class="dropdown-item" href="{% url 'signup' %}">Signup</a>
+                                        {% comment %} <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
+                                        <a class="dropdown-item" href="{% url 'log_out' %}">Logout</a> {% endcomment %}
+                                    </div>
+                                </li>
+                               
+                                {% else %}
+                               
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="blog.html" id="navbarDropdown_3"
+                                        role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        My account
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown_2">
+                                        {% comment %} <a class="dropdown-item" href="{% url 'log_in' %}">login</a>
+                                        <a class="dropdown-item" href="{% url 'signup' %}">Signup</a> {% endcomment %}
                                         <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
                                         <a class="dropdown-item" href="{% url 'log_out' %}">Logout</a>
                                     </div>
                                 </li>
+
+
+                                {% endif %}
                                 
                               
                             </ul>

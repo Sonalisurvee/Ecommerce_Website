@@ -1,11 +1,11 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from store.models import Product,SizeVariant
-from .models import Coupon,Cartt,CartItems
+from .models import Coupon,Cartt,CartItems,Payment,Order,OrderItem
 from account.models import Address
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect,HttpResponse
 import razorpay
 from django.conf import settings
 
@@ -89,6 +89,10 @@ def remove_cartitems(request,product_id,cart_item_id):
 # ----------------------------------checkout--------------------------------------------
 
 
+# KEY = 'rzp_test_a0WKFGxNpEjkyL'
+# SECRET_KEY = 'k7q1VWdctZVX6sZe9p9FWGpJ'
+
+
 @login_required(login_url= 'log_in')
 def checkout(request,cart_items=None):
     cart = None
@@ -134,22 +138,94 @@ def checkout(request,cart_items=None):
         return redirect(checkout)  
     
         # -----------------Coupon-end----------------
-    
+    try:
+        client = razorpay.Client(auth = (settings.KEY , settings.SECRET_KEY))
+        payment = client.order.create({'amount' : int(cart.get_grand_total()) * 100, 'currency' : 'INR', 'payment_capture': 1})
+        cart.razorpay_order_id = payment['id']
+        cart.save()
 
+        print("*********************")
+        print(payment)
+        print("*********************")
+    except:
+        pass  
    
     context = {       
         'cart_items':cart_items,  
         'cart':cart,  
         'user_addresses': addresses,
         'name':name,
-       
+        'payment':payment,
     }
 
 
 
     return render(request,'cart/checkout.html',context) 
 
-    
+
+def success(request):
+    order_id = request.GET.get('order_id')
+    cart = Cartt.objects.get(razorpay_order_id = order_id )
+
+    # razorpay_order_id = request.GET.get('razorpay_order_id').split("_")[1]
+    # cart = Cartt.objects.get(razorpay_order_id=razorpay_order_id )
+
+
+# this will create details in the payment model 
+
+    current_user = request.user
+    transaction = request.GET.get('order_id')
+    cart_total = cart.get_cart_total()
+    tax =cart.get_tax()
+    grand_total = cart.get_grand_total()
+    payment = Payment.objects.create(
+        user =current_user,
+        transaction_id = transaction,
+        cart_total = cart_total,
+        tax = tax,
+        grand_total = grand_total
+    )
+    payment.save()
+
+
+# this will create orders in the order model
+
+    address = Address.objects.get(customer=request.user,default=True)    
+    orders = Order.objects.create(
+        order_id = order_id,
+        user = current_user ,
+        delivery_address = address ,
+        payment =payment ,
+
+
+    )
+
+
+# this will store the products in the orderItem model
+# here orderitems.products and rest is taken from the cartitems model because the products are in the cartitesm now 
+
+    order_items = CartItems.objects.filter(carts = cart)
+    for orderitems in order_items:
+        order_items = OrderItem.objects.create(
+            order =orders ,
+            product = orderitems.products,
+            item_price = orderitems.get_product_price(),
+            quantity = orderitems.quantity,
+            item_total = orderitems.sub_total()
+        )    
+        order_items.save()
+        if orderitems.size_variant:
+            order_items = orderitems.size_variant
+            order_items.save()
+
+
+    # Deleting the cart once it is ordered/paid
+
+    cart.is_paid = True
+    cart.delete()
+    return render(request, 'cart/order_success.html', {'order_id': order_id})
+
+
 
 def remove_coupon(request):
     try:

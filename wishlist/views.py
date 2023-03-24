@@ -77,3 +77,15 @@ def wishlist(request,wishlist_items=None):
     }
     
     return render(request, 'wishlist/wishlist.html',context)
+
+
+
+def add_cart(request,product_id,wishlist_item_id):
+    product = get_object_or_404(Product,id=product_id)
+    if request.user.is_authenticated:
+        wishlist_item = WishlistItem.objects.get(product=product,user=request.user,id=wishlist_item_id)
+    else:
+        wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
+        wishlist_item = WishlistItem.objects.get(product=product,wishlist=wishlist)
+    wishlist_item.delete()
+    return redirect('wishlist')

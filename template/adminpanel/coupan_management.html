@@ -17,10 +17,12 @@
             </ol>
         </nav>
     </div>
+
     <p class="text-center">
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Coupon management</h5>
+            {% include 'message.html' %}
 
             <!-- Table with hoverable rows -->
             <table class="table table-hover">
@@ -103,15 +105,15 @@
                         {% endif %}
 
 
-                        <td>
+                        <td> 
+                            <button type="button" class="btn text-warning" data-bs-toggle="modal"
+                            data-bs-target="#edit_model-{{forloop.counter}}">
+                            <i class="ri-pencil-line"></i>
+                        </button>
                             <button type="button" class="btn text-danger" data-bs-toggle="modal"
                                 data-bs-target="#delete_model-{{forloop.counter}}">
                                 <i class="ri-delete-bin-4-line"></i>
-                            </button>
-                            <button type="button" class="btn text-warning" data-bs-toggle="modal"
-                                data-bs-target="#edit_model-{{forloop.counter}}">
-                                <i class="ri-pencil-line"></i>
-                            </button>
+                            </button>                           
                         </td>
 
 
@@ -167,14 +169,14 @@
                                             </div>
 
                                             <div class="form-outline mb-3">
-                                                <input name="discount" value="{{c.discount_price}}" type="number"
+                                                <input required name="discount" value="{{c.discount_price}}" type="number"
                                                     id="form3Example1cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example1cg">Discount</label>
                                             </div>
 
 
                                             <div class="form-outline mb-3">
-                                                <input name="minimum" value="{{c.minimum_amount }}" type="number"
+                                                <input required name="minimum" value="{{c.minimum_amount }}" type="number"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Minimum amount</label>
                                             </div>

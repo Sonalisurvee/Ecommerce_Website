@@ -16,7 +16,9 @@ img {
   object-fit: cover;
 }
 
-
+td.des {
+  width: 30%; /* or any other percentage or fixed value */
+}
 
 </style>
 
@@ -34,6 +36,7 @@ img {
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Product management</h5>
+            {% include 'message.html' %}
 
             <!-- Table with hoverable rows -->
             <table class="table table-hover">
@@ -59,23 +62,23 @@ img {
 
                         {% if p.image %}
                         <td class="px-2 py-1 cap">
-                            <img src="{{ p.image.url }}" alt="{{p.product_name}}" style="width:100px; height:50px">
+                            <img src="{{ p.image.url }}" alt="{{p.product_name}}" style="width:100px; height:100px">
                         </td>
                         {% endif %}
 
 
-                        <td>{{p.product_description}}</td>
+                        <td class="des">{{p.product_description}}</td>
                         <td>{{p.stock}}</td>
                         <td>{{p.price}}</td>
                         <td>
-                            <button type="button" class="btn text-danger" data-bs-toggle="modal"
-                                data-bs-target="#delete_model-{{forloop.counter}}">
-                                <i class="ri-delete-bin-4-line"></i>
-                            </button>
                             <button type="button" class="btn text-warning" data-bs-toggle="modal"
                                 data-bs-target="#edit_model-{{forloop.counter}}">
                                 <i class="ri-pencil-line"></i>
                             </button>
+                            <button type="button" class="btn text-danger" data-bs-toggle="modal"
+                                data-bs-target="#delete_model-{{forloop.counter}}">
+                                <i class="ri-delete-bin-4-line"></i>
+                            </button>                            
                         </td>
 
 
@@ -125,7 +128,7 @@ img {
                                             method="POST" class="row g-2">
                                             {% csrf_token %}
                                             <div class="form-outline mb-3">
-                                                <input name="product" value="{{p.product_name}}" type="text"
+                                                <input required name="product" value="{{p.product_name}}" type="text"
                                                     id="form3Example1cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example1cg">Product</label>
                                             </div>
@@ -143,26 +146,31 @@ img {
                                             </div>
 
                                             <div class="form-outline mb-3">
+                                                <label class="form-label" for="imagePreview">Image Preview</label>
+                                                <br>
+                                                <img src="{{ p.image.url }}" alt="{{p.porduct_name}}" style="width:100px; height:100px;" >   
+                                            </div>
+
+                                            <div class="form-outline mb-3">
                                                 <input name="image" value="{{ p.image }}" type="file"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Image</label>
                                             </div>
-
-
+                                         
                                             <div class="form-outline mb-3">
-                                                <input name="description" value="{{ p.product_description }}"
+                                                <input required name="description" value="{{ p.product_description }}"
                                                     type="text" id="form3Example3cg"
                                                     class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Description</label>
                                             </div>
                                             <div class="form-outline mb-3">
-                                                <input name="stock" value="{{ p.stock }}" type="number"
+                                                <input required name="stock" value="{{ p.stock }}" type="number"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Stock</label>
                                             </div>
 
                                             <div class="form-outline mb-3">
-                                                <input name="price" value="{{ p.price }}" type="number"
+                                                <input required name="price" value="{{ p.price }}" type="number"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Price</label>
                                             </div>
@@ -214,13 +222,15 @@ img {
                         <div class="form-outline mb-3">
                             <input required name="title" type="text" id="form3Example1cg"
                                 class="form-control form-control-lg" />
-                            <label class="form-label" for="form3Example1cg">Tile</label>
+                            <label class="form-label" for="form3Example1cg">Title</label>
                         </div>
                         <div class="form-outline mb-3">
                             <input required name="image" type="file" id="form3Example1cg"
                                 class="form-control form-control-lg" />
                             <label class="form-label" for="form3Example1cg">Thumbnail Image</label>
                         </div>
+
+                        
                         <div class="form-outline mb-3">
                             <input name="imagess" type="file" id="form3Example1cg"
                                 class="form-control form-control-lg" multiple/>

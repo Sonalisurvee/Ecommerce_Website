@@ -10,10 +10,14 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 
 
-def index(request):
+def index(request):   
+    banners = Banner.objects.all().order_by('id')
+    category = Category.objects.all().order_by('id')
+
     dict_banner={
-        'banners': Banner.objects.all().order_by('id'),
-        'category': Category.objects.all().order_by('id')
+        'banners': banners,
+        'category': category,
+
     }    
     return render(request,'userpanel/index.html',dict_banner)
 
@@ -96,6 +100,10 @@ def banner_edit(request,banner_id):
         description=request.POST['description']
         discount=request.POST['discount']
 
+        if int(discount) < 0:
+            messages.info(request,"Negative values are not allowed.")
+            return redirect(banner_management)
+
         try:
             update_banner=Banner.objects.get(id=banner_id)
             image=request.FILES['image']
@@ -160,27 +168,41 @@ def update_coupon(request,coupan_id):
         coupan=request.POST['coupan']
         discount=request.POST['discount']
         minimum=request.POST['minimum']  
+
+        if not coupan:
+            messages.info(request, 'Coupon field is empty')
+            return redirect(coupan_management)
+        
+        if int(minimum) < 0 or int(discount) < 0 :
+            messages.info(request,"Negative values are not allowed.")
+            return redirect(coupan_management)
+
      
         if Coupon.objects.filter(coupan_code=coupon).exists():
             messages.info(request,"This coupon already exists")
             return redirect(coupan_management)
+            
         else:
             update_coupon = Coupon.objects.filter(id=coupan_id)  
             update_coupon.update(coupan_code=coupan,discount_price=discount,minimum_amount=minimum)
             return redirect(coupan_management)
+        
+        
+
     else:
         messages.info(request,'some field is empty')
         return render(request,'adminpanel/coupan_management.html')
-
+    
 
 def add_coupon(request):
     if request.method == 'POST':
         couponn = request.POST['coupon']
-        print(couponn)
         discount = request.POST['discount']
-        print(discount)
         minimum=request.POST['minimum'] 
-        print(minimum)
+
+        if int(minimum) < 0 or int(discount) < 0 :
+            messages.info(request,"Negative values are not allowed.")
+            return redirect(coupan_management)
 
         if Coupon.objects.filter(coupan_code=couponn).exists():
             messages.info(request,"This coupon already exists")

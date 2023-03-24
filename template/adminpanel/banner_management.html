@@ -4,7 +4,7 @@
 
 <style>
 
-
+ 
 </style>
 
 <main id="main" class="main">
@@ -21,6 +21,7 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Banner management</h5>
+            {% include 'message.html' %}
 
             <!-- Table with hoverable rows -->
             <table class="table table-hover">
@@ -113,11 +114,17 @@
                                             method="POST" class="row g-2">
                                             {% csrf_token %}
                                             <div class="form-outline mb-3">
-                                                <input name="name" value="{{b.banner_name}}" type="text"
+                                                <input required name="name" value="{{b.banner_name}}" type="text"
                                                     id="form3Example1cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example1cg">Banner name</label>
                                             </div>                                      
-
+    
+                                            <div class="form-outline mb-3">
+                                                <label class="form-label" for="imagePreview">Image Preview</label>
+                                                <br>
+                                                <img src="{{ b.banner_image.url }}" alt="{{b.banner_name}}" style="width:100px; height:50px;" >                                    
+    
+                                            </div>
                                             <div class="form-outline mb-3">
                                                 <input name="image" value="{{ b.banner_image }}" type="file"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
@@ -126,7 +133,7 @@
 
 
                                             <div class="form-outline mb-3">
-                                                <input name="description" value="{{ b.note }}"
+                                                <input required name="description" value="{{ b.note }}"
                                                     type="text" id="form3Example3cg"
                                                     class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Description</label>
@@ -134,7 +141,7 @@
                                            
 
                                             <div class="form-outline mb-3">
-                                                <input name="discount" value="{{ b.discount }}" type="number"
+                                                <input required name="discount" value="{{ b.discount }}" type="number"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">discount</label>
                                             </div>
