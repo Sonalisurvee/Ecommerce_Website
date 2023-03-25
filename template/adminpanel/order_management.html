@@ -29,60 +29,54 @@
             <th scope="col">id</th>
             <th scope="col">User</th>
             <th scope="col">Address</th>
-            <th scope="col">Total price</th>
+            <th scope="col">order_id</th>
             <th scope="col">Payment mode</th>
-            <th scope="col">Payment id</th>
+            <th scope="col">Order date</th>
             <th scope="col">Status</th>
           </tr>
         </thead>
         <tbody>
-          {% for o in order %}
+          {% for o in orders %}
           <tr>
             <th scope="row">{{ forloop.counter }}</th>
             <td>{{o.user.username}}</td>
-            <td>{{o.address}}</td>
-            <td>{{o.total_price}}</td>
-            <td>{{o.payment_mode}}</td>
-            <td>{{o.payment_id}}</td>
+            <td>{{o.delivery_address.house_name}}</td>
+            <td>{{o.order_id}}</td>
+            <td>{{o.payment.payment_method}}</td>
+            <td>{{o.ordered_date}}</td>
             <td>{{o.status}}</td>
-            <td>
-              <button type="button" class="btn text-warning" data-bs-toggle="modal"
-                data-bs-target="#edit_model-{{forloop.counter}}">
-                <i class="ri-pencil-line"></i>
-              </button>
+            <td>             
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" 
+            data-bs-target="#neww">Extra large modal</button>
             </td>
-            <div class="modal fade" id="edit_model-{{forloop.counter}}" tabindex="-1"
-              aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
+
+            <div class="modal fade bd-example-modal-xl" id = "neww" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-xl">
                 <div class="modal-content">
+                  
                   <div class="modal-header">
                     <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
-                      Edit Status</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        Delete Category</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+<div class="contain">
+
+                    <h6>dfufgidhh</h6>
+                    <h6>dfufgidhh</h6>
+                    <h6>dfufgidhh</h6>
                   </div>
-                  <div class="modal-body">
-                    <form action="{% url 'order_management' o.id %}" enctype="multipart/form-data" method="POST"
-                      class="row g-2">
-                      {% csrf_token %}
-                      <div class="form-outline mb-3">
-                        <label class="form-label" for="form3Example3cg">Status</label>
-                        <select name="order_status" id="category">
-                          {% for s in statuses %}
-                          <option value="{{ s.0 }}">
-                            {{ s.1 }}
-                          </option>
-                          {% endfor %}
-                        </select>
-                      </div>
-                      <button type="submit" class="btn btn-success">Update</button>
-                    </form>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  </div>
+
+
                 </div>
               </div>
             </div>
+            
+
+
+
+
           </tr>
           {% endfor %}
         </tbody>

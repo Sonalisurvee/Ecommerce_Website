@@ -24,7 +24,6 @@ urlpatterns = [
     path('success/', views.success, name='success'),
     
 
-    path('placeorder/', views.placeorder, name='placeorder'),
     path('orderconfirmation/', views.order_confirmation, name='order_confirmation'),
 
 

@@ -69,3 +69,12 @@ class Product_Image(models.Model):
     def __str__(self):
         return f'{self.product.product_name}'
 
+
+
+class Varitaion(models.Model):
+    product = models.ForeignKey(Product,on_delete=models.CASCADE,null=True)
+    size_variant = models.ForeignKey(SizeVariant,on_delete=models.SET_NULL,null=True,blank=True)
+    stock = models.PositiveIntegerField(default=0)
+    
+    def __str__(self):
+        return self.size_variant.size_name

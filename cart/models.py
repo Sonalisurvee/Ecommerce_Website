@@ -17,9 +17,11 @@ class Coupon(models.Model):
     
 class Cartt(models.Model):
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL,null=True,blank=True)
-    user = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='carts')
+    user = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='carts',null=True)
     is_paid = models.BooleanField(default=False)
     razorpay_order_id = models.CharField(max_length=100 ,null=True, blank=True,unique=True)
+    cart_id = models.CharField(max_length=250,blank=True)
+
 
 
     def __unicode__(self):
@@ -106,13 +108,15 @@ class Payment(models.Model):
 
 class Order(models.Model):
     order_id = models.CharField(max_length=100, unique=True)
-    user = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True)
     delivery_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, null=True, blank=True)
     ordered_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f'{self.id} of {self.user}'
+    
+    
 
 
 class OrderItem(models.Model):
@@ -124,6 +128,7 @@ class OrderItem(models.Model):
         ('Cancelled', 'Cancelled'),
         ('Refunded', 'Refunded')
     )
+    user = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     variant = models.CharField(max_length=100, null=True,blank=True)
@@ -132,8 +137,8 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField()
     item_total = models.PositiveIntegerField()
 
-    def __str__(self):
-        return self.product.product_name
+    def __unicode__(self):
+        return self.quantity
 
 
 

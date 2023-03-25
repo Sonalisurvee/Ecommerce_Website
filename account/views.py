@@ -4,9 +4,10 @@ from django.contrib.auth.models import auth, User
 from django.contrib import messages
 from home.views import index
 from .models import Account,Address
-# from cart.models import Cart,Cartitem
+from cart.models import Cartt,CartItems
 from wishlist.models import Wishlist,WishlistItem
 from wishlist.views import _wishlist_id
+from cart.views import _cart_id
 
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
@@ -30,7 +31,21 @@ def log_in(request):
         email=request.POST['username']
         password=request.POST['password']
         user=auth.authenticate(email=email,password=password)
-        if user is not None:       
+        if user is not None:    
+          try:
+               cart = Cartt.objects.get(cart_id=_cart_id(request))
+               is_cart_item_exists = CartItems.objects.filter(carts=cart).exists()
+               if is_cart_item_exists:
+                    cart_item = CartItems.objects.filter(carts=cart)
+
+                    for item in cart_item:
+                         item.quantity += 1
+                         item.user = user
+                         item.save()
+          except:
+               print('except block')
+               pass
+   
 
           try:
                wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
@@ -151,14 +166,53 @@ def view_address(request):
 def add_address(request):
      if request.method == "POST":
           address_form = UserAddressForm(data=request.POST)
+          
           if address_form.is_valid():
                address_form = address_form.save(commit=False)
                address_form.customer = request.user
                address_form.save()
                return HttpResponseRedirect(reverse("profile"))
+               
      else:
           address_form = UserAddressForm()
      return render(request,"userpanel/address.html",{"form": address_form})
+
+
+
+# def add_address(request):
+#     if request.method == "POST":
+#         address_form = UserAddressForm(data=request.POST)
+
+#         if address_form.is_valid():
+#             address = address_form.save(commit=False)
+#             address.customer = request.user
+#             address.save()
+#             return HttpResponseRedirect(reverse("profile"))
+#         else:
+#             full_name = address_form.cleaned_data.get('full_name')
+#             phone = address_form.cleaned_data.get('phone')
+#             pincode = address_form.cleaned_data.get('pincode')
+#             state = address_form.cleaned_data.get('state')
+#             city = address_form.cleaned_data.get('city')
+#             house_name = address_form.cleaned_data.get('house_name')
+#             if not full_name:
+#                 messages.error(request, 'Please enter your full name')
+#             if not phone:
+#                 messages.error(request, 'Please enter your phone number')
+#             if not pincode:
+#                 messages.error(request, 'Please enter your pincode')
+#             if not state:
+#                 messages.error(request, 'Please enter your state')
+#             if not city:
+#                 messages.error(request, 'Please enter your city')
+#             if not house_name:
+#                 messages.error(request, 'Please enter your house name')
+#     else:
+#         address_form = UserAddressForm()
+
+#     return render(request,"userpanel/address.html",{"form": address_form})
+
+
 
 @login_required
 def edit_address(request,id,num):
@@ -166,6 +220,8 @@ def edit_address(request,id,num):
           address=Address.objects.get(pk=id,customer=request.user)
           address_form = UserAddressForm(instance = address,data=request.POST)
           if address_form.is_valid():
+               address_form = address_form.save(commit=False)
+               address_form.customer = request.user
                address_form.save()
                if num ==1:
                     return HttpResponseRedirect(reverse("profile"))

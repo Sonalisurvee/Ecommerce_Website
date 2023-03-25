@@ -3,7 +3,7 @@ from django.contrib import messages
 from .models import Banner
 from account.models import Account,Address
 from category.models import Category
-from cart.models import Coupon
+from cart.models import Coupon,Order,OrderItem
 from store.models import Product
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
@@ -58,7 +58,8 @@ def block_unblock(request,user_id):
 @login_required(login_url='/login')
 def profile(request):
     context = {
-        'user_addresses': Address.objects.filter(customer=request.user)
+        'user_addresses': Address.objects.filter(customer=request.user),
+        'order':Order.objects.filter(user = request.user)
     }
     return render(request, 'userpanel/profile.html',context)
 
@@ -234,7 +235,53 @@ def expired(request,coupan_id):
 
 
 
-# def orders(request):
+def order_list(request):
+    current_user = request.user    
+    order_items = OrderItem.objects.filter(user = current_user)
 
 
-#     return render(request,'new.html')
+
+    context = {
+        'order_items':order_items,
+    }
+    return render(request,'cart/order_list.html',context)
+
+
+
+
+# -----------------------------------------Order management admin side-----------------------------------------
+
+
+def order_management(request):
+
+    context = {
+        'orders':Order.objects.filter(user = request.user)
+    }
+    return render(request,'adminpanel/order_management.html',context)
+
+
+
+
+
+def sales(request):
+    context = {}
+
+    if request.method == 'POST':
+
+        start_date = request.POST.get('start-date')
+        end_date = request.POST.get('end-date')
+
+        if start_date == '' or end_date == '':
+            messages.error(request,'Give date first')
+            return redirect(sales)
+
+        order_items = OrderItem.objects.filter(order_placed_atgte=start_date, orderplaced_at_lte=end_date)
+
+        if order_items:
+            context.update(sales = order_items,s_date=start_date,e_date = end_date)
+        else:
+            messages.error(request,'no data found')
+
+
+    return render(request,'adminpanel/sales_report.html')
+

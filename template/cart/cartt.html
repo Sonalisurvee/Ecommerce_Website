@@ -17,6 +17,9 @@
     color: #fff;
     font-weight: 500;
   }
+  .bt{
+    margin: 20px;
+  }
 </style>
 
 <!-- breadcrumb part start-->
@@ -32,6 +35,7 @@
     </div>
   </section>
   <!-- breadcrumb part end -->
+  {% include 'message.html' %}
   
 <!--================Cart Area =================-->
 <section class="cart_area section_padding">    
@@ -53,7 +57,7 @@
                             <th scope="col">Price</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Total</th>
-                            <th scope="col"></th>
+                            <th scope="col bt"></th>
 
                         </tr>
                     </thead>
@@ -84,9 +88,8 @@
                                                 class="ti-minus"></i></span></a>
 
                                     <input class="input-number" type="text" value="{{ cart_item.quantity }}" min="0">
-
-                                    <span class="input-number-increment"><a
-                                            href="{% url 'add_to_cart' cart_item.products.id %}?variant={{ cart_item.size_variant.size_name }}"><i
+                                    <a href="{% url 'add_to_cart' cart_item.products.id %}?variant={{ cart_item.size_variant.size_name }}">
+                                    <span class="input-number-increment"><i
                                                 class="ti-plus"></i></span></a>
                                 </div>
                             </td>
@@ -95,7 +98,7 @@
                                 <h5>{{ cart_item.sub_total }}</h5>
                             </td>
                             <td>
-                                <a class="btn_1" href="{% url 'remove_cartitems' cart_item.products.id cart_item.id %}">Remove</a>
+                                <a class="" href="{% url 'remove_cartitems' cart_item.products.id cart_item.id %}"><i class="fa-solid fa-trash fa-xl" style="color: #b08ead;"></i></a>
                             </td>
 
                         </tr>
@@ -104,7 +107,8 @@
                         <hr>
                         <tr class="bottom_button">
                             <td>
-                                <a class="btn_1" href="{% url 'product_list' %}">Update Cart</a>
+                    <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
+
                             </td>
                             <td></td>
                             <td></td>
@@ -129,7 +133,6 @@
                     </tbody>
                 </table>
                 <div class="checkout_btn_inner float-right">
-                    <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
                     <a class="btn_1 checkout_btn_1" href="{% url 'checkout' %}">Proceed to checkout</a>
                 </div>
             </div>

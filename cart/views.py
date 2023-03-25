@@ -9,65 +9,76 @@ from django.http import HttpResponseRedirect,HttpResponse
 import razorpay
 from django.conf import settings
 
+# -----------------------------------Carts --------------------------------
+
+def _cart_id(request):
+    cart = request.session.session_key
+    if not cart:
+        cart = request.session.create()
+        print('created cart id', cart)
+    return cart 
 
 
-
-
-@login_required(login_url= 'log_in')
 def add_to_cart(request,product_id):
     variant = None
     variation =None
-    try:
-        variation = request.GET.get('variant')#querystring
-        print(variant)
-        if variation:
-            variation = request.GET.get('variant')#if variant then it will get the variant from the urls
-            variant = SizeVariant.objects.get(size_name=variation)
+    variation = request.GET.get('variant')#querystring
 
-        product = Product.objects.get(id=product_id)
-        user = request.user
-        
-        cart , _ = Cartt.objects.get_or_create(user = user,is_paid = False)#to check wether cart has something if nothing the create it
-        
-        is_cart_item = CartItems.objects.filter(carts=cart, products=product, size_variant=variant).exists()
+    if variation:
+        variation = request.GET.get('variant')
+        variant = SizeVariant.objects.get(size_name=variation)
 
-        if not is_cart_item:
-            cart_item = CartItems.objects.create(carts=cart, products=product, size_variant=variant)
-            print(cart_item)
-            cart_item.save()
-        else:
+
+    current_user = request.user
+    product = Product.objects.get(id=product_id)
+
+    
+    if current_user.is_authenticated:
+        cart , _ = Cartt.objects.get_or_create(user = current_user,is_paid = False)
+        is_cart_item_exists = CartItems.objects.filter(carts=cart, products=product, size_variant=variant).exists()
+        if is_cart_item_exists:
             cart_item = CartItems.objects.get(carts=cart, products=product, size_variant=variant)
-            cart_item.quantity += 1
-            cart_item.save()     
-    
-    except:
-        pass
-    
+            if cart_item.quantity >= product.stock:
+                messages.info(request,f"Sorry, only {product.stock} units of {product.product_name} are available.")
+                return redirect('cart')
+                # return False, f"Sorry, only {product.stock} units of {product.product_name} are available."
+            else:
+                cart_item.quantity+=1
+        else:
+            cart_item = CartItems.objects.create( 
+            carts = cart,
+            products=product,
+            size_variant = variant
+        )
+        cart_item.save()
 
+    else:
+        try:   
+            cart = Cartt.objects.get(cart_id=_cart_id(request))
+        except Cartt.DoesNotExist: 
+            cart = Cartt.objects.create(cart_id=_cart_id(request)) 
+        cart.save()
+        try:
+            cart_item = CartItems.objects.get(products=product,carts=cart,size_variant=variant)
+            cart_item.quantity+=1 
+        except CartItems.DoesNotExist:
+            cart_item = CartItems.objects.create(
+                products=product,
+                carts=cart,
+                size_variant=variant
+            )
+        cart_item.save()   
     return redirect('cart')
-
-
-def cart(request):
-    cart=None
-    cart_items=None
-    try:
-        cart, _ = Cartt.objects.get_or_create(user=request.user, is_paid = False)
-        cart_items = CartItems.objects.filter(carts=cart)
-    except Exception as e:
-        print(e)
-
-    context ={
-        'cart':cart,
-        'cart_items':cart_items,
-    }
-    return render(request, 'cart/cartt.html',context)
-
 
 
 def remove_cartt(request,product_id,cart_item_id):
     product = get_object_or_404(Product,id=product_id)
     try:
-        cart_item = CartItems.objects.get(products=product,id=cart_item_id)    
+        if request.user.is_authenticated:
+            cart_item = CartItems.objects.get(products=product,id=cart_item_id)    
+        else:
+            cart = Cartt.objects.get(cart_id=_cart_id(request))
+            cart_item = CartItems.objects.get(products=product,carts=cart,id=cart_item_id)
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
             cart_item.save()
@@ -75,15 +86,40 @@ def remove_cartt(request,product_id,cart_item_id):
             cart_item.delete()
     except:
         pass
-    return redirect('cart') 
-
+    return redirect('cart')
 
 
 def remove_cartitems(request,product_id,cart_item_id):    
-    product = get_object_or_404(Product,id=product_id)   
-    cart_item = CartItems.objects.get(products=product,id=cart_item_id)
+    product = get_object_or_404(Product,id=product_id)
+    if request.user.is_authenticated:
+        cart_item = CartItems.objects.get(products=product,id=cart_item_id)
+    else:
+        cart = Cartt.objects.get(cart_id=_cart_id(request))
+        cart_item = CartItems.objects.get(products=product,carts=cart,id=cart_item_id)
     cart_item.delete()
     return redirect('cart')
+
+
+def cart(request):
+    cart=None
+    cart_items=None
+    try:
+        if request.user.is_authenticated:
+            cart, _ = Cartt.objects.get_or_create(user=request.user, is_paid = False)
+            cart_items = CartItems.objects.filter(carts=cart).order_by('id')
+        else:
+            cart = Cartt.objects.get(cart_id=_cart_id(request))
+            cart_items = CartItems.objects.filter(carts=cart)
+       
+    except Exception as e:
+        pass
+
+    context = {
+        'cart':cart,
+        'cart_items':cart_items,
+    
+    }    
+    return render(request, 'cart/cartt.html',context)
 
 
 # ----------------------------------checkout--------------------------------------------
@@ -115,7 +151,7 @@ def checkout(request,cart_items=None):
         coupon_obj = Coupon.objects.filter(coupan_code__icontains = coupon)
 
         if not coupon_obj.exists():
-            messages.warning(request, 'Invalid coupon')
+            messages.warning(request, 'The promo code you have entered is invalid. PLease try again')
             return redirect(checkout)
 
         if cart.coupon:
@@ -144,9 +180,6 @@ def checkout(request,cart_items=None):
         cart.razorpay_order_id = payment['id']
         cart.save()
 
-        print("*********************")
-        print(payment)
-        print("*********************")
     except:
         pass  
    
@@ -183,10 +216,9 @@ def success(request):
         transaction_id = transaction,
         cart_total = cart_total,
         tax = tax,
-        grand_total = grand_total
+        grand_total = grand_total,
     )
-    payment.save()
-
+    payment.save() 
 
 # this will create orders in the order model
 
@@ -195,11 +227,8 @@ def success(request):
         order_id = order_id,
         user = current_user ,
         delivery_address = address ,
-        payment =payment ,
-
-
+        payment = payment ,
     )
-
 
 # this will store the products in the orderItem model
 # here orderitems.products and rest is taken from the cartitems model because the products are in the cartitesm now 
@@ -207,6 +236,7 @@ def success(request):
     order_items = CartItems.objects.filter(carts = cart)
     for orderitems in order_items:
         order_items = OrderItem.objects.create(
+            user = current_user,
             order =orders ,
             product = orderitems.products,
             item_price = orderitems.get_product_price(),
@@ -215,16 +245,15 @@ def success(request):
         )    
         order_items.save()
         if orderitems.size_variant:
-            order_items = orderitems.size_variant
+            order_items.variant = orderitems.size_variant.size_name
             order_items.save()
 
 
-    # Deleting the cart once it is ordered/paid
+    # Deleting the cart once we haev ordered the product
 
     cart.is_paid = True
     cart.delete()
     return render(request, 'cart/order_success.html', {'order_id': order_id})
-
 
 
 def remove_coupon(request):
@@ -237,37 +266,6 @@ def remove_coupon(request):
         pass
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-
-
-
-
-def placeorder(request):
-
-    cart_id = request.GET.get('cart_id')
-
-    cart = Cartt.objects.get(id=cart_id)
-    cartitem = CartItems.objects.filter(cart=cart )
-    print(cartitem)
-
-    address = Address.objects.get(customer=request.user,default=True)
-
-    sub_total = 0
-    for item in cartitem:
-        sub_total+= item.product.price * item.quantity
-
-    gst = (2 * sub_total)/100
-    total = gst + sub_total
-
-    order = Order.objects.create(user=request.user,address=address,total_price=total)
-    order.save()
-    for item in cartitem:
-        orderitem = OrderItem.objects.create( order=order , quantity=item.quantity , product=item.product , price=item.product.price )
-
-    context = {
-        'order_id' : order.id
-    }
-
-    return render(request,'cart/order_success.html',context)
 
 
 # ------------------------------------------------------order_success ---------------------------------------------------

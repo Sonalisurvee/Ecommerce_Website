@@ -5,6 +5,12 @@
 <style>
     .cap {
         background-color: #795376;
+        color: white;
+    }
+    .capp {
+        background-color: #795376;
+        color: white;
+        float: right;
     }
 
     a {
@@ -115,6 +121,8 @@
                                 <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
                             </div>
                         </div> -->
+                        <a class="btn capp" href="{% url 'order_list' %}"> Orders </a>
+
                     </div>
                 </div>
             </div>
@@ -149,10 +157,14 @@
                         href="{% url 'delete_address' a.id 1 %}">
                         Delete
                     </a>
-
+                    {% if a.default %}
+                   
+                    {% else %}
                     <a class="btn btn-light" href="{% url 'default_address' a.id 1 %}">
                         Default
                     </a>
+                       {% endif %}
+
 
                     <!-- Modal -->
                     <div class="modal fade" id="delete_model-{{forloop.counter}}" tabindex="-1"

@@ -26,6 +26,17 @@
                 </nav>
             </div>
         </div>
+        {% if form.errors %}
+<div class="alert alert-danger text-center">
+    {% for field in form %}
+    {% for error in field.errors %}
+    <strong>{{ error|escape }}</strong><br>
+    {% endfor %}
+    {% endfor %}
+</div>
+{% endif %}
+{% include 'message.html' %}
+
 
         <div class="row">
             <div class="col-lg-4">
