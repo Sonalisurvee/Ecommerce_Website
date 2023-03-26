@@ -66,8 +66,9 @@
 }
 
 .single_product_itemm .single_product_textt h3 {
-  font-weight: 300;
+  font-weight: 400;
   font-size: 16px;
+  color: rgb(255, 0, 179);
 }
 
 
@@ -87,16 +88,20 @@
   color: #000;
 }
 
-.single_product_itemm {
+.single_product_itemm  {
   box-shadow: 0px 10px 20px 0px rgba(0, 23, 51, 0.09);
 }
 
 .single_product_itemm .single_product_textt {
   padding: 32px 32px;
+  
 }
-
-
-
+.single_product_itemm:hover .single_product_textt h3 {
+  padding: 0px 10px;  
+}
+.pad{
+  padding: 15px;
+}
 
 
 
@@ -312,22 +317,20 @@
     </header>
     <!-- Header part end-->
 
-
-
-
-
+ 
 
 
     <div id="carouselExample" class="carousel slide">
       <div class="carousel-inner">
-        {% for h in home %}
-        <div class="carousel-item  {% if h.id ==  3%}active{% endif %}">
-          <img src="{{ h.carousel_img.url }}" class="d-block w-100 banner-image" alt="sorry">
+        <!-- {% for h in home %} -->
+        <div class="carousel-item active">
+          <img src="{% static 'users/imgg/wat.png' %}" class="d-block w-100 banner-image" alt="sorry">
+          <!-- <img src="{{ h.carousel_img.url }}" class="d-block w-100 banner-image" alt="sorry"> -->
         </div>
     
         <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
           <div class="p-3" style="max-width: 700px;">
-              <h4 class="text-light text-uppercase font-weight-medium mb-3">{{ h.carousel_text }}</h4>
+              <h4 class="text-light text-uppercase font-weight-medium mb-3">asdfghjikoiuytfds</h4>
               
           </div>
       </div>
@@ -350,7 +353,7 @@
         }
       </style>
     
-      {% endfor %}
+      <!-- {% endfor %} -->
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -364,20 +367,44 @@
     
     <style>
       .banner-image{
-        height:600px;
+        height:100px;
       }
     </style>  
     
-      
 
 
 
+<section class="single_product_list">
+  <h2 class="text-center">Category</h2>
+  <div class="container">      
+    <div class="col-md-12">
+      <div class="product_list pt-3 ">
+          <div class="row">
+              {% for c in category %}
+              <div class="col-lg-3 col-sm-6 pad">
+                  <a href="{{ c.get_url }}">
+                      <div class="single_product_itemm">
+                          <img src="{{c.cat_image.url}}" alt="{{c.cat_name}}" class="img-fluid cap">
+                          <div class="single_product_textt">
+                              <div class="">
+                                  <h4>{{c.cat_name}}</h4>
+                                  <hr>
+                                  <h3>Explore Now</h3>
+                              </div>                           
+                          </div>
+                      </div>
+                  </a>
+              </div>
+              {% endfor %}
+          </div>        
+      </div>
+  </div>
+</div>
+</section>
 
 
 
-
-
-
+<!-- 
     <section class="banner_part">
         <div class="container">
             <div class="row align-items-center">
@@ -393,117 +420,17 @@
                 </div>
                 <div class="banner_img">
                     <!-- <img src="{% static 'users/imgg/banner.avif' %}" alt="#" class="img-fluid"> -->
-                    <a href="{% url 'product_list' %}">
+                    <!-- <a href="{% url 'product_list' %}">
                     
                     <img src="{{ b.banner_image.url }}" alt="{{b.banner_name}}" class="img-fluid"></a>
                     {% endfor %}
                 </div>
             </div>
         </div>
-    </section>
-
-<!-- 
-<section class="container">
-    <div class="product_list">
-        <div class="row">
-                    {% for c in category %}
-            <div class="col-lg-3 col-sm-6">
-                <a href="{{ p.get_url }}">
-                    <div class="single_product_itemm">
-                        <img src="{{c.cat_image.url}}" alt="{{c.cat_name}}" class="img-fluid cap">
-                        <div class="single_product_textt">
-                            <div class="">
-                                <h4>{{c.cat_name}}</h4>
-                                <hr>
-                                <h2>cart<i class="ti-heart"></i></h2>
-
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+    </section> --> 
 
 
-
-</section> -->
-
-
-    <!-- feature_part start-->
-    <!-- <section class="feature_part">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="section_tittle text-center">
-                        <h2>Featured Category</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="row">
-            {% for c in category %}
-                <div class="col-lg-5 col-sm-5">
-                    <div class="single_feature_post_text">
-                        <p>{{c.cat_name}}</p>
-                        <h3>Latest foam Sofa</h3>
-                        <a href="{{ c.get_url }}" class="feature_btn">EXPLORE NOW <i class="fas fa-play"></i></a>
-                        <!-- <img src="{{c.cat_image.url}}" alt=""> -->
-                   <!-- </div>
-                </div>              
-            </div>
-        </div>
-
-            {% endfor %}
-
-        </div>
-    </section> -->
-    <!-- upcoming_event part start-->
-
-
-
-
-
-    <!-- product list start-->
-    <section class="single_product_list">
-        <h2 class="text-center">Category</h2>
-
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    {% for c in category %}
-                    <div class="single_product_iner">
-                        <div class="row align-items-center justify-content-between">
-                            <div class="col-lg-6 col-sm-6">
-                                <div class="single_product_img">
-                                    <img src="{{c.cat_image.url}}" class="img-fluid" alt="#">
-                                    <img src="{% static 'users/img/product_overlay.png' %}" alt="#"
-                                        class="product_overlay img-fluid">
-                                </div>
-                            </div>
-                            <div class="col-lg-5 col-sm-6">
-                                <div class="single_product_content">
-                                    <h5>Started from $200</h5>
-                                    <h2> <a href="single-product.html">{{c.cat_name}}</a> </h2>
-                                    <h4>{{c.description}}</h4><br>
-                                    <a href="{{ c.get_url }}" class="btn_3">Explore Now</a>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-
-
-
-    <!--::footer_part start::-->
+<!--::footer_part start::-->
     <footer class="footer_part">
         <div class="footer_iner">
             <div class="container">
@@ -555,7 +482,12 @@
         </div>
     </footer>
     <!--::footer_part end::-->
+<script>
+    $('.carousel').carousel({
+  interval: 2000
+})
 
+</script>
     <!-- jquery plugins here-->
     <script src="{% static 'users/js/jquery-1.12.1.min.js' %}"></script>
     <!-- popper js -->

@@ -48,6 +48,7 @@
                     <thead>
                         <tr>
                             <th scope="col">Product</th>
+                            <th scope="col">Price</th>
                             <th scope="col">Order status</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Total</th>
@@ -65,11 +66,13 @@
                                     </div>                                    
                                     <div class="media-body">
                                         <p>{{ item.product.product_name }}</p>
-                                        <h5>{{ item.variant }}</h5>
+                                        <h5>Size : {{ item.variant }}</h5>
                                     </div>
                                 </div>
                             </td>
-                          
+                            <td>
+                                <h5>{{ item.item_price }}</h5>
+                            </td> 
                             <td>
                                 <h5> {{ item.order_status }}</h5>
 
@@ -79,12 +82,10 @@
                                 <h5>{{ item.quantity }}</h5>
                             </td>
                             <td>
-                                <h5>{{ item.item_price }}</h5>
-                            </td>        
-                         
-
+                                <h5>{{ item.item_total }}</h5>
+                            </td>                      
+                            {% endfor %}
                         </tr>
-                        {% endfor %}
 
                         <hr>
                         <tr class="bottom_button">
@@ -94,17 +95,14 @@
                             </td>
                             <td></td>
                             <td></td>
-                            <td>
-                              
+                            <td>                              
                                 <h5>Grand total</h5>
                             </td>
-                            <td>
-                          
-                            <p>{{order_items.item_total}}</p>
+                            <td>                          
+                            <p>:{{ item.calculate_order_total }}</p>
                             </td>                         
                         </tr>
                       
-
                     </tbody>
                 
 

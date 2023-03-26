@@ -3,7 +3,6 @@ from store.models import Product,ColorVariant,SizeVariant
 from account.models import Account,Address
 from decimal  import Decimal
 
-# Create your models here.
 
 class Coupon(models.Model):
     coupan_code = models.CharField(max_length=20)
@@ -22,15 +21,9 @@ class Cartt(models.Model):
     razorpay_order_id = models.CharField(max_length=100 ,null=True, blank=True,unique=True)
     cart_id = models.CharField(max_length=250,blank=True)
 
-
-
     def __unicode__(self):
         return self.user
-  
-    # Payment details
-    # razorpay_order_id = models.CharField(max_length=100 ,null=True, blank=True,unique=True)
-
-
+ 
     def get_cart_total(self):
         cart_items = CartItems.objects.filter(carts=self.id)
         price = []
@@ -43,7 +36,6 @@ class Cartt(models.Model):
                 size_variant_price = cart_item.size_variant.price
                 total_size_price = size_variant_price * quantity
                 price.append(total_size_price)
-
         print(price)
         return sum(price)
     
@@ -53,7 +45,6 @@ class Cartt(models.Model):
     
     # tax + cart_total
     def get_grand_total(self):
-        # return self.get_cart_total() + self.get_tax()
         cart_total = self.get_cart_total()
         tax = self.get_tax()
         grand_total = cart_total + tax
@@ -89,8 +80,7 @@ class CartItems(models.Model):
         sub_total = sum(price) * self.quantity
         return sub_total
     
-    
-
+   
 # for invioce and for order payment hign we neeeded this
 class Payment(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
@@ -118,7 +108,6 @@ class Order(models.Model):
     
     
 
-
 class OrderItem(models.Model):
     STATUS = (
         ('Ordered', 'Ordered'),
@@ -140,43 +129,16 @@ class OrderItem(models.Model):
     def __unicode__(self):
         return self.quantity
 
+    def quantity_added(self):
+        total = self.item_price * self.quantity
+        return total
+    
+    def calculate_order_total(self):
+        order_items = OrderItem.objects.filter(order=self.id)
+        order_total = []
+        total_price = 0
+        for order_item in order_items:           
+            total_price = total_price + order_item.item_total
+            order_total.append(total_price)
 
-
-
-
-# ----------------------------old----------------------------------
-
-
-
-# class Order(models.Model):
-#     user = models.ForeignKey(Account,on_delete=models.CASCADE,null=True)
-#     address = models.ForeignKey(Address,on_delete=models.CASCADE)    
-#     total_price = models.FloatField(null=False)
-#     PAYMENT_CHOICES = (
-#         ('cod', 'Cash on Delivery'),
-#     )
-#     payment_mode = models.CharField(max_length=150, choices=PAYMENT_CHOICES, default='cod')
-#     payment_id = models.CharField(max_length=250,null=True)
-#     orderstatuses = (
-#         ('Pending','Pending'),
-#         ('Out for Shipping','Out for Shipping'),
-#         ('Completed','Completed'),
-#     )
-#     status = models.CharField(max_length=150,choices=orderstatuses,default='Pending') 
-#     message = models.TextField(null=True)
-#     tracking_no = models.CharField(max_length=150,null=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-
-
-#     def __str__(self):
-#         return str(self.address)
-
-# class OrderItem(models.Model):
-#     order = models.ForeignKey(Order,on_delete=models.CASCADE)
-#     product = models.ForeignKey(Product,on_delete=models.CASCADE)
-#     price = models.FloatField(null=False)
-#     quantity = models.IntegerField(null=False)
-
-#     def __unicode__(self):
-#         return self.id
+        return sum(order_total)

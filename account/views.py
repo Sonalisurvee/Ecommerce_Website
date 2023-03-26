@@ -155,7 +155,7 @@ def signup(request):
 
 @login_required(login_url='/login')
 def view_address(request):
-     addresses = Address.objects.filter(customer=request.user)
+     addresses = Address.objects.filter(customer=request.user).order_by('id')
      # print(addresses)
      context = {
           'addresses': addresses,
@@ -163,7 +163,7 @@ def view_address(request):
      return render(request,"userpanel/profile.html",context)
 
 @login_required
-def add_address(request):
+def add_address(request,num):
      if request.method == "POST":
           address_form = UserAddressForm(data=request.POST)
           
@@ -171,47 +171,14 @@ def add_address(request):
                address_form = address_form.save(commit=False)
                address_form.customer = request.user
                address_form.save()
-               return HttpResponseRedirect(reverse("profile"))
+               if num ==1:
+                    return HttpResponseRedirect(reverse("profile"))
+               elif num ==2:
+                    return HttpResponseRedirect(reverse('checkout'))
                
      else:
           address_form = UserAddressForm()
      return render(request,"userpanel/address.html",{"form": address_form})
-
-
-
-# def add_address(request):
-#     if request.method == "POST":
-#         address_form = UserAddressForm(data=request.POST)
-
-#         if address_form.is_valid():
-#             address = address_form.save(commit=False)
-#             address.customer = request.user
-#             address.save()
-#             return HttpResponseRedirect(reverse("profile"))
-#         else:
-#             full_name = address_form.cleaned_data.get('full_name')
-#             phone = address_form.cleaned_data.get('phone')
-#             pincode = address_form.cleaned_data.get('pincode')
-#             state = address_form.cleaned_data.get('state')
-#             city = address_form.cleaned_data.get('city')
-#             house_name = address_form.cleaned_data.get('house_name')
-#             if not full_name:
-#                 messages.error(request, 'Please enter your full name')
-#             if not phone:
-#                 messages.error(request, 'Please enter your phone number')
-#             if not pincode:
-#                 messages.error(request, 'Please enter your pincode')
-#             if not state:
-#                 messages.error(request, 'Please enter your state')
-#             if not city:
-#                 messages.error(request, 'Please enter your city')
-#             if not house_name:
-#                 messages.error(request, 'Please enter your house name')
-#     else:
-#         address_form = UserAddressForm()
-
-#     return render(request,"userpanel/address.html",{"form": address_form})
-
 
 
 @login_required

@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect,HttpResponse
 import razorpay
 from django.conf import settings
+from store.views import product_details
 
 # -----------------------------------Carts --------------------------------
 
@@ -20,17 +21,31 @@ def _cart_id(request):
 
 
 def add_to_cart(request,product_id):
-    variant = None
-    variation =None
-    variation = request.GET.get('variant')#querystring
+    current_user = request.user
+    product = Product.objects.get(id=product_id)
 
+    variation = request.GET.get('variant')
+    if not variation:
+        messages.warning(request, 'Please select a variant.')
+        return redirect('product_details',category_slug=product.category.slug, product_slug=product.slug)
+
+    variant = SizeVariant.objects.get(size_name=variation)
+
+    # ... the rest of your code
+
+    # variant = None
+    # variation =None
+    # variation = request.GET.get('variant')#querystring
+    
     if variation:
         variation = request.GET.get('variant')
         variant = SizeVariant.objects.get(size_name=variation)
+    # else:
+    #     messages.warning(request, 'SElect the variant')
+    #     return redirect('product_details') 
 
-
-    current_user = request.user
-    product = Product.objects.get(id=product_id)
+    # current_user = request.user
+    # product = Product.objects.get(id=product_id)
 
     
     if current_user.is_authenticated:
@@ -132,7 +147,7 @@ def cart(request):
 @login_required(login_url= 'log_in')
 def checkout(request,cart_items=None):
     cart = None
-    addresses = Address.objects.filter(customer=request.user)
+    addresses = Address.objects.filter(customer=request.user).order_by('id')
     name=Address.objects.filter(default=True)
     current_user = request.user
 

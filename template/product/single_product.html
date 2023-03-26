@@ -128,10 +128,13 @@
 
 }
 .btn-secondary{
-  padding: 4px;
-  
+  padding: 4px;  
 }
 
+.ratee{
+  padding-left: 15px;
+  padding-bottom: 10px;
+}
 
 </style>
 
@@ -235,6 +238,7 @@
 </div>
 <!--================End Single Product Area =================-->
 
+{% include 'message.html' %}
 
 
  <!--================Product Description Area =================-->
@@ -345,6 +349,8 @@
           </div>
         </div>
        
+        
+
         <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
           <div class="row">
             <div class="col-lg-6">
@@ -353,12 +359,12 @@
                   <div class="box_total">
                     <h5>Overall</h5>
                     <h4>4.0</h4>
-                    <h6>(03 Reviews)</h6>
+                    <h6>({{reviews.count}} Reviews)</h6>                    
                   </div>
                 </div>
                 <div class="col-6">
                   <div class="rating_list">
-                    <h3>Based on 3 Reviews</h3>
+                    <h3>Based on {{reviews.count}} Reviews</h3>
                     <ul class="list">
                       <li>
                         <a href="#">5 Star
@@ -366,7 +372,7 @@
                           <i class="fa fa-star"></i>
                           <i class="fa fa-star"></i>
                           <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i> 01</a>
+                          <i class="fa fa-star"></i> </a>
                       </li>
                       <li>
                         <a href="#">4 Star
@@ -374,7 +380,7 @@
                           <i class="fa fa-star"></i>
                           <i class="fa fa-star"></i>
                           <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i> 01</a>
+                          <i class="fa fa-star"></i> </a>
                       </li>
                       <li>
                         <a href="#">3 Star
@@ -382,7 +388,7 @@
                           <i class="fa fa-star"></i>
                           <i class="fa fa-star"></i>
                           <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i> 01</a>
+                          <i class="fa fa-star"></i> </a>
                       </li>
                       <li>
                         <a href="#">2 Star
@@ -390,7 +396,7 @@
                           <i class="fa fa-star"></i>
                           <i class="fa fa-star"></i>
                           <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i> 01</a>
+                          <i class="fa fa-star"></i> </a>
                       </li>
                       <li>
                         <a href="#">1 Star
@@ -398,129 +404,99 @@
                           <i class="fa fa-star"></i>
                           <i class="fa fa-star"></i>
                           <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i> 01</a>
+                          <i class="fa fa-star"></i> </a>
                       </li>
                     </ul>
                   </div>
                 </div>
               </div>
+
+
+              {% if reviews %}
+
+              {% for review in reviews %}
+              
               <div class="review_list">
                 <div class="review_item">
                   <div class="media">
                     <div class="d-flex">
-                      <img src="img/product/single-product/review-1.png" alt="" />
+                      <img src="{% static 'users/img/product/single-product/review-1.png' %}" alt="" />
+                      <img src="{% static 'users/imgg/banner.avif' %}" alt="" />
                     </div>
-                    <div class="media-body">
-                      <h4>Blake Ruiz</h4>
+                    <div class="media-body pt-4">
+                      <h4>{{review.user.first_name}}yuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu</h4>
+                      <i class="fa fa-star"> </i>
+                      {% comment %} <i class="fa fa-star"></i>
                       <i class="fa fa-star"></i>
                       <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                    </div>
-                  </div>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo
-                  </p>
-                </div>
-                <div class="review_item">
-                  <div class="media">
-                    <div class="d-flex">
-                      <img src="img/product/single-product/review-2.png" alt="" />
-                    </div>
-                    <div class="media-body">
-                      <h4>Blake Ruiz</h4>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>  {% endcomment %}
+                      <span> {{review.rating}}/5.0 <i class="ms-1 zmdi zmdi-star"></i><span>
                     </div>
                   </div>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo
-                  </p>
-                </div>
-                <div class="review_item">
-                  <div class="media">
-                    <div class="d-flex">
-                      <img src="img/product/single-product/review-3.png" alt="" />
-                    </div>
-                    <div class="media-body">
-                      <h4>Blake Ruiz</h4>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                    </div>
-                  </div>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo
-                  </p>
-                </div>
+                  {% comment %} <h6 class="pt-2">{{review.title}}</h6> {% endcomment %}
+                  <p class="container">
+                    {{review.review}}</p>
+                </div>                                
               </div>
+              
+            {% endfor %}
+
+            {% else %}
+            <h5 class="text-center pt-5">Be the first to post a review on this product</h5>
+            {% endif %}
             </div>
+
+
+            {% if user.is_authenticated %}
+
             <div class="col-lg-6">
-              <div class="review_box">
+              <div class="review_box">      
                 <h4>Add a Review</h4>
-                <p>Your Rating:</p>
-                <ul class="list">
-                  <li>
-                    <a href="#">
-                      <i class="fa fa-star"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i class="fa fa-star"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i class="fa fa-star"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i class="fa fa-star"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i class="fa fa-star"></i>
-                    </a>
-                  </li>
-                </ul>
-                <p>Outstanding</p>
-                <form class="row contact_form" action="contact_process.php" method="post" novalidate="novalidate">
+
+                <form action="{% url 'submit_review' single_product.id %}" method="POST" class="row contact_form">
+                    {% csrf_token %}
+                                 
+                    <div class="flex-w flex-m ratee">
+                      <span class="stext-102 cl3 m-r-16">
+                          Your Rating
+                      </span>
+
+
+                      <div class="rate">
+                          <input type="radio" name="rating" id="rating10" value="5"
+                              required><label for="rating10" title="5"></label>
+                          <input type="radio" name="rating" id="rating9" value="4.5"
+                              required><label for="rating9" title="4.5" class="half"></label>
+                          <input type="radio" name="rating" id="rating8" value="4" required><label
+                              for="rating8" title="4"></label>
+                          <input type="radio" name="rating" id="rating7" value="3.5"
+                              required><label for="rating7" title="3.5" class="half"></label>
+                          <input type="radio" name="rating" id="rating6" value="3" required><label
+                              for="rating6" title="3"></label>
+                          <input type="radio" name="rating" id="rating5" value="2.5"
+                              required><label for="rating5" title="2.5" class="half"></label>
+                          <input type="radio" name="rating" id="rating4" value="2" required><label
+                              for="rating4" title="2"></label>
+                          <input type="radio" name="rating" id="rating3" value="1.5"
+                              required><label for="rating3" title="1.5" class="half"></label>
+                          <input type="radio" name="rating" id="rating2" value="1" required><label
+                              for="rating2" title="1"></label>
+                          <input type="radio" name="rating" id="rating1" value="0.5"
+                              required><label for="rating1" title="0.5" class="half"></label>
+                      </div>
+                    </div>
+                  
+
+
+
                   <div class="col-md-12">
                     <div class="form-group">
-                      <input type="text" class="form-control" name="name" placeholder="Your Full name" />
+                      <input type="text" class="form-control" name="title" rows="1" placeholder="Review title">
                     </div>
                   </div>
                   <div class="col-md-12">
                     <div class="form-group">
-                      <input type="email" class="form-control" name="email" placeholder="Email Address" />
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <input type="text" class="form-control" name="number" placeholder="Phone Number" />
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <textarea class="form-control" name="message" rows="1" placeholder="Review"></textarea>
+                      <textarea class="form-control" name="review" rows="1" placeholder="Review"></textarea>
                     </div>
                   </div>
                   <div class="col-md-12 text-right">
@@ -528,11 +504,18 @@
                       Submit Now
                     </button>
                   </div>
+
+                    {% else %}
+                    <h6>Please login to submit your review.<a href="login">Login here<a>
+                {% endif %}
                 </form>
               </div>
             </div>
           </div>
         </div>
+
+
+
       </div>
     </div>
   </section>

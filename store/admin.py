@@ -27,5 +27,7 @@ class SizeVariantAdmin(admin.ModelAdmin):
 class VariationAdmin(admin.ModelAdmin):
     list_display = ['product','size_variant','stock']
 
+
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Product_Image)
+admin.site.register(ReviewRating)

@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404,HttpResponse
-from .models import Product,Product_Image
+from .models import Product,Product_Image,ReviewRating
 from category.models import Category
 from cart.models import CartItems,Cartt
 # from cart.views import _cart_id
@@ -7,7 +7,10 @@ from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from decimal import Decimal
+from django.http import HttpResponseRedirect
 
+from django.contrib.auth.decorators import login_required
+from .forms import ReviewForm
 
 
 # -----------------------------------Product Management-Delete,edit and add --------------------------------
@@ -158,10 +161,13 @@ def product_list(request,category_slug=None):
 def product_details(request, category_slug,product_slug):
     context = {}
     try:
+
+
         # size=request.Get.get('size')
 
         single_product = Product.objects.get(category__slug=category_slug,slug=product_slug)
         #this will show the single product based on the cate slug and prod slug 
+        reviews = ReviewRating.objects.filter(product=single_product)
 
         cat=Product.objects.get(slug=product_slug)
         # this will only shows the cate matching product
@@ -197,7 +203,51 @@ def product_details(request, category_slug,product_slug):
         # 'in_cart': in_cart,
         'cat':cat,
         'products':products,
+        'reviews':reviews
     })
     print(context)
 
     return render(request,'product/single_product.html',context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required
+def submit_review(request, product_id):
+    if request.method == 'POST':
+        try:
+            review = ReviewRating.objects.get(user__id=request.user.id, product__id=product_id)
+            form = ReviewForm(request.POST, instance=review)  # Checks whether the review of the product by the user exists.
+                                                              # If exists, it will detect that review needs to be updated.
+                                                              # If instance not passed, it will save it as a new review
+            form.save()
+            messages.success(request, 'Thank you! Your review has been updated')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
+        except ReviewRating.DoesNotExist:
+            form = ReviewForm(request.POST)
+            
+            if form.is_valid():
+                data = ReviewRating()
+                data.title = form.cleaned_data['title']
+                data.review = form.cleaned_data['review']
+                data.rating = form.cleaned_data['rating']
+                data.user = request.user
+                data.product_id = product_id
+                data.save()
+                messages.success(request, 'Thank you! Your review have been saved.')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            
+    messages.error(request, 'Not success')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+

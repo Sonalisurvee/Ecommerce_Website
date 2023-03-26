@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 from category.models import Category
 from django.urls import reverse
 from django.utils.text import slugify
+from account.models import Account
 
 
 class ColorVariant(models.Model):
@@ -78,3 +79,18 @@ class Varitaion(models.Model):
     
     def __str__(self):
         return self.size_variant.size_name
+    
+
+
+class ReviewRating(models.Model):
+    user = models.ForeignKey(Account,on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50)
+    review = models.TextField(blank=True, null=True)
+    rating = models.FloatField()
+    status = models.BooleanField(default=True)
+    created_at = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+

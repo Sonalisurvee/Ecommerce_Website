@@ -89,6 +89,10 @@ def banner_management(request):
     }    
     return render(request,'adminpanel/banner_management.html',dict_banner)
 
+
+
+
+
 def banner_delete(request,banner_id):
     delet_banner = Banner.objects.filter(id=banner_id)   
     delet_banner.delete()
@@ -105,13 +109,10 @@ def banner_edit(request,banner_id):
             messages.info(request,"Negative values are not allowed.")
             return redirect(banner_management)
 
-        try:
-            update_banner=Banner.objects.get(id=banner_id)
-            image=request.FILES['image']
-            update_banner.banner_image=image
-            update_banner.save()
-        except:
-            pass
+        image=request.FILES.getlist('image')
+        update_banner.banner_image=image
+        update_banner.save()
+       
 
         update_banner=Banner.objects.filter(id=banner_id)
         update_banner.update(banner_name=name,note=description,discount=discount)

@@ -15,7 +15,9 @@
                                 <span class="font-weight-bold fs-20">Thank you for your purchase!</span>
                                 <small class="mt-2 fs-15">Your order ID is : {{order_id}}</small>
                             </div>
+                            
                             <a href="{% url 'index' %}"><button class="btn btn-danger order-button">CONTINUE SHOPPING</button></a>
+                            <a href="{% url 'order_list' %}"><button class="btn btn-danger order-button">SEE YOUR ORDERS</button></a>
                         </div>
                     </div>
                 </div>

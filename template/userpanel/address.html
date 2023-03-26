@@ -58,9 +58,10 @@
                 <form method="post" action="" class="account-form" name="address_form" enctype="multipart/form-data">
                     {% if from.error%}
                     <div class="alert alert-primary" role="alert">
-                        Errror: Plese try agin
+                        Error: Plese try again
                         {% endif %}
                         {% csrf_token %}
+                        
                         <label class="small fw-bold">{{ form.full_name.label }}</label>
                         {{ form.full_name }}
                         <label class="small fw-bold">{{ form.phone.label }}</label>
