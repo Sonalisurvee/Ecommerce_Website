@@ -1,0 +1,112 @@
+{% extends 'adminpanel/adminbase.html' %}
+{% block title %}Order list{% endblock title %}
+{% block body %}
+<style>
+  .cap p:first-letter {
+    text-transform: capitalize;
+  }
+</style>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'order_management' %}">Order management</a></li>
+        <li class="breadcrumb-item active">Order details</li>
+      </ol>
+    </nav>
+  </div>
+
+
+  <p class="text-center">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Order detailst</h5>
+      {% include 'message.html' %}
+
+      <!-- Table with hoverable rows -->
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">id</th>
+            <th scope="col">product</th>
+            <th scope="col">Image</th>
+            <th scope="col">variant</th>
+            <th scope="col">item price</th>
+            <th scope="col">Qantity</th>
+            <th scope="col">Item total</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in order_items %}
+          <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{o.product.product_name}}</td>
+
+                {% if o.product.image %}
+                <td class="px-4 py-3 capp">                               
+                    <img src="{{ o.product.image.url }}" alt="{{o.product.product_name}}" style="width:80px; height:70px;" >                                    
+                </td>
+                {% endif %}
+
+            <td>{{o.variant}}</td>
+            <td>{{o.item_price}}</td>
+            <td>{{o.quantity}}</td>
+            <td>{{o.item_total}}</td>
+            <td>{{o.order_status}}</td>
+            <td>
+              <button type="button" class="btn text-warning" data-bs-toggle="modal"
+                data-bs-target="#edit_model-{{forloop.counter}}">
+                <i class="ri-pencil-line"></i>
+              </button>
+            </td>
+            <div class="modal fade" id="edit_model-{{forloop.counter}}" tabindex="-1"
+              aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
+                      Edit Status</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="{% url 'update_status' o.id %}" enctype="multipart/form-data" method="POST"
+                      class="row g-2">
+                      {% csrf_token %}
+                      <div class="form-outline mb-3">
+                        <label class="form-label" for="form3Example3cg">Status</label>
+                        <select name="order_status" id="category">
+                          <option value="{{o.order_status}}">{{o.order_status}}</option>
+
+                          {% for s in statuses %}
+                          <option value="{{ s.0 }}">
+                            {{ s.1 }}
+                          </option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <button type="submit" class="btn btn-success">Update</button>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+      <!-- End Table with hoverable rows -->
+
+    </div>
+  </div>
+  </p>
+</main><!-- End #main -->
+
+<h3>shgfgjjhfjnj</h3>
+{% endblock body %}

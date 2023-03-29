@@ -27,58 +27,39 @@
         <thead>
           <tr>
             <th scope="col">id</th>
-            <th scope="col">User</th>
-            <th scope="col">Address</th>
+            <th scope="col">Customer</th>
             <th scope="col">order_id</th>
+            <th scope="col">Address</th>
             <th scope="col">Payment mode</th>
             <th scope="col">Order date</th>
-            <th scope="col">Status</th>
+            <th scope="col">Tax</th>
+            <th scope="col">Grand total</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
           {% for o in orders %}
           <tr>
             <th scope="row">{{ forloop.counter }}</th>
+            <td>{{o.order_id}}</td>
             <td>{{o.user.username}}</td>
             <td>{{o.delivery_address.house_name}}</td>
-            <td>{{o.order_id}}</td>
             <td>{{o.payment.payment_method}}</td>
-            <td>{{o.ordered_date}}</td>
-            <td>{{o.status}}</td>
-            <td>             
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" 
-            data-bs-target="#neww">Extra large modal</button>
+            <td>{{o.ordered_date.date}}</td>
+            <td>{{o.payment.tax}}</td>
+            <td>{{o.payment.grand_total}}</td>
+            <td>              
+              <a href="{% url 'view_order' o.id %}"> <i class="fa-solid fa-eye"></i></a>            
             </td>
 
-            <div class="modal fade bd-example-modal-xl" id = "neww" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                  
-                  <div class="modal-header">
-                    <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
-                        Delete Category</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-
-<div class="contain">
-
-                    <h6>dfufgidhh</h6>
-                    <h6>dfufgidhh</h6>
-                    <h6>dfufgidhh</h6>
-                  </div>
-
-
-                </div>
-              </div>
-            </div>
+          
             
+            {% endfor %}
 
 
 
 
           </tr>
-          {% endfor %}
         </tbody>
       </table>
       <!-- End Table with hoverable rows -->

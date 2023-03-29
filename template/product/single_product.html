@@ -17,7 +17,7 @@
   }
 
   .product_image_area .single_product_text {
-    margin: 8px 0 20px;
+    margin: 1px 0 20px;
   }
 
   @media (max-width: 991px) {
@@ -133,8 +133,68 @@
 
 .ratee{
   padding-left: 15px;
-  padding-bottom: 10px;
 }
+
+
+
+
+
+
+
+
+
+
+/* Hide the radio Button */
+.rate > input{
+    display: none;
+  }
+  
+.rate{
+    display: inline-block;
+    border: 0;
+}
+  
+.rate > label{
+    float: right;
+}
+  
+/* Showing the Stars */
+.rate > label:before{
+    display: inline-block;
+    font-size: 1.1rem;
+    content: "\f005";
+    font-family: FontAwesome;
+    margin: 0;
+    padding: 0.3rem .2rem;
+    cursor: pointer;
+}
+  
+/* Half Star */
+.rate .half:before{
+    content: "\f089";
+    position: absolute;
+    padding-right: 0;
+}
+
+/* Check and Hover */
+input:checked ~ label, label:hover ~ label{
+    color: #ffb503;
+}
+
+/* Hover Hightlight */
+input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:hover ~ label, label:hover ~ input:checked ~ label{
+    color: #cc9000;
+}
+
+
+
+
+
+/* ########################## */
+
+
+
+
 
 </style>
 
@@ -170,12 +230,13 @@
       </div>
       <div class="col-lg-6">
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0">
+          <ol class="breadcrumb mb-0 pb-2">
             <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
             <a href="{% url 'product_list' %}" li class="breadcrumb-item active" aria-current="page">Store</li></a>
             <li class="breadcrumb-item active" aria-current="page">{{single_product.product_name}}</li>
           </ol>
         </nav>
+
         <div class="single_product_text">
           <h3>{{ single_product.product_name }}</h3>
           
@@ -222,9 +283,15 @@
                   <a href="#" class="btn_3 ">Added to cart</a>
                   <a href="{% url 'cart' %}" class="btn_3">View cart</a>
                 {% else %}
+                {% if selected_size %}
+ 
+
                 <a href="{% url 'add_to_cart' single_product.id %}?variant={{selected_size}}" class="btn_3">Add to
                   cart</a>
-                  <a href="{% url 'add_wishlist' single_product.id %}" class="btn_3 mx-2">Wishlist</a>
+                  {% else %}
+                  <button onclick="alert('Add size before add to cart')" title="Add size before add to cart"  class="btn_3">Add to cart</button>
+              {% endif %}
+              <a href="{% url 'add_wishlist' single_product.id %}" class="btn_3 mx-2">Wishlist</a>
 
                 {% endif %}
 
@@ -419,12 +486,11 @@
               <div class="review_list">
                 <div class="review_item">
                   <div class="media">
-                    <div class="d-flex">
-                      <img src="{% static 'users/img/product/single-product/review-1.png' %}" alt="" />
-                      <img src="{% static 'users/imgg/banner.avif' %}" alt="" />
+                    <div class="d-flex pt-4">
+                      <img src="{% static 'users/imgg/profile.png' %}" alt="" width="40px"/>
                     </div>
                     <div class="media-body pt-4">
-                      <h4>{{review.user.first_name}}yuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu</h4>
+                      <h4>{{review.user.first_name}}</h4>
                       <i class="fa fa-star"> </i>
                       {% comment %} <i class="fa fa-star"></i>
                       <i class="fa fa-star"></i>
@@ -447,7 +513,6 @@
             </div>
 
 
-            {% if user.is_authenticated %}
 
             <div class="col-lg-6">
               <div class="review_box">      
@@ -458,8 +523,9 @@
                                  
                     <div class="flex-w flex-m ratee">
                       <span class="stext-102 cl3 m-r-16">
-                          Your Rating
+                        How do you rate this product?
                       </span>
+                      <br>
 
 
                       <div class="rate">
@@ -499,6 +565,8 @@
                       <textarea class="form-control" name="review" rows="1" placeholder="Review"></textarea>
                     </div>
                   </div>
+            {% if user.is_authenticated %}
+
                   <div class="col-md-12 text-right">
                     <button type="submit" value="submit" class="btn_3">
                       Submit Now
@@ -506,7 +574,10 @@
                   </div>
 
                     {% else %}
-                    <h6>Please login to submit your review.<a href="login">Login here<a>
+                    <h6 class="pl-5">Please login to submit your review.
+
+              <a href="{% url 'log_in' %}" class="btn_3 mx-2">Login</a>
+                    
                 {% endif %}
                 </form>
               </div>

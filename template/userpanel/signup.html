@@ -24,8 +24,8 @@
                 <div class="col-lg-6 col-md-6">
                     <div class="login_part_form">
                         <div class="login_part_form_iner">
-                            <h3>Welcome Back ! <br>
-                                Please Sign in now</h3>
+                            <h3>Welcome to Signora Family! <br>
+                                Please Sign in here</h3>
                                 {% include 'message.html' %}
                             <form class="row contact_form" action="{% url 'signup' %}" method="post">
                                 {% csrf_token %}
@@ -65,9 +65,9 @@
                 <div class="col-lg-6 col-md-6">
                     <div class="login_part_text text-center">
                         <div class="login_part_text_iner">
-                            <h2>New to our Shop?</h2>
+                            <h2>Already a user?</h2>
                             <p>There are daily new updates on brand new footwares for ladies</p>
-                            <a href="{% url 'log_in' %}" class="btn_3">Create an Account</a>
+                            <a href="{% url 'log_in' %}" class="btn_3">Log in here</a>
                         </div>
                     </div>
                 </div>

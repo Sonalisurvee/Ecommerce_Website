@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 
 from django.contrib.auth.decorators import login_required
 from .forms import ReviewForm
-
+import re
 
 # -----------------------------------Product Management-Delete,edit and add --------------------------------
 
@@ -23,8 +23,10 @@ def product_management(request):
 
 
 def delete_product(request,product_id):
+    product = get_object_or_404(Product,id=product_id)
     del_record = Product.objects.filter(id=product_id)
     del_record.delete()
+    messages.success(request, f"{product.product_name} has been deleted from the list")    
     return redirect(product_management)   
 
  
@@ -46,14 +48,30 @@ def update_product(request,product_id):
         price=request.POST['price']
         cat_instance = Category.objects.get(id=category)
 
-        if int(stock) < 0:
-            messages.info(request,"Negative values are not allowed.")
+        # if int(stock) < 0:
+        #     messages.info(request,"Negative values are not allowed.")
+        #     return redirect(product_management)
+
+        # if Decimal(price).quantize(Decimal('1')) < 0:
+        #     messages.info(request, "Negative values are not allowed.")
+        #     return redirect(product_management)
+
+        if not stock.isdigit():
+            messages.warning(request,'Invalid entry for stock')
             return redirect(product_management)
 
-
-        if Decimal(price).quantize(Decimal('1')) < 0:
-            messages.info(request, "Negative values are not allowed.")
+        if not str(price).isdigit():
+            messages.warning(request,'Invalid entry for price')
             return redirect(product_management)
+   
+        if product.isalpha():
+            messages.warning(request,'Invalid entry for product name')
+            return redirect(product_management)
+        
+        if product_description.isalpha():
+            messages.warning(request,'Invalid entry for product description')
+            return redirect(product_management)
+                
 
         update_prod=Product.objects.filter(id=product_id)
         update_prod.update(
@@ -66,6 +84,7 @@ def update_product(request,product_id):
             'product': products, 
             'categories': categories,
             }
+        messages.success(request, f"{products.product_name} has been updated")            
         return redirect(product_management)
     else:    
         messages.info(request,'some field is empty')
@@ -76,7 +95,7 @@ def update_product(request,product_id):
 def add_product(request):
     if request.method == 'POST':
         productname=request.POST['title']
-        slug=request.POST['slug']
+        # slug=request.POST['slug']
         product_image=request.FILES['image']
         description=request.POST['description']
         category=request.POST['category']#here only the id of categorywill be stored
@@ -85,7 +104,23 @@ def add_product(request):
 
         multi_imaeg = request.FILES.getlist('imagess')
 
+        if not productname.isalpha():
+            messages.warning(request,'Invalid entry for product name')
+            return redirect(product_management)
+        
+        if not description.isalpha():
+            messages.warning(request,'Invalid entry for product description')
+            return redirect(product_management)           
 
+        if not stock.isdigit():
+            messages.warning(request,'Enter only number')
+            return redirect(product_management)
+        
+        if int(stock) > 1000000:
+            messages.warning(request,'Enter only number')
+            return redirect(product_management)
+        
+    
         cat_instance = Category.objects.get(id=category)#for admin to view our category ,as cate is the forign key in product for we have to assig suprate instance for it so 
         # because we dint gave any related name to the category and now the id stored in the category will be stored in the category instance
         # 
@@ -94,7 +129,7 @@ def add_product(request):
             image=product_image,
             category=cat_instance,
             stock=stock,price=price,
-            slug=slug,
+            # slug=slug,
             product_description=description
             )
         
@@ -112,7 +147,8 @@ def add_product(request):
                 productimage=image
                 )      
         return redirect(product_management)
-  
+
+
     else:
         return redirect(add_product)
     
@@ -141,16 +177,20 @@ def search(request):
 # category_slug=None gave because we r listng all products and perticular product ,so if cate_slug is empty then id wll list all product and ro avoid error
 def product_list(request,category_slug=None):
     categories=None
-    products=None        
-    if category_slug != None:#wat if slug is there
-        categories=get_object_or_404(Category, slug=category_slug)
-        products=Product.objects.filter(category=categories, is_available=True)
-        product_count=products.count()
-    else:
-        products = Product.objects.all().filter(is_available=True)    
-        product_count=products.count()    
-    return render(request,'product/product_list.html',{'products': products,'product_count': product_count})
+    products=None  
+    try:
+        if category_slug != None:#wat if slug is there
+            categories=get_object_or_404(Category, slug=category_slug)
+            products=Product.objects.filter(category=categories, is_available=True)
+            product_count=products.count()
+        else:
+            products = Product.objects.all().filter(is_available=True)    
+            product_count=products.count()  
 
+        return render(request,'product/product_list.html',{'products': products,'product_count': product_count})
+    except:
+        return render(request,'404.html')
+ 
 
 # -----------------------------------Product-Details --------------------------------
 
@@ -161,8 +201,6 @@ def product_list(request,category_slug=None):
 def product_details(request, category_slug,product_slug):
     context = {}
     try:
-
-
         # size=request.Get.get('size')
 
         single_product = Product.objects.get(category__slug=category_slug,slug=product_slug)
@@ -177,21 +215,24 @@ def product_details(request, category_slug,product_slug):
         # in_cart = CartItems.objects.filter(carts=cart, products=single_product).exists()
         
        
-
-        if request.GET.get('size'):
-            size = request.GET.get('size')
-            price = single_product.get_product_price_by_size(size)
-            context['selected_size'] = size
-            context['updates_price'] = price
-            # updates_price = price
-            # name 'updates_price' is not defined,this error i got wen i gave update_p outside the context.and i got this because 
-
+        try:
+            if request.GET.get('size'):
+                size = request.GET.get('size')
+                price = single_product.get_product_price_by_size(size)
+                context['selected_size'] = size
+                context['updates_price'] = price
+                # updates_price = price
+                # name 'updates_price' is not defined,this error i got wen i gave update_p outside the context.and i got this because 
+        except:
+            pass
 
 
     # if somebody enters wrong slug of product or try to search for anything n urls then it will raie an exception 
     # instead of raise e we can give the link to our 404 error page or any other link .
+    # except Exception as e:
+        # raise e    
     except Exception as e:
-        raise e    
+        return render(request,'404.html')
         
         
 

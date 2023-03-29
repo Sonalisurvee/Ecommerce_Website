@@ -7,8 +7,6 @@ urlpatterns = [
     path('', views.index, name='index'),  
     path('admin/', views.admin_index, name='admin_index'),  
 
-
-
     path('admin/sales', views.sales, name='sales'),  
 
     # coupon management
@@ -25,7 +23,18 @@ urlpatterns = [
     path('profile/', views.profile, name="profile"),  
     path('update_profile/<int:user_id>', views.update_profile, name="update_profile"), 
 
-    path('profile/order_list/', views.order_list, name="order_list"), 
+    # path('profile/order_list/', views.order_list, name="order_list"), 
+    # path('profile/order_details/', views.order_details, name="order_details"), 
+
+    
+    path('profile/orders-list/', views.orders_list, name="orders_list"),
+
+    path('profile/order-details/<str:order_id>/', views.order_details, name="order_details"),
+
+    path('profile/order-tracking/<int:item_id>/', views.order_tracking, name="tracking"),
+    path('order-invoice/<str:order_id>/', views.order_invoice, name="order_invoice"),
+    path('cancel-order/<int:item_id>/<str:order_id>', views.cancel_order, name="cancel_order"),
+
 
     #user management
 
@@ -41,7 +50,8 @@ urlpatterns = [
     # order management
 
     path('admin/order_management/', views.order_management, name='order_management'),
-    path('admin/order_management/<int:order_id>/', views.order_management, name='order_management'),       
+    path('admin/order_details/<int:id>/', views.view_order, name='view_order'),       
+    path('admin/update_status/<int:id>/', views.update_status, name='update_status'),       
     
     
     

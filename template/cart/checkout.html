@@ -63,6 +63,7 @@
 </section>
 <!-- breadcrumb part end -->
 
+
 <!--================Checkout Area =================-->
 
 <section class="checkout_area section_padding">
@@ -105,8 +106,43 @@
         
         <input type="text" name="coupon" placeholder="Enter coupon code" />
         <button type="submit" class="tp_btn" href="#">Apply Coupon</button>
+        <button type="button" class="tp_btn" data-toggle="modal" data-target="#coupon-{{forloop.counter}}">View Coupon</button>
+   
         {% endif %}
       </form>
+      
+
+
+<!--Modal: modalConfirmDelete-->
+<div
+class="modal fade"
+id="coupon-{{forloop.counter}}"
+tabindex="-1"
+role="dialog"
+aria-labelledby="exampleModalLabel"
+aria-hidden="true"
+>
+<div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+  <!--Content-->
+  <div class="modal-content text-center">
+      <!--Header-->
+      {% for c in coupon %}
+      <div class="modal-header d-flex justify-content-center">
+          <p class="heading text-dark">
+              "{{c.coupan_code}}" has {{c.discount_price}} discount on  minimum amount of {{c.minimum_amount}}
+          </p>
+      </div>
+      {% endfor %}
+      <!--Body-->
+    
+  </div>
+  <!--/.Content-->
+</div>
+</div>
+<!--Modal: modalConfirmDelete-->
+
+
+
 
 
     </div>
@@ -119,7 +155,7 @@
         <div class="col-lg-6">  
 
     
-          <!-- ------------------------------------------------------- address-area---------------------------------------------------------------- -->
+  <!-- ------------------------------------------------------- address-area---------------------------------------------------------------- -->
 
 
           {% if user_addresses %}
@@ -246,7 +282,7 @@
 
             <hr>
             {% if cart.coupon %}
-            <a href="#" class="btn btn-success">{{cart.coupon.discount_price}} off is applied on product</a>
+            <a  class="btn btn-success text-light">{{cart.coupon.discount_price}} off is applied on product</a>
             <br>
             <hr>
             {% endif %}

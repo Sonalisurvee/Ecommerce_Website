@@ -121,8 +121,11 @@ def signup(request):
                     if Account.objects.filter(email = email).exists():
                          messages.info(request,'Email already exists')
                          return redirect(signup)
-                    elif Account.objects.filter(first_name = fname).exists():
-                         messages.info(request,'Username already exists')
+                    # elif Account.objects.filter(first_name = fname).exists():
+                    #      messages.info(request,'Username already exists')
+                    #      return redirect(signup)
+                    elif Account.objects.filter(phone_number = number).exists():
+                         messages.info(request,'Phone number already exists')
                          return redirect(signup)
                     else:
                          user = Account.objects.create_user(username=username, first_name=fname,last_name=lname,email=email,phone_number=number,password=password1)
@@ -171,6 +174,9 @@ def add_address(request,num):
                address_form = address_form.save(commit=False)
                address_form.customer = request.user
                address_form.save()
+               Address.objects.filter(customer=request.user).update(default=False)
+               address_form.default = True
+               address_form.save()
                if num ==1:
                     return HttpResponseRedirect(reverse("profile"))
                elif num ==2:
@@ -217,3 +223,29 @@ def default_address(request,id,new):
     elif new == 2:
          return redirect('checkout')
 
+
+
+
+
+# def add_address(request, checkout=None):
+#     if request.method == 'POST':
+#         form = AddressForm(request.POST)
+#         if form.is_valid():
+#             address = form.save(commit=False)
+#             address.customer = request.user
+#             address.save()
+
+#             # Set the newly added address as default and unset default for other addresses
+#             Address.objects.filter(customer=request.user).update(default=False)
+#             address.default = True
+#             address.save()
+
+#             if checkout:
+#                 return redirect('checkout')
+#             else:
+#                 return redirect('view_profile')
+
+#     else:
+#         form = AddressForm()
+
+#     return render(request, 'account/address_form.html', {'form': form})

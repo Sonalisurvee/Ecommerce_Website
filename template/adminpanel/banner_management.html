@@ -42,20 +42,17 @@
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{b.banner_name}}</td>
-                                             
+                        <td class="px-4 py-3">                                             
+                            {% for c in carousal %}
+                                {% if c.image %}
 
-                        <td class="px-4 py-3">
-                        {% if b.banner_image %}
+                                    <img src="{{ c.image.url }}" alt="{{c.carousal_name}}" style="width:100px; height:50px" >
 
-                            <img src="{{ b.banner_image.url }}" alt="{{b.banner_name}}" style="width:100px; height:50px" >
-                        {% endif %}
-                            
+                                {% endif %}
+                            {% endfor %}
                         </td>
-
-
                         <td>{{b.note}}</td>
-                        <td>{{b.discount}}</td>
-                        
+                        <td>{{b.discount}}</td>                        
                         <td>
                             <!-- <button type="button" class="btn text-danger" data-bs-toggle="modal"
                             data-bs-target="#delete_model-{{forloop.counter}}">
@@ -118,17 +115,31 @@
                                                     id="form3Example1cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example1cg">Banner name</label>
                                             </div>                                      
-    
+<!--     
                                             <div class="form-outline mb-3">
                                                 <label class="form-label" for="imagePreview">Image Preview</label>
                                                 <br>
                                                 <img src="{{ b.banner_image.url }}" alt="{{b.banner_name}}" style="width:100px; height:50px;" >                                    
     
-                                            </div>
-                                            <div class="form-outline mb-3">
+                                            </div> -->
+                                            <!-- <div class="form-outline mb-3">
                                                 <input name="image" value="{{ b.banner_image }}" type="file"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Image</label>
+                                            </div> -->
+                                            {% for bb in carousal %}
+                                            <div class="form-outline mb-3">
+                                                <label class="form-label" for="imagePreview">Image Preview</label>
+                                                <br>
+                                                <img src="{{ bb.image.url }}" alt="no image" style="width:100px; height:50px;" >                                    
+    
+                                            </div>
+                                            {% endfor %}
+
+                                            <div class="form-outline mb-3">
+                                                <input name="image" type="file" id="form3Example1cg"
+                                                    class="form-control form-control-lg" multiple/>
+                                                <label class="form-label" for="form3Example1cg">Thumbnail Image</label>
                                             </div>
 
 

@@ -2,6 +2,8 @@ from django.shortcuts import render,redirect,get_object_or_404
 from store.models import Product
 from .models import Wishlist,WishlistItem
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
+
 
 
 # -----------------------------------Wishlist-Delete,view and add --------------------------------
@@ -47,6 +49,7 @@ def add_wishlist(request,product_id):
                 wishlist=wishlist
             )
         wishlist_item.save()
+    messages.success(request, f"{product.product_name} has been added to wishlist")
     return redirect('wishlist')
 
 
@@ -58,6 +61,7 @@ def remove_wishlistitem(request,product_id,wishlist_item_id):
         wishlist = Wishlist.objects.get(wishlist_id=_wishlist_id(request))
         wishlist_item = WishlistItem.objects.get(product=product,wishlist=wishlist)
     wishlist_item.delete()
+    messages.success(request, f"{product.product_name} has been removed from the wishlist")
     return redirect('wishlist')
 
 

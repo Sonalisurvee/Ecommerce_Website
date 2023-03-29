@@ -1,7 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import messages
 from .models import Category
-from store.models import Product    
+from store.models import Product 
+import re
+
       
 # -----------------------------------Category-Delete,edit and add --------------------------------
 
@@ -25,6 +27,13 @@ def update_category(request,cate_id):
         category=request.POST['category']
         description=request.POST['description']
 
+        if not category.isalpha():
+            messages.warning(request,'Invalid entry for category name')
+            return redirect(category_management)
+        
+        if not description.isalpha():
+            messages.warning(request,'Invalid entry for category description')
+            return redirect(category_management)      
 
         # here description was not getting updated because of if condinti given to the cat_name = category.exists, so we saved the description before onyly
         category1.description = description
@@ -66,12 +75,21 @@ def add_category(request):
         category = request.POST['category']
         description = request.POST['description']
         image=request.FILES['image']
-        slug=request.POST['slug']  
+        # slug=request.POST['slug']
+
+        if not category.isalpha():
+            messages.warning(request,'Invalid entry for category name')
+            return redirect(category_management)
+        
+        if not description.isalpha():
+            messages.warning(request,'Invalid entry for category description')
+            return redirect(category_management)       
+      
         if Category.objects.filter(cat_name=category).exists():
             messages.info(request,"This category already exists")
             return redirect(category_management)
         else:
-            cate = Category.objects.create(cat_name=category,description=description,cat_image=image,slug=slug)
+            cate = Category.objects.create(cat_name=category,description=description,cat_image=image)
             cate.save()           
         return redirect(category_management)   
   

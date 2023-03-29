@@ -5,7 +5,7 @@
 
 <style>
      .section_padding {
-    padding: 10px 10px;
+    padding: 0px 10px;
   }
   .breadcrumb_part {
     height: 100px;
@@ -35,16 +35,18 @@
     </div>
   </section>
   <!-- breadcrumb part end -->
-  {% include 'message.html' %}
   
 <!--================Cart Area =================-->
 <section class="cart_area section_padding">    
     <div class="container">
+  {% include 'message.html' %}
+
           <br>
           {% if not cart_items %}
         <div class="text-center p-3">
             <h3>Your cart is empty</h3>
             <img src="{% static 'users/imgg/cart1.jpg' %}" alt="#" width="350px">
+            <br>
             <a class="btn_1" href="{% url 'product_list' %}">Continue Shopping</a>
         </div>
         {% else %}

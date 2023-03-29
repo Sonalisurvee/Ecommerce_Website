@@ -21,31 +21,19 @@ def _cart_id(request):
 
 
 def add_to_cart(request,product_id):
-    current_user = request.user
-    product = Product.objects.get(id=product_id)
-
-    variation = request.GET.get('variant')
-    if not variation:
-        messages.warning(request, 'Please select a variant.')
-        return redirect('product_details',category_slug=product.category.slug, product_slug=product.slug)
-
-    variant = SizeVariant.objects.get(size_name=variation)
-
-    # ... the rest of your code
-
-    # variant = None
-    # variation =None
-    # variation = request.GET.get('variant')#querystring
+    variant = None
+    variation =None
+    variation = request.GET.get('variant')#querystring
     
     if variation:
         variation = request.GET.get('variant')
         variant = SizeVariant.objects.get(size_name=variation)
-    # else:
-    #     messages.warning(request, 'SElect the variant')
-    #     return redirect('product_details') 
 
-    # current_user = request.user
-    # product = Product.objects.get(id=product_id)
+    current_user = request.user
+    product = Product.objects.get(id=product_id)
+    if product.stock < 1:
+        messages.warning(request, f"{product.product_name} are out of stock")
+        return redirect('cart')
 
     
     if current_user.is_authenticated:
@@ -82,7 +70,8 @@ def add_to_cart(request,product_id):
                 carts=cart,
                 size_variant=variant
             )
-        cart_item.save()   
+        cart_item.save() 
+    messages.success(request, f"{product.product_name}Item had been added to the cart")  
     return redirect('cart')
 
 
@@ -112,6 +101,7 @@ def remove_cartitems(request,product_id,cart_item_id):
         cart = Cartt.objects.get(cart_id=_cart_id(request))
         cart_item = CartItems.objects.get(products=product,carts=cart,id=cart_item_id)
     cart_item.delete()
+    messages.success(request, f"{product.product_name} has been removed from the cart")
     return redirect('cart')
 
 
@@ -144,72 +134,75 @@ def cart(request):
 # SECRET_KEY = 'k7q1VWdctZVX6sZe9p9FWGpJ'
 
 
-@login_required(login_url= 'log_in')
+# @login_required(login_url= 'log_in')
 def checkout(request,cart_items=None):
-    cart = None
-    addresses = Address.objects.filter(customer=request.user).order_by('id')
-    name=Address.objects.filter(default=True)
-    current_user = request.user
+    if request.user.is_authenticated:
+        cart = None
+        addresses = Address.objects.filter(customer=request.user).order_by('id')
+        name=Address.objects.filter(default=True)
+        current_user = request.user
 
-# thus try block is created just to chech wethere cart is ther or not ,once cart is created we are able to add produtc to it
-    context = {}
-    try:
-        cart = Cartt.objects.get(user=current_user, is_paid=False)
-        cart_items = CartItems.objects.filter(carts=cart)
-          
-    except:
-        pass
-
-
-    if request.method == 'POST':
-        coupon = request.POST.get('coupon')
-        coupon_obj = Coupon.objects.filter(coupan_code__icontains = coupon)
-
-        if not coupon_obj.exists():
-            messages.warning(request, 'The promo code you have entered is invalid. PLease try again')
-            return redirect(checkout)
-
-        if cart.coupon:
-            messages.warning(request, 'Coupon already exists')
-            return redirect(checkout)
+    # thus try block is created just to chech wethere cart is ther or not ,once cart is created we are able to add produtc to it
+        context = {}
+        try:
+            cart = Cartt.objects.get(user=current_user, is_paid=False)
+            cart_items = CartItems.objects.filter(carts=cart)
+            
+        except:
+            pass
 
 
-        if cart.get_cart_total() < coupon_obj[0].minimum_amount:
-            messages.warning(request, f"Amount should be greater than {coupon_obj[0].minimum_amount}")
-            return redirect(checkout)
-                    
-        if coupon_obj[0].is_expired:
-            messages.warning(request, 'Coupan had been expired')
-            return redirect(checkout)                
+        if request.method == 'POST':
+            coupon = request.POST.get('coupon')
+            coupon_obj = Coupon.objects.filter(coupan_code__icontains = coupon)
+
+            if not coupon_obj.exists():
+                messages.warning(request, 'The promo code you have entered is invalid. PLease try again')
+                return redirect(checkout)
+
+            if cart.coupon:
+                messages.warning(request, 'Coupon already exists')
+                return redirect(checkout)
 
 
-        cart.coupon = coupon_obj[0]#both if statement ontop fails then coupon_obj will get stored in cart_item.coupan,[0]?
-        cart.save()  
-        messages.success(request,'coupan applied')
-        return redirect(checkout)  
-    
-        # -----------------Coupon-end----------------
-    try:
-        client = razorpay.Client(auth = (settings.KEY , settings.SECRET_KEY))
-        payment = client.order.create({'amount' : int(cart.get_grand_total()) * 100, 'currency' : 'INR', 'payment_capture': 1})
-        cart.razorpay_order_id = payment['id']
-        cart.save()
-
-    except:
-        pass  
-   
-    context = {       
-        'cart_items':cart_items,  
-        'cart':cart,  
-        'user_addresses': addresses,
-        'name':name,
-        'payment':payment,
-    }
+            if cart.get_cart_total() < coupon_obj[0].minimum_amount:
+                messages.warning(request, f"Amount should be greater than {coupon_obj[0].minimum_amount}")
+                return redirect(checkout)
+                        
+            if coupon_obj[0].is_expired:
+                messages.warning(request, 'Coupan had been expired')
+                return redirect(checkout)                
 
 
+            cart.coupon = coupon_obj[0]#both if statement ontop fails then coupon_obj will get stored in cart_item.coupan,[0]?
+            cart.save()  
+            messages.success(request,'coupan applied')
+            return redirect(checkout)  
+        
+            # -----------------Coupon-end----------------
+        try:
+            client = razorpay.Client(auth = (settings.KEY , settings.SECRET_KEY))
+            payment = client.order.create({'amount' : int(cart.get_grand_total()) * 100, 'currency' : 'INR', 'payment_capture': 1})
+            cart.razorpay_order_id = payment['id']
+            cart.save()
 
-    return render(request,'cart/checkout.html',context) 
-
+        except:
+            pass  
+        
+        coup = Coupon.objects.filter(is_expired = False)
+        context = {       
+            'cart_items':cart_items,  
+            'cart':cart,  
+            'user_addresses': addresses,
+            'name':name,
+            'payment':payment,
+            'coupon':coup
+        }
+        return render(request,'cart/checkout.html',context) 
+    else:
+        messages.warning(request, 'Login required to checkout')
+        return redirect('log_in')
+        
 
 def success(request):
     order_id = request.GET.get('order_id')
@@ -250,6 +243,11 @@ def success(request):
 
     order_items = CartItems.objects.filter(carts = cart)
     for orderitems in order_items:
+
+        orderitems.products.stock -= orderitems.quantity
+
+        orderitems.products.save()
+
         order_items = OrderItem.objects.create(
             user = current_user,
             order =orders ,
@@ -288,3 +286,7 @@ def remove_coupon(request):
 
 def order_confirmation(request):
     return render(request,'cart/order_confirmation.html')
+
+
+# -----------------------------------------Order management user side-----------------------------------------
+

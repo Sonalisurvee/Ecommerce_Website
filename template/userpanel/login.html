@@ -33,13 +33,13 @@
                     <div class="login_part_form">
                         <div class="login_part_form_iner">
                             <h3>Welcome Back ! <br>
-                                Please log in now</h3>
+                                Please log in here</h3>
                                 {% include 'message.html' %}
                             <form class="row contact_form" action="{% url 'log_in' %}" method="POST">
                                 {% csrf_token %}
                                 <div class="col-md-12 form-group p_star">
                                     <input type="email" class="form-control" id="username" name="username" value=""
-                                        placeholder="Username">
+                                        placeholder="Email">
                                 </div>
                                 <div class="col-md-12 form-group p_star">
                                     <input type="password" class="form-control" id="password" name="password" value=""

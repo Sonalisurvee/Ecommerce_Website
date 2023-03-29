@@ -1,21 +1,29 @@
-from django.shortcuts import render,redirect,get_object_or_404
+from django.shortcuts import render,redirect,get_object_or_404,HttpResponseRedirect
 from django.contrib import messages
-from .models import Banner
+from .models import Banner,Carousel
 from account.models import Account,Address
 from category.models import Category
-from cart.models import Coupon,Order,OrderItem
+from cart.models import Coupon,Order,OrderItem,Payment
 from store.models import Product
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
+import razorpay
+from django.conf import settings
+from django.db.models import  Sum
+import os
+
 
 
 def index(request):   
-    banners = Banner.objects.all().order_by('id')
+    banner = Banner.objects.all().order_by('id')
+    banners = Carousel.objects.all().order_by('id')
     category = Category.objects.all().order_by('id')
 
     dict_banner={
         'banners': banners,
+        'banner': banner,
         'category': category,
 
     }    
@@ -25,9 +33,38 @@ def index(request):
 @login_required(login_url='/login')
 def admin_index(request):
     if request.user.is_authenticated and request.user.is_superadmin:
-        return render(request, 'adminpanel/admin_index.html')
+        user = Account.objects.all().count()
+        product = Product.objects.all().count()
+        category = Category.objects.all().count()
+        sales = OrderItem.objects.count()
+        orders = Order.objects.all().count()
+        item = OrderItem.objects.all()
+        delivered_orders = OrderItem.objects.filter().values('item_total')
+        revenue = 0
+
+        for order in delivered_orders:        
+            revenue += order['item_total']
+
+        recent_sale = OrderItem.objects.all().order_by('-id')[:5]
+        total_income = Payment.objects.aggregate(Sum('grand_total'))['grand_total__sum']
+        total_income = round(total_income, 2)
+
+
+        context = {
+            'user': user,
+            'category': category,
+            'product': product,
+            'sales': sales,
+            'orders': orders,
+            'item': item,
+            'total_income': total_income,        
+            'recent_sales':recent_sale,
+        }
+
+        return render(request, 'adminpanel/admin_index.html',context)
     else:
         return redirect('/')
+    
 
 
 # -----------------------------------------user_management-----------------------------------------
@@ -35,7 +72,7 @@ def admin_index(request):
 
 def user_management(request):
     dict_user={
-        'users':Account.objects.all().order_by('id')
+        'users':Account.objects.filter(is_staff=False).order_by('id')
     }    
     return render(request,'adminpanel/user_management.html',dict_user)
 
@@ -45,10 +82,12 @@ def block_unblock(request,user_id):
     if user.is_active:
         user.is_active=False#just converting the active status of the user to inaction
         user.save()
+        messages.success(request,f"{user.username} has been blocked")
         return redirect(user_management)
     else:
         user.is_active=True
         user.save()
+        messages.success(request,f"{user.username} has been Unblocked")
         return redirect(user_management)
 
 
@@ -71,7 +110,15 @@ def update_profile(request,user_id):
     if request.method == 'POST':
         fname=request.POST['fname']
         lname=request.POST['lname']
-        number=request.POST['number']            
+        number=request.POST['number']       
+        if not fname:
+            messages.info(request,'First name is missing')
+            return redirect(profile)
+        if not lname:
+            messages.info(request,'last name is missing')
+            return redirect(profile)
+
+   
         update_user = Account.objects.filter(id=user_id)  
         update_user.update(first_name=fname,last_name=lname,phone_number=number)
         return redirect(profile)
@@ -82,20 +129,19 @@ def update_profile(request,user_id):
 
 
 # -----------------------------------------Banner_management-----------------------------------------
-
+    
 def banner_management(request):
     dict_banner={
         'banners': Banner.objects.all().order_by('id'),
+        'carousal': Carousel.objects.all().order_by('id')
     }    
     return render(request,'adminpanel/banner_management.html',dict_banner)
-
-
-
 
 
 def banner_delete(request,banner_id):
     delet_banner = Banner.objects.filter(id=banner_id)   
     delet_banner.delete()
+    messages.success(request, 'Deleted succesfully')
     return redirect(banner_management)
 
 def banner_edit(request,banner_id):
@@ -104,24 +150,54 @@ def banner_edit(request,banner_id):
         name=request.POST['name']
         description=request.POST['description']
         discount=request.POST['discount']
+        
+        image=request.FILES.getlist('image')   
 
-        if int(discount) < 0:
-            messages.info(request,"Negative values are not allowed.")
+        if not name.isalpha():
+            messages.warning(request,'Invalid entry for banner name')
+            return redirect(banner_management)   
+        
+        if not discount.isdigit():
+            messages.warning(request,'Enter only number')
             return redirect(banner_management)
+        
+        if int(discount) > 1000000:
+            messages.warning(request,'Enter only number')
+            return redirect(banner_management)
+        
 
-        image=request.FILES.getlist('image')
-        update_banner.banner_image=image
+        update_banner=Banner.objects.get(id=banner_id)
+        # update_banner=Banner.objects.filter(id=banner_id)
+        # update_banner.update(banner_name=name,note=description,discount=discount)
+        update_banner.banner_name=name
+        update_banner.note=description
+        update_banner.discount=discount
         update_banner.save()
-       
+    
+        for carousel in update_banner.carousel_set.all():
+            image_path = carousel.image.path
+            os.remove(image_path)
+            carousel.delete()            
 
-        update_banner=Banner.objects.filter(id=banner_id)
-        update_banner.update(banner_name=name,note=description,discount=discount)
+        for im in image:
+            carousel = Carousel.objects.create(
+                carousel_name = update_banner,
+                image =im
+                )
+            carousel.save()
+        
+
+    
+        # image=request.FILES.getlist('image')
+        # update_banner.banner_image=image
+        # update_banner.save()
         return redirect(banner_management)
+
     else:
         messages.info(request,'some field is empty')
         return render(request,'adminpanel/banner_management.html',{'banner':banner})
     
-
+# carousal
 # -----------------------------------------404-----------------------------------------
 
 
@@ -132,19 +208,44 @@ def error_404(request,exception):
 # -----------------------------------------Order management-----------------------------------------
 
 
-def order_management(request, order_id=0):
-    if request.method == 'POST':
-        order = Order.objects.get(id=order_id)
-        status = request.POST['order_status']
-        order.status = status
-        order.save()
-        return redirect(order_management) 
+def order_management(request):
+
+    context = {
+        'orders':Order.objects.all().order_by('-id')
+    }
+    return render(request,'adminpanel/order_management.html',context)
+
+
+def view_order(request,id):
+    try:
+        order = Order.objects.get(id=id)
+        order_items = OrderItem.objects.filter(order=order)
+    except:
+        pass 
 
     dict_order = {
-        'order': Order.objects.all().order_by('id'),
-        'statuses' : Order.orderstatuses
+        'order_items':order_items,
+        'statuses' : OrderItem.STATUS
     }
-    return render(request,'adminpanel/order_management.html',dict_order)
+    
+    return render(request, 'adminpanel/view_order.html',dict_order)
+
+
+def update_status(request, id):
+    if request.method == 'POST':
+        try:
+            order = OrderItem.objects.get(id=id)
+            status = request.POST['order_status']
+            order.order_status = status
+            order.save()
+            messages.success(request, 'Status updated succesfully')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
+        except OrderItem.DoesNotExist:
+            messages.error(request, 'Something gone wrong')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            
+
 
 
 
@@ -159,8 +260,10 @@ def coupan_management(request):
 
 
 def delete_coupon(request,coupan_id):
+    coupon=get_object_or_404(Coupon,pk=coupan_id)
     del_record = Coupon.objects.filter(id=coupan_id)
     del_record.delete()
+    messages.warning(request,f"Deleted the {coupon.coupan_code} coupon")
     return redirect(coupan_management)
 
 
@@ -173,12 +276,27 @@ def update_coupon(request,coupan_id):
 
         if not coupan:
             messages.info(request, 'Coupon field is empty')
+            return redirect(coupan_management)        
+
+        if not minimum.isdigit():
+            messages.warning(request,'Enter only number')
             return redirect(coupan_management)
         
-        if int(minimum) < 0 or int(discount) < 0 :
-            messages.info(request,"Negative values are not allowed.")
+        if int(minimum) > 1000000:
+            messages.warning(request,'Enter only number')
             return redirect(coupan_management)
-
+        
+        if not discount.isdigit():
+            messages.warning(request,'Enter only number')
+            return redirect(coupan_management)
+        
+        if int(discount) > 1000000:
+            messages.warning(request,'Enter only number')
+            return redirect(coupan_management)
+        
+        if not coupan.isalpha():
+            messages.warning(request,'Invalid entry for coupon name')
+            return redirect(coupan_management)
      
         if Coupon.objects.filter(coupan_code=coupon).exists():
             messages.info(request,"This coupon already exists")
@@ -187,9 +305,8 @@ def update_coupon(request,coupan_id):
         else:
             update_coupon = Coupon.objects.filter(id=coupan_id)  
             update_coupon.update(coupan_code=coupan,discount_price=discount,minimum_amount=minimum)
-            return redirect(coupan_management)
-        
-        
+            messages.success(request,f"Updates the {coupon.coupan_code} coupon")
+            return redirect(coupan_management)       
 
     else:
         messages.info(request,'some field is empty')
@@ -200,10 +317,26 @@ def add_coupon(request):
     if request.method == 'POST':
         couponn = request.POST['coupon']
         discount = request.POST['discount']
-        minimum=request.POST['minimum'] 
+        minimum=request.POST['minimum']       
 
-        if int(minimum) < 0 or int(discount) < 0 :
-            messages.info(request,"Negative values are not allowed.")
+        if not minimum.isdigit():
+            messages.warning(request,'Enter only number')
+            return redirect(coupan_management)
+        
+        if int(minimum) > 1000000:
+            messages.warning(request,'Enter only number')
+            return redirect(coupan_management)
+        
+        if not discount.isdigit():
+            messages.warning(request,'Enter only number')
+            return redirect(coupan_management)
+        
+        if int(discount) > 1000000:
+            messages.warning(request,'Enter only number')
+            return redirect(coupan_management)
+        
+        if not coupan.isalpha():
+            messages.warning(request,'Invalid entry for coupon name')
             return redirect(coupan_management)
 
         if Coupon.objects.filter(coupan_code=couponn).exists():
@@ -211,7 +344,8 @@ def add_coupon(request):
             return redirect(coupan_management)
         else:
             coupan = Coupon.objects.create(coupan_code=couponn,discount_price=discount,minimum_amount=minimum)
-            coupan.save()           
+            coupan.save()      
+            messages.success(request,f"New coupon '{coupan.coupan_code}' has been created")
         return redirect(coupan_management)   
   
     else:
@@ -235,32 +369,86 @@ def expired(request,coupan_id):
 # -----------------------------------------Order management user side-----------------------------------------
 
 
+login_required
+def orders_list(request):
 
-def order_list(request):
-    current_user = request.user    
-    order_items = OrderItem.objects.filter(user = current_user)
+    orders = Order.objects.filter(user=request.user).order_by('-id')
+    return render(request, 'cart/order_list.html', {'orders' : orders})
 
+
+
+
+login_required
+def order_details(request,order_id):
+    try:
+        order = Order.objects.get(id=order_id)
+        order_items = OrderItem.objects.filter(order=order)
+    except:
+        pass 
+
+    return render(request, 'cart/order_details.html', {'order_items' : order_items})
+
+
+
+
+login_required
+def order_tracking(request, item_id):
+    current_date = timezone.now()
+    item = OrderItem.objects.get(id=item_id)
+    context = {
+        'item' : item,
+        'current_date' : current_date
+    }
+    return render(request, 'cart/order_tracking.html' ,context)
+
+
+def order_invoice(request, order_id):
+
+    order = Order.objects.get(id=order_id,user=request.user)
+
+    order_items = OrderItem.objects.filter(order=order)
 
 
     context = {
-        'order_items':order_items,
+
+        'order' : order,
+        'order_items' : order_items
     }
-    return render(request,'cart/order_list.html',context)
+
+    return render(request, 'cart/invoice.html',context)
 
 
+
+def cancel_order(request, item_id=None, order_id=None):
+        
+    client = razorpay.Client(auth=(settings.KEY, settings.SECRET_KEY))
+
+    order = Order.objects.get(user=request.user, order_id=order_id)
+
+    payment_id = order.payment.transaction_id
+
+    item = OrderItem.objects.get(order=order, id=item_id)
+
+    item_amount = int(item.item_total) * 100
+
+
+    refund = client.payment.refund(payment_id,{'amount':item_amount})
+
+
+    if refund is not None:
+
+        item.order_status = 'Refunded'
+
+        item.save()
+
+        return render(request, 'orders/refund_success.html',{'order_id':order_id})
+    
+    else:
+
+        return HttpResponse('Payment Not Captured')
 
 
 # -----------------------------------------Order management admin side-----------------------------------------
-
-
-def order_management(request):
-
-    context = {
-        'orders':Order.objects.filter(user = request.user)
-    }
-    return render(request,'adminpanel/order_management.html',context)
-
-
 
 
 
@@ -276,13 +464,13 @@ def sales(request):
             messages.error(request,'Give date first')
             return redirect(sales)
 
-        order_items = OrderItem.objects.filter(order_placed_atgte=start_date, orderplaced_at_lte=end_date)
-
+        order_items = OrderItem.objects.filter(order__ordered_date__gte=start_date, order__ordered_date__lte=end_date)
         if order_items:
+            print(order_items)
             context.update(sales = order_items,s_date=start_date,e_date = end_date)
         else:
             messages.error(request,'no data found')
 
 
-    return render(request,'adminpanel/sales_report.html')
+    return render(request,'adminpanel/sales_report.html',context)
 

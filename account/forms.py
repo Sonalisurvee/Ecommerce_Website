@@ -11,7 +11,10 @@ class UserAddressForm(forms.ModelForm):
         regex=r'^\d{6}$',
         message='Pincode must be 6 digits'
     )
-
+    name_validator = RegexValidator(
+        regex=r'^[a-zA-Z ]+$',
+        message='Name must contain only letters'
+    )
  
 
     class Meta:
@@ -32,7 +35,7 @@ class UserAddressForm(forms.ModelForm):
             {"class": "form-control mb-2 account-form","placeholder":"Full Name"}
         )
         self.fields["full_name"].required = True
-
+        self.fields["full_name"].validators = [self.name_validator]
 
         self.fields["phone"].widget.attrs.update(
             {"class": "form-control mb-2 account-form","placeholder":"0987654321"}
@@ -50,15 +53,20 @@ class UserAddressForm(forms.ModelForm):
         self.fields["state"].widget.attrs.update(
             {"class": "form-control mb-2 account-form","placeholder":"Your State"}
         )
-        self.fields["state"].required = True   
+        self.fields["state"].required = True 
+        self.fields["state"].validators = [self.name_validator]
 
         self.fields["city"].widget.attrs.update(
             {"class": "form-control mb-2 account-form","placeholder":" Your City"}
         )
-        self.fields["city"].required = True   
+        self.fields["city"].required = True
+        self.fields["city"].validators = [self.name_validator]
+
 
         self.fields["house_name"].widget.attrs.update(
             {"class": "form-control mb-2 account-form","placeholder":"House name"}
         )
-        self.fields["house_name"].required = True   
+        self.fields["house_name"].required = True
+        self.fields["house_name"].validators = [self.name_validator]
+
 

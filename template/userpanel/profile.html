@@ -46,7 +46,9 @@
 
 
 <section style="background-color: #eee;">
-    <div class="container py-5">
+    <div class="container py-4">  
+  {% include 'message.html' %}
+
         <div class="row">
             <div class="col">
                 <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
@@ -57,6 +59,7 @@
                 </nav>
             </div>
         </div>
+        
 
         <div class="row">
             <div class="col-lg-4">
@@ -121,7 +124,7 @@
                                 <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
                             </div>
                         </div> -->
-                        <a class="btn capp" href="{% url 'order_list' %}"> Orders </a>
+                        <a class="btn capp" href="{% url 'orders_list' %}"> Orders </a>
 
                     </div>
                 </div>

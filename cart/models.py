@@ -134,7 +134,8 @@ class OrderItem(models.Model):
         return total
     
     def calculate_order_total(self):
-        order_items = OrderItem.objects.filter(order=self.id)
+        order_items = OrderItem.objects.filter(order=self.order)
+        print()
         order_total = []
         total_price = 0
         for order_item in order_items:           
