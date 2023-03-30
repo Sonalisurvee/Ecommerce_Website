@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from .forms import ReviewForm
 import re
+from django.core.exceptions import ValidationError
 
 # -----------------------------------Product Management-Delete,edit and add --------------------------------
 
@@ -30,100 +31,138 @@ def delete_product(request,product_id):
     return redirect(product_management)   
 
  
-def update_product(request,product_id):
-    products=get_object_or_404(Product,pk=product_id)
-    categories = Category.objects.all()    
+def update_product(request, product_id):
+    products = get_object_or_404(Product, pk=product_id)
+    categories = Category.objects.all()
     if request.method == 'POST':
         try:
-            update_prod=Product.objects.get(id=product_id)
-            product_image=request.FILES['image']
-            update_prod.image=product_image
-            update_prod.save()
+            update_prod = Product.objects.get(id=product_id)
+            product_image = request.FILES.get('image')
+            if product_image:
+                update_prod.image = product_image
+                update_prod.save()
         except:
             pass
-        product=request.POST['product']
-        category=request.POST['category']
-        product_description=request.POST['description']
-        stock=request.POST['stock']
-        price=request.POST['price']
+        product = request.POST.get('product')
+        category = request.POST.get('category')
+        product_description = request.POST.get('description')
+        stock = request.POST.get('stock')
+        price = request.POST.get('price')
         cat_instance = Category.objects.get(id=category)
 
-        # if int(stock) < 0:
-        #     messages.info(request,"Negative values are not allowed.")
-        #     return redirect(product_management)
-
-        # if Decimal(price).quantize(Decimal('1')) < 0:
-        #     messages.info(request, "Negative values are not allowed.")
-        #     return redirect(product_management)
-
+        if not product:
+            messages.warning(request, 'Product name shouldnt be empty')
+            return redirect(product_management)
+        
+        if not all(char.isalpha() or char.isspace() for char in product) or len(product.strip()) == 0:
+            messages.warning(request, 'Invalid entry for product name')
+            return redirect(product_management)
+        
+        if not product_description:
+            messages.warning(request, 'Product description shouldnt be empty')
+            return redirect(product_management)
+        
+        if not all(char.isalpha() or char.isspace() or char in ["'", '.'] for char in product_description) or len(product_description.strip()) == 0:
+            messages.warning(request, 'Invalid entry for product name')
+            return redirect(product_management)   
+        
         if not stock.isdigit():
             messages.warning(request,'Invalid entry for stock')
             return redirect(product_management)
 
-        if not str(price).isdigit():
-            messages.warning(request,'Invalid entry for price')
-            return redirect(product_management)
-   
-        if product.isalpha():
-            messages.warning(request,'Invalid entry for product name')
-            return redirect(product_management)
-        
-        if product_description.isalpha():
-            messages.warning(request,'Invalid entry for product description')
-            return redirect(product_management)
-                
+        if not str(price).isnumeric() and 'e' not in price.lower():
+            try:
+                float(price)
+                if float(price) < 0:
+                    messages.warning(request, 'Price cannot be negative')
+                    return redirect(product_management)
+            except ValueError:
+                messages.warning(request, 'Invalid entry for price')
+                return redirect(product_management)
 
-        update_prod=Product.objects.filter(id=product_id)
+        if 'e' in price.lower() or float(price) > 1000000:
+            messages.warning(request,'Enter only numbers, scientific notation not allowed, and the price should not exceed 1000000')
+            return redirect(product_management)
+
+        if Product.objects.filter(product_name=product).exclude(id=product_id).exists():
+            messages.warning(request, 'A product with this name already exists.')
+            return redirect(product_management)
+
+
+        update_prod = Product.objects.filter(id=product_id)
         update_prod.update(
             product_name=product,
             category=cat_instance,
             product_description=product_description,
-            stock=stock,price=price
-            )
-        context = {
-            'product': products, 
-            'categories': categories,
-            }
-        messages.success(request, f"{products.product_name} has been updated")            
+            stock=stock,
+            price=price
+        )
+
+        context = {'product': products, 'categories': categories}
+        messages.success(request, f"{products.product_name} has been updated")
         return redirect(product_management)
-    else:    
-        messages.info(request,'some field is empty')
-        return render(request,'product/product_management.html', context)
+    else:
+        messages.info(request, 'some field is empty')
+        return render(request, 'product/product_management.html', context)
 
-
+                                
 
 def add_product(request):
     if request.method == 'POST':
         productname=request.POST['title']
-        # slug=request.POST['slug']
-        product_image=request.FILES['image']
         description=request.POST['description']
         category=request.POST['category']#here only the id of categorywill be stored
         stock=request.POST['stock']
         price=request.POST['price']
 
-        multi_imaeg = request.FILES.getlist('imagess')
-
-        if not productname.isalpha():
-            messages.warning(request,'Invalid entry for product name')
+        if not productname:
+            messages.warning(request, 'Product name shouldnt be empty')
             return redirect(product_management)
         
-        if not description.isalpha():
-            messages.warning(request,'Invalid entry for product description')
-            return redirect(product_management)           
+        if not all(char.isalpha() or char.isspace() for char in productname) or len(productname.strip()) == 0:
+            messages.warning(request, 'Invalid entry for product name')
+            return redirect(product_management)
+        
+        if Product.objects.filter(product_name=productname).exists():
+            messages.info(request,"This product already exists")
+            return redirect(product_management)
 
+        try:
+            product_image=request.FILES['image']
+        except:
+            messages.warning(request,'Thumbnail image is required for creating a product.')
+            return redirect(product_management)
+        
+        if not description:
+            messages.warning(request, 'Product description shouldnt be empty')
+            return redirect(product_management) 
+
+        if not all(char.isalpha() or char.isspace() or char in ["'", '.'] for char in description) or len(description.strip()) == 0:
+            messages.warning(request, 'Invalid entry for product description')
+            return redirect(product_management)  
+        
         if not stock.isdigit():
-            messages.warning(request,'Enter only number')
+            messages.warning(request,'Invalid entry for stock')
             return redirect(product_management)
-        
-        if int(stock) > 1000000:
-            messages.warning(request,'Enter only number')
+                
+        if not str(price).isnumeric() and 'e' not in price.lower():
+            try:
+                float(price)
+                if float(price) < 0:
+                    messages.warning(request, 'Price cannot be negative')
+                    return redirect(product_management)
+            except ValueError:
+                messages.warning(request, 'Invalid entry for price')
+                return redirect(product_management)
+
+        if 'e' in price.lower() or float(price) > 1000000:
+            messages.warning(request,'Enter only numbers, scientific notation not allowed, and the price should not exceed 1000000')
             return redirect(product_management)
-        
     
         cat_instance = Category.objects.get(id=category)#for admin to view our category ,as cate is the forign key in product for we have to assig suprate instance for it so 
         # because we dint gave any related name to the category and now the id stored in the category will be stored in the category instance
         # 
+
         prod = Product.objects.create(
             product_name=productname,
             image=product_image,
@@ -133,21 +172,38 @@ def add_product(request):
             product_description=description
             )
         
+        try:
+            product_image = request.FILES['image']
+        except KeyError:
+            product_image = None
+
+        prod = Product.objects.create(
+            product_name=productname,
+            image=product_image,
+            category=cat_instance,
+            stock=stock,
+            price=price,
+            product_description=description
+        )
+        
         # this for loop i gave after multi_iamge then i got error saying 
         # The error message indicates that you are trying to assign a string value to the product field of the Product_Image model, but it expects an instance of the Product model.
         # To fix this,first create an instance of the 'Product' model, and then use that instance (prod) to create the Product_Image instances.
         # basically we stored the other data and now we are able to assign a name in product colum of 'Product_image' model
         # before the error was like cant assign name to product as there was no product exist or we dint add
 
+        try:
+            multi_imaeg = request.FILES.getlist('imagess')
 
-        
-        for image in multi_imaeg:
-            Product_Image.objects.create(
-                product=prod, 
-                productimage=image
-                )      
-        return redirect(product_management)
-
+            
+            for image in multi_imaeg:
+                Product_Image.objects.create(
+                    product=prod, 
+                    productimage=image
+                    )      
+            return redirect(product_management)
+        except:
+            pass
 
     else:
         return redirect(add_product)

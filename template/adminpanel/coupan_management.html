@@ -169,14 +169,14 @@
                                             </div>
 
                                             <div class="form-outline mb-3">
-                                                <input required name="discount" value="{{c.discount_price}}" type="number"
+                                                <input name="discount" value="{{c.discount_price}}" type="number"
                                                     id="form3Example1cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example1cg">Discount</label>
                                             </div>
 
 
                                             <div class="form-outline mb-3">
-                                                <input required name="minimum" value="{{c.minimum_amount }}" type="number"
+                                                <input name="minimum" value="{{c.minimum_amount }}" type="number"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Minimum amount</label>
                                             </div>
@@ -222,19 +222,19 @@
                     {% csrf_token %}
 
                     <div class="form-outline mb-3">
-                        <input required name="coupon" type="text" id="form3Example1cg"
+                        <input name="coupon" type="text" id="form3Example1cg"
                             class="form-control form-control-lg" />
                         <label class="form-label" for="form3Example1cg">Coupon</label>
                     </div>
 
                     <div class="form-outline mb-3">
-                        <input required name="discount" type="number" id="form3Example1cg"
+                        <input name="discount" type="number" id="form3Example1cg"
                             class="form-control form-control-lg" />
                         <label class="form-label" for="form3Example1cg">Discount</label>
                     </div>
 
                     <div class="form-outline mb-3">
-                        <input required name="minimum" type="number" id="form3Example1cg"
+                        <input name="minimum" type="number" id="form3Example1cg"
                             class="form-control form-control-lg" />
                         <label class="form-label" for="form3Example1cg">Minimun Amount</label>
                     </div>

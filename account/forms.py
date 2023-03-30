@@ -4,18 +4,18 @@ from .models import Address
 
 class UserAddressForm(forms.ModelForm):
     phone_validator = RegexValidator(
-        regex=r'^[0-9]{10}$',
-        message='Phone number must be 10 digits'
+    regex=r'^[1-9][0-9]{9}$',
+    message='Phone number must be 10 digits and not start with 0'
     )
     pincode_validator = RegexValidator(
-        regex=r'^\d{6}$',
-        message='Pincode must be 6 digits'
+    regex=r'^[1-9]\d{5}$',
+    message='Pincode must be 6 digits and should not start with 0'
     )
     name_validator = RegexValidator(
         regex=r'^[a-zA-Z ]+$',
         message='Name must contain only letters'
     )
- 
+
 
     class Meta:
         model = Address
@@ -42,7 +42,6 @@ class UserAddressForm(forms.ModelForm):
         )        
         self.fields["phone"].validators = [self.phone_validator]
         self.fields["phone"].required = True   
-
 
         self.fields["pincode"].widget.attrs.update(
             {"class": "form-control mb-2 account-form","placeholder":"Pincode"}

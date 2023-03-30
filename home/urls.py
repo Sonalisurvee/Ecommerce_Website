@@ -44,8 +44,9 @@ urlpatterns = [
     #banner management
     
     path('banner_management', views.banner_management, name='banner_management'),       
-    path('banner_delete/<int:banner_id>/', views.banner_delete, name='banner_delete'),       
-    path('banner_edit/<int:banner_id>/', views.banner_edit, name='banner_edit'),  
+    path('banner_management/banner_delete/<int:banner_id>/', views.banner_delete, name='banner_delete'),       
+    path('banner_management/banner_edit/<int:banner_id>/', views.banner_edit, name='banner_edit'),  
+    path('banner_management/delet_image/<int:carousel_id>/', views.delet_image, name='delet_image'),  
     
     # order management
 

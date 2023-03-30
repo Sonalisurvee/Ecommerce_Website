@@ -114,7 +114,7 @@ def cart(request):
             cart_items = CartItems.objects.filter(carts=cart).order_by('id')
         else:
             cart = Cartt.objects.get(cart_id=_cart_id(request))
-            cart_items = CartItems.objects.filter(carts=cart)
+            cart_items = CartItems.objects.filter(carts=cart).order_by('id')
        
     except Exception as e:
         pass

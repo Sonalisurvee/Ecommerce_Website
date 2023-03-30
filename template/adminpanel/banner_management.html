@@ -1,5 +1,5 @@
 {% extends 'adminpanel/adminbase.html' %}
-{% block title %}Product{% endblock title %}
+{% block title %}Banner{% endblock title %}
 {% block body %}
 
 <style>
@@ -9,7 +9,7 @@
 
 <main id="main" class="main">
     <div class="pagetitle">
-        <h1>Dashboard</h1>
+        <h1>Banner</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
@@ -53,47 +53,12 @@
                         </td>
                         <td>{{b.note}}</td>
                         <td>{{b.discount}}</td>                        
-                        <td>
-                            <!-- <button type="button" class="btn text-danger" data-bs-toggle="modal"
-                            data-bs-target="#delete_model-{{forloop.counter}}">
-                            <i class="ri-delete-bin-4-line"></i>
-                        </button> -->
+                        <td>                       
                         <button type="button" class="btn text-warning" data-bs-toggle="modal"
                             data-bs-target="#edit_model-{{forloop.counter}}">
                             <i class="ri-pencil-line"></i>
                         </button>
-                        </td>                    
-
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="delete_model-{{forloop.counter}}" tabindex="-1"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
-                                            Delete banner</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        are you sure to delete this <span class="text-danger">"{{b.banner_name}}"</span>
-
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                        <form action="{% url 'banner_delete' b.id %}" style="float: right;"
-                                            method="post" class="float-right d-inline">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-primary">Delete</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        
+                        </td>                     
 
                         <!-- Modal -->
                         <div class="modal fade" id="edit_model-{{forloop.counter}}" tabindex="-1"
@@ -111,7 +76,7 @@
                                             method="POST" class="row g-2">
                                             {% csrf_token %}
                                             <div class="form-outline mb-3">
-                                                <input required name="name" value="{{b.banner_name}}" type="text"
+                                                <input name="name" value="{{b.banner_name}}" type="text"
                                                     id="form3Example1cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example1cg">Banner name</label>
                                             </div>                                      
@@ -131,8 +96,14 @@
                                             <div class="form-outline mb-3">
                                                 <label class="form-label" for="imagePreview">Image Preview</label>
                                                 <br>
-                                                <img src="{{ bb.image.url }}" alt="no image" style="width:100px; height:50px;" >                                    
-    
+                                                <div class="row">
+                                                    <div class="col">
+                                                    <img src="{{ bb.image.url }}" alt="no image" style="width:100px; height:50px;" >                                   
+                                                    </div>
+                                                    <div class="col float-left">
+                                                        <a href="{% url 'delet_image' bb.id %}"><i class="fa-regular fa-trash-can" style="color: #070707;"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
                                             {% endfor %}
 
@@ -144,7 +115,7 @@
 
 
                                             <div class="form-outline mb-3">
-                                                <input required name="description" value="{{ b.note }}"
+                                                <input name="description" value="{{ b.note }}"
                                                     type="text" id="form3Example3cg"
                                                     class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Description</label>

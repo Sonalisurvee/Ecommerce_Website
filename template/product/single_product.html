@@ -136,14 +136,6 @@
 }
 
 
-
-
-
-
-
-
-
-
 /* Hide the radio Button */
 .rate > input{
     display: none;
@@ -265,16 +257,20 @@ input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:
             {% if single_product.size_variant.count %}
             <div class="row container pl-3">
               <p class="col">Size : </p>
+     
+
               {% for size in single_product.size_variant.all %}
                 <div class="col btn-group btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary">
-                  <input required type="radio" name="options" id="suv" autocomplete="off" onchange="get_correct_price('{{size.size_name}}')" {% if selected_size == size.size_name %} checked {% endif %}>{{ size.size_name }}
+                <label class="btn btn-secondary {% if selected_size == size.size_name %} active {% endif %}">
+                  <input type="radio" name="options" id="suv" autocomplete="off" onchange="get_correct_price('{{size.size_name}}')" {% if selected_size == size.size_name %} checked {% endif %}>{{ size.size_name }}
                   </label>
                 </div>
               {% endfor %}           
               </div>
             {% endif %}
           </div>
+
+
 
             <div class="add_to_cart pt-3">             
 

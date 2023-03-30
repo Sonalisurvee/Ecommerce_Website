@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect,get_object_or_404,HttpResponseRedirect
+from django.shortcuts import render,redirect,get_object_or_404,HttpResponseRedirect,HttpResponse
 from django.contrib import messages
 from .models import Banner,Carousel
 from account.models import Account,Address
@@ -13,6 +13,7 @@ import razorpay
 from django.conf import settings
 from django.db.models import  Sum
 import os
+import re
 
 
 
@@ -97,7 +98,7 @@ def block_unblock(request,user_id):
 @login_required(login_url='/login')
 def profile(request):
     context = {
-        'user_addresses': Address.objects.filter(customer=request.user),
+        'user_addresses': Address.objects.filter(customer=request.user).order_by('id'),
         'order':Order.objects.filter(user = request.user)
     }
     return render(request, 'userpanel/profile.html',context)
@@ -118,10 +119,34 @@ def update_profile(request,user_id):
             messages.info(request,'last name is missing')
             return redirect(profile)
 
-   
+        if not all(char.isalpha() or char.isspace() for char in fname) or len(fname.strip()) == 0:
+            messages.warning(request, 'Invalid entry for first name')
+            return redirect(profile)        
+
+        if not all(char.isalpha() or char.isspace() for char in lname) or len(lname.strip()) == 0:
+            messages.warning(request, 'Invalid entry for last name')
+            return redirect(profile) 
+        
+        if not re.match(r'^[1-9]\d{9}$', number) or number.startswith('00'):
+            messages.warning(request, 'Invalid entry for number')
+            return redirect(profile)
+        
         update_user = Account.objects.filter(id=user_id)  
         update_user.update(first_name=fname,last_name=lname,phone_number=number)
         return redirect(profile)
+    
+
+        
+        if not re.match(r'^[1-9]\d{9}$', number) or number.startswith('00'):
+            # If phone number is not valid, show error message
+            error_message = 'Please enter a valid 10-digit phone number (not starting with 00)'
+            return render(request, 'error.html', {'message': error_message})
+
+    
+
+
+
+
 
     else:
         messages.info(request,'some field is empty')
@@ -149,16 +174,27 @@ def banner_edit(request,banner_id):
     if request.method=='POST':
         name=request.POST['name']
         description=request.POST['description']
-        discount=request.POST['discount']
-        
-        image=request.FILES.getlist('image')   
+        discount=request.POST['discount']        
+        image=request.FILES.getlist('image') 
+                
+        if not name:
+            messages.warning(request, 'Banner name shouldnt be empty')
+            return redirect(banner_management)
 
-        if not name.isalpha():
-            messages.warning(request,'Invalid entry for banner name')
-            return redirect(banner_management)   
-        
+        if not description:
+            messages.warning(request, 'Banner description shouldnt be empty')
+            return redirect(banner_management)
+
+        if not all(char.isalpha() or char.isspace() for char in name):
+            messages.warning(request, 'Invalid entry for banner name')
+            return redirect(banner_management)
+
+        if not all(char.isalpha() or char.isspace() for char in description):
+            messages.warning(request, 'Invalid entry for banner description')
+            return redirect(banner_management)
+
         if not discount.isdigit():
-            messages.warning(request,'Enter only number')
+            messages.warning(request,'Enter only positive number')
             return redirect(banner_management)
         
         if int(discount) > 1000000:
@@ -174,30 +210,38 @@ def banner_edit(request,banner_id):
         update_banner.discount=discount
         update_banner.save()
     
-        for carousel in update_banner.carousel_set.all():
-            image_path = carousel.image.path
-            os.remove(image_path)
-            carousel.delete()            
+        # for carousel in update_banner.carousel_set.all():
+        #     image_path = carousel.image.path
+        #     os.remove(image_path)
+        #     carousel.delete()            
 
         for im in image:
             carousel = Carousel.objects.create(
                 carousel_name = update_banner,
                 image =im
                 )
-            carousel.save()
-        
-
-    
-        # image=request.FILES.getlist('image')
-        # update_banner.banner_image=image
-        # update_banner.save()
+            carousel.save() 
         return redirect(banner_management)
-
     else:
         messages.info(request,'some field is empty')
         return render(request,'adminpanel/banner_management.html',{'banner':banner})
     
-# carousal
+
+def delet_image(request,carousel_id):
+    delet_banner_image = Carousel.objects.filter(id=carousel_id) 
+    delet_banner_image.delete()
+    return redirect(banner_management)    
+
+
+# def delet_image(request, carousel_id):
+#     delet_banner_image = Carousel.objects.get(id=carousel_id) # Get the carousel object to be deleted
+#     image_path = os.path.join(settings.MEDIA_ROOT, str(delet_banner_image.image)) # Get the path to the image file
+#     os.remove(image_path) # Delete the image file from the server's file system
+#     delet_banner_image.delete() # Delete the record from the database
+#     return redirect(banner_management)
+
+
+
 # -----------------------------------------404-----------------------------------------
 
 
@@ -276,36 +320,36 @@ def update_coupon(request,coupan_id):
 
         if not coupan:
             messages.info(request, 'Coupon field is empty')
-            return redirect(coupan_management)        
-
-        if not minimum.isdigit():
-            messages.warning(request,'Enter only number')
-            return redirect(coupan_management)
+            return redirect(coupan_management)  
         
-        if int(minimum) > 1000000:
-            messages.warning(request,'Enter only number')
-            return redirect(coupan_management)
-        
-        if not discount.isdigit():
-            messages.warning(request,'Enter only number')
-            return redirect(coupan_management)
-        
-        if int(discount) > 1000000:
-            messages.warning(request,'Enter only number')
-            return redirect(coupan_management)
-        
-        if not coupan.isalpha():
-            messages.warning(request,'Invalid entry for coupon name')
+        if not all(char.isalpha() or char.isspace() for char in coupan) or len(coupan.strip()) == 0:
+            messages.warning(request, 'Invalid entry for coupan name')
             return redirect(coupan_management)
      
-        if Coupon.objects.filter(coupan_code=coupon).exists():
+        if Coupon.objects.filter(coupan_code=coupon).exclude(id=coupan_id).exists():
             messages.info(request,"This coupon already exists")
+            return redirect(coupan_management)   
+         
+        if float(discount) > 1000000:
+            messages.warning(request,'Enter only numbers, scientific notation not allowed as discount price')
+            return redirect(coupan_management) 
+          
+        if not discount.isdigit():
+            messages.warning(request,'Enter only numbers as discount price and no negetive number')
+            return redirect(coupan_management)
+                
+        if not minimum.isdigit():
+            messages.warning(request,'Enter only numbers as minimum amount and no negetive number')
+            return redirect(coupan_management)
+        
+        if float(minimum) > 1000000:
+            messages.warning(request,'Enter only numbers, scientific notation not allowed as minimum amount')
             return redirect(coupan_management)
             
         else:
             update_coupon = Coupon.objects.filter(id=coupan_id)  
             update_coupon.update(coupan_code=coupan,discount_price=discount,minimum_amount=minimum)
-            messages.success(request,f"Updates the {coupon.coupan_code} coupon")
+            messages.success(request,f"Updated the {coupon.coupan_code} coupon")
             return redirect(coupan_management)       
 
     else:
@@ -315,35 +359,39 @@ def update_coupon(request,coupan_id):
 
 def add_coupon(request):
     if request.method == 'POST':
-        couponn = request.POST['coupon']
+        coupon = request.POST['coupon']
         discount = request.POST['discount']
-        minimum=request.POST['minimum']       
+        minimum=request.POST['minimum']  
 
-        if not minimum.isdigit():
-            messages.warning(request,'Enter only number')
-            return redirect(coupan_management)
+        if not coupon:
+            messages.info(request, 'Coupon field is empty')
+            return redirect(coupan_management)  
         
-        if int(minimum) > 1000000:
-            messages.warning(request,'Enter only number')
-            return redirect(coupan_management)
+        if not all(char.isalpha() or char.isspace() for char in coupon) or len(coupon.strip()) == 0:
+            messages.warning(request, 'Invalid entry for coupan name')
+            return redirect(coupan_management)   
         
+        if float(discount) > 1000000:
+            messages.warning(request,'Enter only numbers, scientific notation not allowed as discount price')
+            return redirect(coupan_management)    
+
         if not discount.isdigit():
-            messages.warning(request,'Enter only number')
+            messages.warning(request,'Enter only numbers as discount price')
+            return redirect(coupan_management) 
+        
+        if float(minimum) > 1000000:
+            messages.warning(request,'Enter only numbers, scientific notation not allowed as minimum amount')
+            return redirect(coupan_management)   
+         
+        if not minimum.isdigit():
+            messages.warning(request,'Enter only numbers as minimum amount')
             return redirect(coupan_management)
         
-        if int(discount) > 1000000:
-            messages.warning(request,'Enter only number')
-            return redirect(coupan_management)
-        
-        if not coupan.isalpha():
-            messages.warning(request,'Invalid entry for coupon name')
-            return redirect(coupan_management)
-
-        if Coupon.objects.filter(coupan_code=couponn).exists():
+        if Coupon.objects.filter(coupan_code=coupon).exists():
             messages.info(request,"This coupon already exists")
             return redirect(coupan_management)
         else:
-            coupan = Coupon.objects.create(coupan_code=couponn,discount_price=discount,minimum_amount=minimum)
+            coupan = Coupon.objects.create(coupan_code=coupon,discount_price=discount,minimum_amount=minimum)
             coupan.save()      
             messages.success(request,f"New coupon '{coupan.coupan_code}' has been created")
         return redirect(coupan_management)   

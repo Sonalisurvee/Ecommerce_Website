@@ -19,6 +19,7 @@ from .models import UserOTP
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 import random
+import re
 
 
 # -----------------------------------Accounts --------------------------------
@@ -96,15 +97,21 @@ def signup(request):
                print(user)
                print(get_otp)
                print(otp_1)
-               if int(get_otp) == otp_1 :
-                    user.is_active = True
-                    user.save()
-                    messages.success(request,f'Account created Successfully')
-                    return redirect(log_in)
-               else:
-                    user.delete()
+               
+               try:
+                    if int(get_otp) == otp_1 :
+                         user.is_active = True
+                         user.save()
+                         messages.success(request,f'Account created Successfully')
+                         return redirect(log_in)
+                    else:
+                         user.delete()
+                         messages.warning(request,'You have entered a wrong OTP')
+                         return render(request, 'userpanel/login.html',{'otp':True, 'user':user})
+               except:
                     messages.warning(request,'You have entered a wrong OTP')
-                    return render(request, 'userpanel/login.html',{'otp':True, 'user':user})
+                    return redirect(signup)
+
 
           # ===User registration====
           else:
@@ -115,6 +122,18 @@ def signup(request):
                password1 = request.POST['password']
                password2 = request.POST['repassword']
                username  = email.split('@')[0]
+
+          if not all(char.isalpha() or char.isspace() for char in fname) or len(fname.strip()) == 0:
+               messages.warning(request, 'Invalid entry for first name')
+               return redirect(signup)        
+
+          if not all(char.isalpha() or char.isspace() for char in lname) or len(lname.strip()) == 0:
+               messages.warning(request, 'Invalid entry for last name')
+               return redirect(signup) 
+     
+          if not re.match(r'^[1-9]\d{9}$', number) or number.startswith('00'):
+               messages.warning(request, 'Invalid entry for number')
+               return redirect(signup)
           
           if fname and email and password1 and password2 and number != "":
                if password1 == password2:

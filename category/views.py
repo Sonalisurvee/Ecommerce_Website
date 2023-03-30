@@ -27,13 +27,22 @@ def update_category(request,cate_id):
         category=request.POST['category']
         description=request.POST['description']
 
-        if not category.isalpha():
-            messages.warning(request,'Invalid entry for category name')
+        if Category.objects.filter(cat_name=category).exclude(id=cate_id).exists():
+            messages.info(request,"This category already exists")
+            return redirect(category_management)
+
+        if not category:
+            messages.info(request, 'Category field is empty')
+            return redirect(category_management)  
+        
+        if not all(char.isalpha() or char.isspace() for char in category) or len(category.strip()) == 0:
+            messages.warning(request, 'Invalid entry for category name')
             return redirect(category_management)
         
-        if not description.isalpha():
-            messages.warning(request,'Invalid entry for category description')
-            return redirect(category_management)      
+        if not all(char.isalpha() or char.isspace() or char in ["'", '.'] for char in description) or len(description.strip()) == 0:
+            messages.warning(request, 'Invalid entry for category description')
+            return redirect(category_management)  
+         
 
         # here description was not getting updated because of if condinti given to the cat_name = category.exists, so we saved the description before onyly
         category1.description = description
@@ -49,20 +58,13 @@ def update_category(request,cate_id):
             update_category.cat_image=image
             update_category.save()
         except:
-            pass
+            pass        
 
-        if not category:
-            messages.info(request, 'Category field is empty')
-            return redirect(category_management)
-
-        if Category.objects.filter(cat_name=category).exists():
-            messages.info(request,"This category already exists")
-            return redirect(category_management)
-        else:
-            update_category = Category.objects.filter(id=cate_id)  
-        # this update_c was given to filter all the id in the category        
-            update_category.update(cat_name=category,description=description)
-            return redirect(category_management)
+        update_category = Category.objects.filter(id=cate_id)  
+    # this update_c was given to filter all the id in the category        
+        update_category.update(cat_name=category,description=description)
+        messages.info(request,"Cate got updated")
+        return redirect(category_management)
 
         #here both the update_c were imp because both play 2 diff roles 
     else:
@@ -77,13 +79,17 @@ def add_category(request):
         image=request.FILES['image']
         # slug=request.POST['slug']
 
-        if not category.isalpha():
-            messages.warning(request,'Invalid entry for category name')
+        if not all(char.isalpha() or char.isspace() for char in category):
+            messages.warning(request, 'Invalid entry for category name')
             return redirect(category_management)
         
-        if not description.isalpha():
-            messages.warning(request,'Invalid entry for category description')
-            return redirect(category_management)       
+        if not all(char.isalpha() or char.isspace() for char in description):
+            messages.warning(request, 'Invalid entry for category description')
+            return redirect(category_management)    
+         
+        if not category:
+            messages.info(request, 'Category field is empty')
+            return redirect(category_management)      
       
         if Category.objects.filter(cat_name=category).exists():
             messages.info(request,"This category already exists")

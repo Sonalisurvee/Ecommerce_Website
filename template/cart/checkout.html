@@ -183,8 +183,8 @@ aria-hidden="true"
                   Edit
                 </a>
 
-                <a class="btn cap m-1" data-bs-toggle="modal" data-bs-target="#deletaddress{{forloop.counter}}"
-                  href="{% url 'delete_address' a.id 2 %}">
+                <a class="btn cap m-1" data-toggle="modal" data-target="#deletaddress{{forloop.counter}}"
+                  href="">
                   Delete
                 </a>
 
@@ -204,23 +204,31 @@ aria-hidden="true"
                     <div class="modal-content">
                       <div class="modal-header">
                         <h5 class="" id="exampleModalLabel">Delete</h5>
-                        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close"> <i
-                            class="fa fa-cancel"></i>X </button>
+                        <button type="button" class="btn" data-dismiss="modal" aria-label="Close"> <i
+                            class="fa fa-cancel"></i></button>
                       </div>
                       <div class="modal-body">
                         <p>Are you sure to delete Address <span class="text-primary">" {{a.house_name}}
                             ..."</span></p>
-                        <form action="#" enctype="multipart/form-data" method="POST">
+                        <form action="{% url 'delete_address' a.id 2 %}" enctype="multipart/form-data" method="POST">
                           {% csrf_token %}
                           <div class="d-flex justify-content-center">
                             <button type="submit"
-                              class="btn btn-danger btn-lg gradient-custom-4 w-50 text-light">Confirm</button>
+                            class="btn btn-md purple-bg gradient-custom-2 w-30 text-light">Confirm</button>
+                            <style>
+                              .purple-bg {
+                                  background-color: #9c7899;
+          
+                              }
+                          </style>
                           </div>
                         </form>
                       </div>
                     </div>
                   </div>
                 </div>
+
+                
               </div>
             </div>
           </div>

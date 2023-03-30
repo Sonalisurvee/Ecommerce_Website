@@ -21,6 +21,9 @@ td.des {
 }
 
 </style>
+<head>
+   
+</head>
 
 <main id="main" class="main">
     <div class="pagetitle">
@@ -128,7 +131,7 @@ td.des {
                                             method="POST" class="row g-2">
                                             {% csrf_token %}
                                             <div class="form-outline mb-3">
-                                                <input required name="product" value="{{p.product_name}}" type="text"
+                                                <input name="product" value="{{p.product_name}}" type="text"
                                                     id="form3Example1cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example1cg">Product</label>
                                             </div>
@@ -146,31 +149,38 @@ td.des {
                                             </div>
 
                                             <div class="form-outline mb-3">
-                                                <label class="form-label" for="imagePreview">Image Preview</label>
+                                                <label class="form-label" for="imagePreview">Current Image</label>
                                                 <br>
                                                 <img src="{{ p.image.url }}" alt="{{p.porduct_name}}" style="width:100px; height:100px;" >   
+                                            </div>                                      
+                                            
+                                            <div class="form-outline mb-3">
+                                                <label class="form-label" for="imagePreview">New Image Preview</label>
+                                                <br>
+                                                <img id="imagePreview" src="" alt="" style="width:100px; height:100px;">
                                             </div>
-
+                                            
                                             <div class="form-outline mb-3">
                                                 <input name="image" value="{{ p.image }}" type="file"
-                                                    id="form3Example3cg" class="form-control form-control-lg" />
+                                                    id="form3Example3cg" class="form-control form-control-lg" onchange="previewImage(event)"/>
                                                 <label class="form-label" for="form3Example3cg">Image</label>
-                                            </div>
+                                            </div>                                       
+
                                          
                                             <div class="form-outline mb-3">
-                                                <input required name="description" value="{{ p.product_description }}"
+                                                <input name="description" value="{{ p.product_description }}"
                                                     type="text" id="form3Example3cg"
                                                     class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Description</label>
                                             </div>
                                             <div class="form-outline mb-3">
-                                                <input required name="stock" value="{{ p.stock }}" type="number"
+                                                <input name="stock" value="{{ p.stock }}" type="number"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Stock</label>
                                             </div>
 
                                             <div class="form-outline mb-3">
-                                                <input required name="price" value="{{ p.price }}" type="number"
+                                                <input name="price" value="{{ p.price }}" type="number"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
                                                 <label class="form-label" for="form3Example3cg">Price</label>
                                             </div>
@@ -220,12 +230,12 @@ td.des {
                         </div>
                         {%endfor%}
                         <div class="form-outline mb-3">
-                            <input required name="title" type="text" id="form3Example1cg"
+                            <input name="title" type="text" id="form3Example1cg"
                                 class="form-control form-control-lg" />
                             <label class="form-label" for="form3Example1cg">Title</label>
                         </div>
                         <div class="form-outline mb-3">
-                            <input required name="image" type="file" id="form3Example1cg"
+                            <input name="image" type="file" id="form3Example1cg"
                                 class="form-control form-control-lg" />
                             <label class="form-label" for="form3Example1cg">Thumbnail Image</label>
                         </div>
@@ -238,7 +248,7 @@ td.des {
                         </div>                    
 
                         <div class="form-outline mb-3">
-                            <input required name="description" type="text" id="form3Example1cg"
+                            <input name="description" type="text" id="form3Example1cg"
                                 class="form-control form-control-lg" />
                             <label class="form-label" for="form3Example1cg">description</label>
                         </div>
@@ -257,12 +267,12 @@ td.des {
                         </div>
 
                         <div class="form-outline mb-3">
-                            <input required name="stock" type="number" id="form3Example3cg"
+                            <input name="stock" type="number" id="form3Example3cg"
                                 class="form-control form-control-lg" />
                             <label class="form-label" for="form3Example3cg">Stock</label>
                         </div>
                         <div class="form-outline mb-3">
-                            <input required name="price" type="number" id="form3Example3cg"
+                            <input name="price" type="number" id="form3Example3cg"
                                 class="form-control form-control-lg" />
                             <label class="form-label" for="form3Example3cg">Price</label>
                         </div>
@@ -281,5 +291,27 @@ td.des {
     </div>
 
 </main><!-- End #main -->
+<script>
+    function previewImage(event) {
+        var preview = document.getElementById('imagePreview');
+        var file = event.target.files[0];
+        var reader = new FileReader();
+        preview.src = ""; // clear the image preview before setting a new image
+        if (file) {
+            reader.onload = function() {
+                preview.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = "{{ p.image.url }}";
+        }
+    }
+    
+            
+            </script>
+
+
+
+
 
 {% endblock body %}

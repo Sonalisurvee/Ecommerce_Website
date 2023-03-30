@@ -156,8 +156,8 @@
                         Edit
                     </a>
 
-                    <a class="btn cap" data-bs-toggle="modal" data-bs-target="#delete_model-{{forloop.counter}}"
-                        href="{% url 'delete_address' a.id 1 %}">
+                    <a class="btn cap" data-toggle="modal" data-target="#deletaddress{{forloop.counter}}"
+                        href="">
                         Delete
                     </a>
                     {% if a.default %}
@@ -170,31 +170,37 @@
 
 
                     <!-- Modal -->
-                    <div class="modal fade" id="delete_model-{{forloop.counter}}" tabindex="-1"
-                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
-                                        Delete Product</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    are you sure to delete <span class="text-danger">"{{p.product_name}}"</span>
-
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <form action="" style="float: right;" method="post" class="float-right d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-primary">Delete</button>
-                                    </form>
-                                </div>
-                            </div>
+                    <div class="modal fade " id="deletaddress{{forloop.counter}}" tabindex="-1"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="" id="exampleModalLabel">Delete</h5>
+                          <button type="button" class="btn" data-dismiss="modal" aria-label="Close"> <i
+                              class="fa fa-cancel"></i></button>
                         </div>
+                        <div class="modal-body">
+                          <p>Are you sure to delete Address <span class="text-primary">" {{a.house_name}}
+                              "</span></p>
+                          <form action="{% url 'delete_address' a.id 1 %}" enctype="multipart/form-data" method="POST">
+                            {% csrf_token %}
+                            <div class="d-flex justify-content-center pt-3">
+                              <button type="submit"
+                                class="btn btn-md purple-bg gradient-custom-2 w-30 text-light">Confirm</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
                     </div>
+                  </div>
+  
+                  <style>
+                    .purple-bg {
+                        background-color: #9c7899;
+
+                    }
+                </style>
+
                 </div>
             </div>
         </div>
@@ -243,7 +249,7 @@
 
                     <div class="form-outline mb-3">
                         <input name="number" value="{{ user.phone_number }}" type="tel" id="form3Example3cg"
-                            class="form-control form-control-lg" pattern="[0-9]{10}" />
+                            class="form-control form-control-lg" />
                         <label class="form-label" for="form3Example3cg">Phone number</label>
                     </div>
                     <button type="submit" class="btn btn-success">Update</button>
