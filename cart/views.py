@@ -150,7 +150,9 @@ def checkout(request,cart_items=None):
             
         except:
             pass
+        
 
+        # if name
 
         if request.method == 'POST':
             coupon = request.POST.get('coupon')

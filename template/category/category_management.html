@@ -1,3 +1,4 @@
+
 {% extends 'adminpanel/adminbase.html' %}
 {% block title %}Category{% endblock title %}
 {% block body %}
@@ -12,11 +13,11 @@
   overflow: hidden;
 }
 
-img {
-  max-width: 100%; /* set the maximum width of the image to 100% */
-  max-height: 100%; /* set the maximum height of the image to 100% */
+/* img {
+  max-width: 100%;
+  max-height: 100%; 
   object-fit: cover;
-}
+} */
 
 td.des {
   width: 40%; /* or any other percentage or fixed value */
@@ -24,43 +25,49 @@ td.des {
  
 </style>
 
-  <main id="main" class="main">
-    <div class="pagetitle">
-        <h1>Dashboard</h1>
-        <nav>
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
-            <li class="breadcrumb-item active">Category</li>
-          </ol>
-        </nav>
-      </div>
-    <p class="text-center">
-        <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Category management</h5>
+<main id="main" class="main">
+
+  <div class="pagetitle">
+    <h1>Signora</h1>
+    <nav>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
+          <li class="breadcrumb-item active"> Category list</li>
+      </ol>
+  </nav>
+  </div> <!-- End Page Title -->
+
+
+
+  <div class="col-12">
+    <div class="card recent-sales overflow-auto">
+
+
+      <div class="card-body">
+        <h5 class="card-title">Category</h5>
               {% include 'message.html' %}
 
-              <!-- Table with hoverable rows -->
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th scope="col">id</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Image</th>
-                    <th scope="col">Slug</th>
-                    <th scope="col">Action</th>
-                  </tr>
-                </thead>
-                <tbody>    
+
+        <table class="table table-borderless datatable">
+          <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">Category</th>
+                <th scope="col">Description</th>
+                <th scope="col">Image</th>
+                <th scope="col">Slug</th>
+                <th scope="col">Action</th>
+            </tr>
+          </thead>
+         <tbody>    
                   {% for c in cate %}           
                   <tr>
                     <th scope="row">{{ forloop.counter }}</th>
                     <td>{{c.cat_name}}</td>
                     <td class="des">{{c.description}}</td>
                     {% if c.cat_image %}
-                    <td class="px-4 py-3 capp">                               
-                        <img src="{{ c.cat_image.url }}" alt="{{c.cat_name}}" style="width:100px; height:50px;" >                                    
+                    <td class="capp">                               
+                        <img src="{{ c.cat_image.url }}" alt="{{c.cat_name}}" style="width:100px; height:100px;" >                                    
                     </td>
                     {% endif %} 
                     <td>{{c.slug}}</td>
@@ -68,11 +75,13 @@ td.des {
                     <td>                        
                     <button type="button" class="btn text-warning" data-bs-toggle="modal"
                         data-bs-target="#edit_model-{{forloop.counter}}">
-                        <i class="ri-pencil-line"></i>
+                        <i class="fa-solid fa-pen-to-square fa-lg" style="color: #e07a06;"></i>
+
                     </button>
                     <button type="button" class="btn text-danger" data-bs-toggle="modal"
                         data-bs-target="#delete_model-{{forloop.counter}}">
-                        <i class="ri-delete-bin-4-line"></i>
+                        <i class="fa-solid fa-trash-can fa-lg" style="color: #f10404;"></i>
+
                     </button>
                     </td>                    
 
@@ -108,7 +117,7 @@ td.des {
                     
 
                     <!-- Modal -->
-                    <div class="modal fade" id="edit_model-{{forloop.counter}}" tabindex="-1"
+                     <div class="modal fade" id="edit_model-{{forloop.counter}}" tabindex="-1"
                         aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -127,25 +136,29 @@ td.des {
                                                 id="form3Example1cg" class="form-control form-control-lg" />
                                             <label class="form-label cap" for="form3Example1cg">Category</label>
                                         </div>
-                                     
-                                        <div class="form-outline mb-3">
-                                            <input name="image" type="file" value="{{c.cat_image}}"
-                                                id="form3Example3cg" class="form-control form-control-lg" />
-                                            <label class="form-label" for="form3Example3cg">Image</label>
-                                        </div>
-
-                                        
+<!--                                         
                                         <div class="form-outline mb-3">
                                             <label class="form-label" for="imagePreview">Image Preview</label>
                                             <br>
                                             <img src="{{ c.cat_image.url }}" alt="{{c.cat_name}}" style="width:100px; height:100px;" >                                    
 
+                                        </div> -->
+
+                                         <div class="form-group">
+                                            <img id="preview-image-edit-{{forloop.counter}}" src="{{c.cat_image.url}}" alt="Preview Image" style="max-height: 130px;">
+                                            <label class="form-label" for="form3Example3cg"></label>
                                         </div>
-                                        
+                                                        
+                                        <div class="form-outline mb-3">
+                                            <input name="image" type="file" value="{{c.cat_image}}"
+                                                id="form3Example3cg" class="form-control form-control-lg" />
+                                            <label class="form-label" for="form3Example3cg">Image</label>
+                                        </div>
+                                                                           
 
 
                                         <div class="form-outline mb-3">                                            
-                                            <input required name="description" value="{{c.description }}"
+                                            <input name="description" value="{{c.description }}"
                                                 type="text" id="form3Example3cg"
                                                 class="form-control form-control-lg" />
                                             <label class="form-label" for="form3Example3cg">Description</label>
@@ -161,18 +174,21 @@ td.des {
                             </div>
                         </div>
                     </div>
-             
+                        
                   </tr>
                   {% endfor %}  
                 </tbody>
-              </table>
-              <!-- End Table with hoverable rows -->
+        </table>
 
-            </div>
-          </div>    </p>
-  </main><!-- End #main -->
+      </div>
+    </div>
+  </div>
 
-  <button type="button" class="btn btn-outline-primary m-3 sticky-bottom" style="float:right" data-bs-toggle="modal"
+</main>
+
+          
+
+<button type="button" class="btn btn-outline-primary m-3 sticky-bottom" style="float:right" data-bs-toggle="modal"
     data-bs-target="#addcategory_model-{{forloop.counter}}">
     Add Category
 </button>
@@ -195,23 +211,24 @@ td.des {
                             class="form-control form-control-lg" />
                         <label class="form-label" for="form3Example1cg">Category</label>
                     </div>
+
+             
                     <div class="form-outline mb-3">
-                        <input required name="image" type="file" id="form3Example1cg"
-                            class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Example1cg">Image</label>
+                    <input name="image" type="file" id="form3Example1cg"
+                        class="form-control form-control-lg" onchange="previewImage(this)" />
+                    <label class="form-label" for="form3Example1cg">Image</label>
                     </div>
-                    <!-- <div class="form-outline mb-3">
-                        <input name="slug" type="text" id="form3Example1cg"
-                            class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Example1cg">Slug</label>
-                    </div> -->
                     
+                    <div class="form-group">
+                        <img id="preview-image" src="#" alt="Preview Image" style="max-height: 130px;">
+                    <label class="form-label" for="form3Example1cg"></label>
+                    </div> 
+
                     <div class="form-outline mb-3">
                         <input name="description" type="text" id="form3Example1cg"
                             class="form-control form-control-lg" />
                         <label class="form-label" for="form3Example1cg">description</label>
-                    </div>                   
-                                                                
+                    </div>                                                             
 
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn btn-outline-dark btn-lg ">Add category</button>
@@ -225,7 +242,17 @@ td.des {
         </div>
     </div>
 </div>
+<script>
+    function previewImage(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          $('#preview-image').attr('src', e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
 
-  {% endblock body %}
+    </script>
 
-
+  {% endblock body %}}

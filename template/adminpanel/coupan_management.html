@@ -1,43 +1,53 @@
+
+
+
+
+
+
+
+
 {% extends 'adminpanel/adminbase.html' %}
-{% block title %}Coupon{% endblock title %}
+{% block title %}Coupon {% endblock title %}
 {% block body %}
-<style>
-    .cap p:first-letter {
-        text-transform: capitalize;
-    }
-</style>
+
 
 <main id="main" class="main">
-    <div class="pagetitle">
-        <h1>Dashboard</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
-                <li class="breadcrumb-item active">Coupon</li>
-            </ol>
-        </nav>
-    </div>
 
-    <p class="text-center">
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Coupon management</h5>
+  <div class="pagetitle">
+    <h1>Signora</h1>
+    <nav>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
+          <li class="breadcrumb-item active"> Coupon list</li>
+      </ol>
+  </nav>
+  </div> <!-- End Page Title -->
+
+
+
+  <div class="col-12">
+    <div class="card recent-sales overflow-auto">
+
+
+      <div class="card-body">
+        <h5 class="card-title">Coupon list</h5>
+
             {% include 'message.html' %}
 
-            <!-- Table with hoverable rows -->
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">id</th>
-                        <th scope="col">Coupon</th>
-                        <th scope="col">Discount price</th>
-                        <th scope="col">Minimum amount</th>
-                        <th scope="col">Expired</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for c in coupon %}
+        <table class="table table-borderless datatable">
+          <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">Coupon</th>
+                <th scope="col">Discount price</th>
+                <th scope="col">Minimum amount</th>
+                <th scope="col">Expired</th>
+                <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+
+          {% for c in coupon %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{c.coupan_code}}</td>
@@ -108,11 +118,12 @@
                         <td> 
                             <button type="button" class="btn text-warning" data-bs-toggle="modal"
                             data-bs-target="#edit_model-{{forloop.counter}}">
-                            <i class="ri-pencil-line"></i>
+                            <i class="fa-solid fa-pen-to-square fa-lg" style="color: #e07a06;"></i>
+
                         </button>
                             <button type="button" class="btn text-danger" data-bs-toggle="modal"
                                 data-bs-target="#delete_model-{{forloop.counter}}">
-                                <i class="ri-delete-bin-4-line"></i>
+                                <i class="fa-solid fa-trash-can fa-lg" style="color: #f10404;"></i>
                             </button>                           
                         </td>
 
@@ -194,15 +205,16 @@
 
                     </tr>
                     {% endfor %}
-                </tbody>
-            </table>
-            <!-- End Table with hoverable rows -->
+          </tbody>
+        </table>
 
-        </div>
+      </div>
     </div>
-    </p>
-</main><!-- End #main -->
+  </div>
 
+</main>
+
+       
 <button type="button" class="btn btn-outline-primary m-3 sticky-bottom" style="float:right" data-bs-toggle="modal"
     data-bs-target="#addcategory_model-{{forloop.counter}}">
     Add Coupon
@@ -251,6 +263,6 @@
             </div>
         </div>
     </div>
-</div>
+</div>   
 
 {% endblock body %}

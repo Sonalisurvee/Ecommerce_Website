@@ -75,35 +75,35 @@ def update_category(request,cate_id):
 def add_category(request):
     if request.method == 'POST':
         category = request.POST['category']
-        description = request.POST['description']
-        image=request.FILES['image']
-        # slug=request.POST['slug']
-
-        if not all(char.isalpha() or char.isspace() for char in category):
-            messages.warning(request, 'Invalid entry for category name')
-            return redirect(category_management)
-        
-        if not all(char.isalpha() or char.isspace() for char in description):
-            messages.warning(request, 'Invalid entry for category description')
-            return redirect(category_management)    
-         
-        if not category:
-            messages.info(request, 'Category field is empty')
-            return redirect(category_management)      
+        description = request.POST['description']     
       
         if Category.objects.filter(cat_name=category).exists():
             messages.info(request,"This category already exists")
             return redirect(category_management)
-        else:
-            cate = Category.objects.create(cat_name=category,description=description,cat_image=image)
-            cate.save()           
+
+        if not category:
+            messages.info(request, 'Category field is empty')
+            return redirect(category_management)  
+        
+        if not all(char.isalpha() or char.isspace() for char in category) or len(category.strip()) == 0:
+            messages.warning(request, 'Invalid entry for category name')
+            return redirect(category_management)
+        
+        try:
+            image=request.FILES['image']
+        except:
+            messages.warning(request,'image is required for adding new category.')
+            return redirect(category_management)        
+        
+        if not all(char.isalpha() or char.isspace() or char in ["'", '.'] for char in description) or len(description.strip()) == 0:
+            messages.warning(request, 'Invalid entry for category description')
+            return redirect(category_management)      
+        
+        cate = Category.objects.create(cat_name=category,description=description,cat_image=image)
+        cate.save()  
+        messages.info(request,"New category got created")         
         return redirect(category_management)   
   
     else:
         messages.info(request,'some field is empty')
         return redirect(add_category)
-    
-
-           
-def simply(request):
-        return render(request,'category/simply.html')

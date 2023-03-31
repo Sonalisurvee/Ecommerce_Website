@@ -14,7 +14,7 @@ from django.conf import settings
 from django.db.models import  Sum
 import os
 import re
-
+1
 
 
 def index(request):   
@@ -26,7 +26,6 @@ def index(request):
         'banners': banners,
         'banner': banner,
         'category': category,
-
     }    
     return render(request,'userpanel/index.html',dict_banner)
 
@@ -180,18 +179,22 @@ def banner_edit(request,banner_id):
         if not name:
             messages.warning(request, 'Banner name shouldnt be empty')
             return redirect(banner_management)
+        
+        if not all(char.isalpha() or char.isspace() for char in name) or len(name.strip()) == 0:
+            messages.warning(request, 'Invalid entry for banner name')
+            return redirect(banner_management)
+        
+        if Coupon.objects.filter(coupan_code=name).exclude(id=banner_id).exists():
+            messages.info(request,"This banner already exists")
+            return redirect(banner_management)
 
         if not description:
             messages.warning(request, 'Banner description shouldnt be empty')
             return redirect(banner_management)
 
-        if not all(char.isalpha() or char.isspace() for char in name):
-            messages.warning(request, 'Invalid entry for banner name')
-            return redirect(banner_management)
-
-        if not all(char.isalpha() or char.isspace() for char in description):
-            messages.warning(request, 'Invalid entry for banner description')
-            return redirect(banner_management)
+        if not all(char.isalpha() or char.isspace() or char in ["'", '.'] for char in description) or len(description.strip()) == 0:
+            messages.warning(request, 'Invalid entry for banner decription')
+            return redirect(banner_management)  
 
         if not discount.isdigit():
             messages.warning(request,'Enter only positive number')
@@ -221,6 +224,7 @@ def banner_edit(request,banner_id):
                 image =im
                 )
             carousel.save() 
+        messages.info(request,f"{update_banner.banner_name} got updated")        
         return redirect(banner_management)
     else:
         messages.info(request,'some field is empty')

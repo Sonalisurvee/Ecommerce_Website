@@ -24,7 +24,7 @@ urlpatterns = [
     path('admindj/', admin.site.urls),
     path('',include('account.urls')),
     path('',include('home.urls')),
-    path('category/',include('category.urls')),
+    path('admin/category/',include('category.urls')),
     path('',include('store.urls')),
     path('cart/',include('cart.urls')),
     path('wishlist/',include('wishlist.urls')),

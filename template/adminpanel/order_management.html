@@ -1,73 +1,77 @@
 {% extends 'adminpanel/adminbase.html' %}
 {% block title %}Order {% endblock title %}
 {% block body %}
-<style>
-  .cap p:first-letter {
-    text-transform: capitalize;
-  }
-</style>
+
 
 <main id="main" class="main">
+
   <div class="pagetitle">
-    <h1>Dashboard</h1>
+    <h1>Signora</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
-        <li class="breadcrumb-item active">Order management</li>
+          <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
+          <li class="breadcrumb-item active"> Order list</li>
       </ol>
-    </nav>
-  </div>
-  <p class="text-center">
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">Order management</h5>
+  </nav>
+  </div> <!-- End Page Title -->
 
-      <!-- Table with hoverable rows -->
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th scope="col">id</th>
-            <th scope="col">Customer</th>
-            <th scope="col">order_id</th>
-            <th scope="col">Address</th>
-            <th scope="col">Payment mode</th>
-            <th scope="col">Order date</th>
-            <th scope="col">Tax</th>
-            <th scope="col">Grand total</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for o in orders %}
-          <tr>
-            <th scope="row">{{ forloop.counter }}</th>
-            <td>{{o.order_id}}</td>
-            <td>{{o.user.username}}</td>
-            <td>{{o.delivery_address.house_name}}</td>
-            <td>{{o.payment.payment_method}}</td>
-            <td>{{o.ordered_date.date}}</td>
-            <td>{{o.payment.tax}}</td>
-            <td>{{o.payment.grand_total}}</td>
-            <td>              
-              <a href="{% url 'view_order' o.id %}"> <i class="fa-solid fa-eye"></i></a>            
-            </td>
 
-          
-            
+
+  <div class="col-12">
+    <div class="card recent-sales overflow-auto">
+
+
+      <div class="card-body">
+        <h5 class="card-title">Orders list</h5>
+
+
+        <table class="table table-borderless datatable">
+          <thead>
+            <tr>
+              <th scope="col">Order ID</th>
+              <th scope="col" class="text-center">Customer</th>
+              <th scope="col">Delivery address</th>
+              <th scope="col">Ordered date</th>
+              <th scope="col">Payment</th>
+              <th scope="col">Sub total</th>
+              <th scope="col">Tax</th>
+              <th scope="col">Grand Total</th>
+              <th scope="col">View</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            {% for o in orders %}
+            <tr>
+              <td><a href="#">
+                {{o.order_id}}</a>
+              </td>
+              <td class="text-center">{{o.user.id}}</td>
+              <td>{{o.delivery_address.full_name}}, {{o.delivery_address.house_name}},
+                    {{o.delivery_address.city}}, {{o.delivery_address.district}}, {{o.delivery_address.state}},
+                    PIN: {{o.delivery_address.pin}}
+              </td>
+              <td>{{o.ordered_date}}</td>
+              <td>{{o.payment.payment_method}}</td>
+              <td>₹{{o.payment.cart_total}}</td>
+              <td><span class="badge bg-success">₹{{o.payment.tax}}</span></td>
+              <td class="text-center"><span class="badge bg-secondary">₹{{o.payment.grand_total}}</span></td>
+              <td>              
+                <a href="{% url 'view_order' o.id %}"> <i class="fa-solid fa-eye"></i></a>            
+              </td>  
+                
+
+            </tr>
             {% endfor %}
+          </tbody>
+        </table>
 
-
-
-
-          </tr>
-        </tbody>
-      </table>
-      <!-- End Table with hoverable rows -->
-
+      </div>
     </div>
   </div>
-  </p>
-</main><!-- End #main -->
 
+</main>
+
+          
 
 {% endblock body %}

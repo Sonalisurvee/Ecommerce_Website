@@ -63,7 +63,7 @@ def update_product(request, product_id):
             return redirect(product_management)
         
         if not all(char.isalpha() or char.isspace() or char in ["'", '.'] for char in product_description) or len(product_description.strip()) == 0:
-            messages.warning(request, 'Invalid entry for product name')
+            messages.warning(request, 'Invalid entry for product description')
             return redirect(product_management)   
         
         if not stock.isdigit():

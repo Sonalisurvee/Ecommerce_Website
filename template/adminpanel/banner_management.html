@@ -1,44 +1,44 @@
 {% extends 'adminpanel/adminbase.html' %}
-{% block title %}Banner{% endblock title %}
+{% block title %}Banner {% endblock title %}
 {% block body %}
 
-<style>
-
- 
-</style>
 
 <main id="main" class="main">
-    <div class="pagetitle">
-        <h1>Banner</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
-                <li class="breadcrumb-item active">Banner</li>
-            </ol>
-        </nav>
-    </div>
-    <p class="text-center">
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Banner management</h5>
+
+  <div class="pagetitle">
+    <h1>Signora</h1>
+    <nav>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Banner managment</li>
+      </ol>
+  </nav>
+  </div> <!-- End Page Title -->
+
+
+
+  <div class="col-12">
+    <div class="card recent-sales overflow-auto">
+      <div class="card-body">
+        <h5 class="card-title">Banner list</h5>
             {% include 'message.html' %}
 
-            <!-- Table with hoverable rows -->
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">id</th>
-                        <th scope="col">Banner name</th>
-                        <th scope="col">Image</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">discount</th>
-                        <th scope="col">Action</th>
-                    
-                    </tr>
-                </thead>
-                <tbody>
 
-                    {% for b in banners %}
+        <table class="table table-borderless datatable">
+          <thead>
+             <tr>
+                <th scope="col">id</th>
+                <th scope="col">Banner name</th>
+                <th scope="col">Image</th>
+                <th scope="col">Description</th>
+                <th scope="col">discount</th>
+                <th scope="col">Action</th>
+            
+            </tr>
+          </thead>
+          <tbody>
+
+            {% for b in banners %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{b.banner_name}}</td>
@@ -52,11 +52,11 @@
                             {% endfor %}
                         </td>
                         <td>{{b.note}}</td>
-                        <td>{{b.discount}}</td>                        
+                        <td><span class="badge bg-secondary">{{b.discount}}%</span></td>                        
                         <td>                       
                         <button type="button" class="btn text-warning" data-bs-toggle="modal"
                             data-bs-target="#edit_model-{{forloop.counter}}">
-                            <i class="ri-pencil-line"></i>
+                            <i class="fa-solid fa-pen-to-square fa-lg" style="color: #e07a06;"></i>
                         </button>
                         </td>                     
 
@@ -141,22 +141,15 @@
 
                     </tr>
                     {% endfor %}
+          </tbody>
+        </table>
 
-                </tbody>
-            </table>
-            <!-- End Table with hoverable rows -->
-
-        </div>
+      </div>
     </div>
-    </p>
+  </div>
 
+</main>
 
-
-</main><!-- End #main -->
-
-
+          
 
 {% endblock body %}
-
-
-

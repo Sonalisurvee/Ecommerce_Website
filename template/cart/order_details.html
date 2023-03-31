@@ -215,7 +215,7 @@
                                                 href="{% url 'tracking' item.id %}"
                                                 >Track Order</a>
 
-                                            <!-- {% if item.order_status == 'Cancelled' or item.order_status == 'Refunded' %}
+                                            {% if item.order_status == 'Cancelled' or item.order_status == 'Refunded' %}
                                             <a class="btn btn-sm btn-secondary text-light rounded-pill py-2"
                                                 >Cancelled Order</a
                                             >
@@ -228,7 +228,7 @@
                                             >
                                                 Cancel Order
                                             </button>
-                                            {% endif %} -->
+                                            {% endif %}
                                         </div>
                                         <p class="mb-0 text-black text-danger pt-2">
                                             <span class="text-black font-weight-bold"> Total Paid:</span> ₹{{item.item_total}}.00

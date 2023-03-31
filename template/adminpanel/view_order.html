@@ -1,5 +1,5 @@
 {% extends 'adminpanel/adminbase.html' %}
-{% block title %}Order list{% endblock title %}
+{% block title %}Order list {% endblock title %}
 {% block body %}
 <style>
   .cap p:first-letter {
@@ -8,40 +8,46 @@
 </style>
 
 <main id="main" class="main">
+
   <div class="pagetitle">
-    <h1>Dashboard</h1>
+    <h1>Signora</h1>
     <nav>
-      <ol class="breadcrumb">
+     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'order_management' %}">Order management</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'order_management' %}">Order list</a></li>
         <li class="breadcrumb-item active">Order details</li>
       </ol>
-    </nav>
-  </div>
+  </nav>
+  </div> <!-- End Page Title -->
 
 
-  <p class="text-center">
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">Order detailst</h5>
-      {% include 'message.html' %}
 
-      <!-- Table with hoverable rows -->
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th scope="col">id</th>
-            <th scope="col">product</th>
-            <th scope="col">Image</th>
-            <th scope="col">variant</th>
-            <th scope="col">item price</th>
-            <th scope="col">Qantity</th>
-            <th scope="col">Item total</th>
-            <th scope="col">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for o in order_items %}
+  <div class="col-12">
+    <div class="card recent-sales overflow-auto">
+
+
+      <div class="card-body">
+        <h5 class="card-title">Orders details</h5>
+
+        {% include 'message.html' %}
+
+        <table class="table table-borderless datatable">
+          <thead>
+            <tr>
+              <th scope="col">id</th>
+              <th scope="col">product</th>
+              <th scope="col">Image</th>
+              <th scope="col">variant</th>
+              <th scope="col">item price</th>
+              <th scope="col">Qantity</th>
+              <th scope="col">Item total</th>
+              <th scope="col">Status</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+
+           {% for o in order_items %}
           <tr>
             <th scope="row">{{ forloop.counter }}</th>
             <td>{{o.product.product_name}}</td>
@@ -56,11 +62,29 @@
             <td>{{o.item_price}}</td>
             <td>{{o.quantity}}</td>
             <td>{{o.item_total}}</td>
-            <td>{{o.order_status}}</td>
+
+
+
+            <!-- <td>{{o.order_status}}</td> -->
+            {%if o.order_status == 'Ordered'%}
+              <td><span class="badge bg-success">Ordered</span></td>
+            {% elif o.order_status == 'Shipped'%}
+              <td><span class="badge bg-warning">Shipped</span></td>
+            {% elif o.order_status == 'Out for delivery'%}
+              <td><span class="badge bg-secondary">Out for delivery</span></td>
+            {% elif o.order_status == 'Cancelled'%}
+              <td><span class="badge bg-danger">Cancelled</span></td>
+            {% elif o.order_status == 'Delivered'%}
+              <td><span class="badge bg-info">Delivered</span></td>
+            {% else %}
+              <td><span class="badge bg-primary">Refunded</span></td>
+            {% endif %}
+
             <td>
               <button type="button" class="btn text-warning" data-bs-toggle="modal"
                 data-bs-target="#edit_model-{{forloop.counter}}">
-                <i class="ri-pencil-line"></i>
+                <i class="fa-solid fa-pen-to-square fa-lg" style="color: #e07a06;"></i>
+
               </button>
             </td>
             <div class="modal fade" id="edit_model-{{forloop.counter}}" tabindex="-1"
@@ -97,16 +121,18 @@
                 </div>
               </div>
             </div>
-          {% endfor %}
           </tr>
-        </tbody>
-      </table>
-      <!-- End Table with hoverable rows -->
+          {% endfor %}
+          </tbody>
+        </table>
 
+      </div>
     </div>
   </div>
-  </p>
-</main><!-- End #main -->
 
-<h3>shgfgjjhfjnj</h3>
+</main>
+
+          
+
 {% endblock body %}
+
