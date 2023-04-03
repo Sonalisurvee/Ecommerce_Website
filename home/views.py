@@ -1,10 +1,10 @@
 from django.shortcuts import render,redirect,get_object_or_404,HttpResponseRedirect,HttpResponse
 from django.contrib import messages
-from .models import Banner,Carousel
+from .models import Banner,Carousel,Admin_profile
 from account.models import Account,Address
 from category.models import Category
 from cart.models import Coupon,Order,OrderItem,Payment
-from store.models import Product
+from store.models import Product,ReviewRating,Varitaion,SizeVariant
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -14,7 +14,8 @@ from django.conf import settings
 from django.db.models import  Sum
 import os
 import re
-1
+from django.http import JsonResponse
+from django.core.mail import send_mail
 
 
 def index(request):   
@@ -104,6 +105,8 @@ def profile(request):
 
 
 
+
+
 #---
 def update_profile(request,user_id):
     user=get_object_or_404(Account,pk=user_id)
@@ -111,42 +114,11 @@ def update_profile(request,user_id):
         fname=request.POST['fname']
         lname=request.POST['lname']
         number=request.POST['number']       
-        if not fname:
-            messages.info(request,'First name is missing')
-            return redirect(profile)
-        if not lname:
-            messages.info(request,'last name is missing')
-            return redirect(profile)
-
-        if not all(char.isalpha() or char.isspace() for char in fname) or len(fname.strip()) == 0:
-            messages.warning(request, 'Invalid entry for first name')
-            return redirect(profile)        
-
-        if not all(char.isalpha() or char.isspace() for char in lname) or len(lname.strip()) == 0:
-            messages.warning(request, 'Invalid entry for last name')
-            return redirect(profile) 
-        
-        if not re.match(r'^[1-9]\d{9}$', number) or number.startswith('00'):
-            messages.warning(request, 'Invalid entry for number')
-            return redirect(profile)
-        
+               
         update_user = Account.objects.filter(id=user_id)  
         update_user.update(first_name=fname,last_name=lname,phone_number=number)
-        return redirect(profile)
-    
-
-        
-        if not re.match(r'^[1-9]\d{9}$', number) or number.startswith('00'):
-            # If phone number is not valid, show error message
-            error_message = 'Please enter a valid 10-digit phone number (not starting with 00)'
-            return render(request, 'error.html', {'message': error_message})
-
-    
-
-
-
-
-
+        messages.success(request, 'Your profile has been updated successfully.')
+        return redirect(profile)     
     else:
         messages.info(request,'some field is empty')
         return render(request,'userpanel/profile.html',{'user':user})
@@ -287,13 +259,20 @@ def update_status(request, id):
             order.order_status = status
             order.save()
             messages.success(request, 'Status updated succesfully')
+            mess=f'Hello\t{order.user.first_name},\n Your order {order.product.product_name} with Order ID: {order.order.order_id} has been {order.order_status} successfully\n Track your order status in our website \n Thank you' 
+            send_mail(
+                    'Order status',
+                    mess,
+                    settings.EMAIL_HOST_USER,
+                    [order.user.email],
+                    fail_silently=False
+                )
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         
         except OrderItem.DoesNotExist:
             messages.error(request, 'Something gone wrong')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
             
-
 
 
 
@@ -471,32 +450,23 @@ def order_invoice(request, order_id):
 
 
 
-def cancel_order(request, item_id=None, order_id=None):
-        
+def cancel_order(request, item_id=None, order_id=None):        
     client = razorpay.Client(auth=(settings.KEY, settings.SECRET_KEY))
-
     order = Order.objects.get(user=request.user, order_id=order_id)
-
     payment_id = order.payment.transaction_id
-
     item = OrderItem.objects.get(order=order, id=item_id)
-
-    item_amount = int(item.item_total) * 100
-
+    item_amount = int(item.item_total * 100)
 
     refund = client.payment.refund(payment_id,{'amount':item_amount})
 
-
     if refund is not None:
-
         item.order_status = 'Refunded'
-
+        item.variantion.stock += item.quantity
         item.save()
 
-        return render(request, 'orders/refund_success.html',{'order_id':order_id})
+        return render(request, 'cart/refund_success.html',{'order_id':order_id})
     
     else:
-
         return HttpResponse('Payment Not Captured')
 
 
@@ -526,3 +496,95 @@ def sales(request):
 
     return render(request,'adminpanel/sales_report.html',context)
 
+def admin_profile(request):
+        admin = Admin_profile.objects.get(user = request.user)
+
+
+        # profile = Account
+        return render(request,'adminpanel/admin_profile.html',{'admin': admin})
+
+def admin_profile_update(request,admin_id):
+    
+        return render(request,'adminpanel/admin_profile.html')
+    
+    
+
+
+# -----------------------------------------------review managment-----------------------------------------------
+
+def review_management(request):
+    dict_review = {
+        'review': ReviewRating.objects.all().order_by('id')        
+    }
+
+    return render(request,'adminpanel/admin_review.html',dict_review)
+
+
+
+
+def delete_review(request,id):
+    review = get_object_or_404(ReviewRating,pk=id)
+    delete_reviews = ReviewRating.objects.filter(id=id)
+    delete_reviews.delete()
+    messages.warning(request,f"Deleted the {review.title} review")
+    return redirect(review_management)
+
+# -----------------------------------------------Varaint managment-----------------------------------------------
+
+def variant_management(request):
+    dict_variant = {
+        'variations' : Varitaion.objects.all().order_by('id'),
+        'products' : Product.objects.all().order_by('id'),
+        'size' : SizeVariant.objects.all().order_by('id')
+    }
+    return render(request,'adminpanel/variants.html',dict_variant)
+
+def variant_delete(request,id):
+    variant = get_object_or_404(Varitaion,pk=id)
+    delete_variant = Varitaion.objects.get(id=id)
+    delete_variant.delete()
+    messages.warning(request,f"Deleted the {variant.size_variant} on {variant.product}")    
+    return redirect(variant_management)
+
+def variant_edit(request,id):
+    variant = get_object_or_404(Varitaion,pk=id)
+    if request.method == 'POST':
+        product = request.POST['product']
+        size = request.POST['size']
+        stock = request.POST['stock']
+
+        products = Product.objects.get(product_name = product)
+        sizes = SizeVariant.objects.get(size_name = size)
+
+        # these aboe both are the instance like product and size_name like product and size_variant are in the variation and both are the forgin fkey so to stoe it we need the posted value as the instance ,
+        edit_variant = Varitaion.objects.filter(id=id)
+        edit_variant.update(
+            product=products,
+            size_variant=sizes,
+            stock=stock
+            )
+        messages.success(request,f"Updated the {variant.size_variant} on {variant.product}")
+        return redirect(variant_management)
+    else:
+        messages.info(request,'some field is empty')
+        return redirect(variant_management)
+
+def add_variant(request):
+    if request.method == 'POST':
+        product = request.POST['product']
+        size = request.POST['size']
+        stock = request.POST['stock']
+
+        products = Product.objects.get(product_name = product)
+        sizes = SizeVariant.objects.get(size_name = size)
+        edit_variant = Varitaion.objects.create(
+            product=products,
+            size_variant=sizes,
+            stock=stock
+            )
+        edit_variant.save()
+        messages.success(request,"gfhj")
+        return redirect(variant_management)
+    else:
+        messages.info(request,'some field is empty')
+        return redirect(variant_management)

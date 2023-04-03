@@ -252,7 +252,7 @@ input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:
             </div>
 
             <hr>
-
+<!-- 
 <div class="newradio pt-2">
             {% if single_product.size_variant.count %}
             <div class="row container pl-3">
@@ -268,7 +268,36 @@ input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:
               {% endfor %}           
               </div>
             {% endif %}
-          </div>
+          </div> -->
+
+
+
+          <div class="newradio pt-2">
+            {% if variants %}
+            <div class="row container pl-3">
+                <p class="col">Size : </p>
+        
+                <div class="col btn-group btn-group-toggle" data-toggle="buttons">
+                   
+                  <!-- {% if selected_size %}
+                    <label class="btn btn-secondary active">
+                        <input type="radio" name="options" id="suv" autocomplete="off" onchange="get_current_price()"
+                            value="{{selected_size}}" checked>
+                        {{size_variant}}
+                    </label>
+                    {% endif %} -->
+        
+                    {% for variant in variants %}
+                    <label class="btn btn-secondary {% if selected_size == variant.size_name %} active {% endif %}">                        
+                    <input type="radio" name="options" id="suv" autocomplete="off" onchange="get_correct_price('{{variant.size_variant}}')" 
+                    value="{{variant}}" {% if selected_size == variant.size_variant %} checked {% endif %}> {{ variant.size_variant }}
+                    </label>
+                    {% endfor %}        
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
 
 
 
@@ -587,11 +616,6 @@ input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:
     </div>
   </section>
   <!--================End Product Description Area =================-->
-
-
-
-
-
 
 
 

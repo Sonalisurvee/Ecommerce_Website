@@ -1,0 +1,103 @@
+{% extends 'adminpanel/adminbase.html' %}
+{% block title %}Review {% endblock title %}
+{% block body %}
+
+
+<main id="main" class="main">
+
+  <div class="pagetitle">
+    <h1>Signora</h1>
+    <nav>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
+          <li class="breadcrumb-item active"> Review list</li>
+      </ol>
+  </nav>
+  </div> <!-- End Page Title -->
+
+
+
+  <div class="col-12">
+    <div class="card recent-sales overflow-auto">
+
+
+      <div class="card-body">
+        <h5 class="card-title">Review list</h5>
+
+            {% include 'message.html' %}
+
+        <table class="table table-borderless datatable">
+          <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">Image</th>
+                <th scope="col">Product</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Title</th>
+                <th scope="col">Review</th>
+                <th scope="col">Rating</th>
+                <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+
+          {% for r in review %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{r.product.image.url}}</td>
+                        <td>{{r.product.product_name}}</td>
+                        <td>{{r.user.first_name}}</td>    
+                        <td>{{r.title}}</td>    
+                        <td>{{r.review}}</td>    
+                        <td>{{r.rating}}</td>          
+
+                        <td>                             
+                            <button type="button" class="btn text-danger" data-bs-toggle="modal"
+                                data-bs-target="#delete_model-{{forloop.counter}}">
+                                <i class="fa-solid fa-trash-can fa-lg" style="color: #f10404;"></i>
+                            </button>                           
+                        </td>
+
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="delete_model-{{forloop.counter}}" tabindex="-1"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
+                                            Delete Coupon</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        are you sure to delete this review <span
+                                            class="text-danger">"{{r.title}}"</span>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <form action="{% url 'delete_review' r.id %}" style="float: right;"
+                                            method="post" class="float-right d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </tr>
+                    {% endfor %}
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+ 
+
+{% endblock body %}

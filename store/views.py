@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404,HttpResponse
-from .models import Product,Product_Image,ReviewRating
+from .models import Product,Product_Image,ReviewRating,Varitaion
 from category.models import Category
 from cart.models import CartItems,Cartt
 # from cart.views import _cart_id
@@ -126,12 +126,6 @@ def add_product(request):
         if Product.objects.filter(product_name=productname).exists():
             messages.info(request,"This product already exists")
             return redirect(product_management)
-
-        try:
-            product_image=request.FILES['image']
-        except:
-            messages.warning(request,'Thumbnail image is required for creating a product.')
-            return redirect(product_management)
         
         if not description:
             messages.warning(request, 'Product description shouldnt be empty')
@@ -158,20 +152,16 @@ def add_product(request):
         if 'e' in price.lower() or float(price) > 1000000:
             messages.warning(request,'Enter only numbers, scientific notation not allowed, and the price should not exceed 1000000')
             return redirect(product_management)
+        
+        try:
+            product_image=request.FILES['image']
+        except:
+            messages.warning(request,'Thumbnail image is required for creating a product.')
+            return redirect(product_management)
     
         cat_instance = Category.objects.get(id=category)#for admin to view our category ,as cate is the forign key in product for we have to assig suprate instance for it so 
         # because we dint gave any related name to the category and now the id stored in the category will be stored in the category instance
         # 
-
-        prod = Product.objects.create(
-            product_name=productname,
-            image=product_image,
-            category=cat_instance,
-            stock=stock,price=price,
-            # slug=slug,
-            product_description=description
-            )
-        
         try:
             product_image = request.FILES['image']
         except KeyError:
@@ -193,9 +183,7 @@ def add_product(request):
         # before the error was like cant assign name to product as there was no product exist or we dint add
 
         try:
-            multi_imaeg = request.FILES.getlist('imagess')
-
-            
+            multi_imaeg = request.FILES.getlist('imagess')            
             for image in multi_imaeg:
                 Product_Image.objects.create(
                     product=prod, 
@@ -254,6 +242,61 @@ def product_list(request,category_slug=None):
 
 # Basically this is the view fun for viewing the details of single product 
 
+# def product_details(request, category_slug,product_slug):
+#     context = {}
+#     try:
+#         # size=request.Get.get('size')
+
+#         single_product = Product.objects.get(category__slug=category_slug,slug=product_slug)
+#         #this will show the single product based on the cate slug and prod slug 
+#         reviews = ReviewRating.objects.filter(product=single_product)
+
+#         cat=Product.objects.get(slug=product_slug)
+#         # this will only shows the cate matching product
+
+#         # user = request.user
+#         # cart= Cartt.objects.get_or_create(user = user,is_paid = False)        
+#         # in_cart = CartItems.objects.filter(carts=cart, products=single_product).exists()
+        
+       
+#         try:
+#             if request.GET.get('size'):
+#                 size = request.GET.get('size')
+#                 price = single_product.get_product_price_by_size(size)
+#                 context['selected_size'] = size
+#                 context['updates_price'] = price
+#                 # updates_price = price
+#                 # name 'updates_price' is not defined,this error i got wen i gave update_p outside the context.and i got this because 
+#         except:
+#             pass
+
+
+#     # if somebody enters wrong slug of product or try to search for anything n urls then it will raie an exception 
+#     # instead of raise e we can give the link to our 404 error page or any other link .
+#     # except Exception as e:
+#         # raise e    
+#     except Exception as e:
+#         return render(request,'404.html')
+        
+        
+
+        
+#     products = Product_Image.objects.filter(product=single_product)    
+    
+#     context.update({
+#         'single_product': single_product,
+#         # 'in_cart': in_cart,
+#         'cat':cat,
+#         'products':products,
+#         'reviews':reviews
+#     })
+#     print(context)
+
+#     return render(request,'product/single_product.html',context)
+
+
+
+
 def product_details(request, category_slug,product_slug):
     context = {}
     try:
@@ -261,48 +304,37 @@ def product_details(request, category_slug,product_slug):
 
         single_product = Product.objects.get(category__slug=category_slug,slug=product_slug)
         #this will show the single product based on the cate slug and prod slug 
+        variants = Varitaion.objects.filter(product=single_product)
         reviews = ReviewRating.objects.filter(product=single_product)
+        cat=Product.objects.get(slug=product_slug)  
+        products = Product_Image.objects.filter(product=single_product)   
 
-        cat=Product.objects.get(slug=product_slug)
-        # this will only shows the cate matching product
-
-        # user = request.user
-        # cart= Cartt.objects.get_or_create(user = user,is_paid = False)        
-        # in_cart = CartItems.objects.filter(carts=cart, products=single_product).exists()
-        
-       
-        try:
-            if request.GET.get('size'):
-                size = request.GET.get('size')
-                price = single_product.get_product_price_by_size(size)
-                context['selected_size'] = size
-                context['updates_price'] = price
-                # updates_price = price
-                # name 'updates_price' is not defined,this error i got wen i gave update_p outside the context.and i got this because 
-        except:
-            pass
-
-
-    # if somebody enters wrong slug of product or try to search for anything n urls then it will raie an exception 
-    # instead of raise e we can give the link to our 404 error page or any other link .
-    # except Exception as e:
-        # raise e    
-    except Exception as e:
-        return render(request,'404.html')
-        
-        
-
-        
-    products = Product_Image.objects.filter(product=single_product)    
-    
-    context.update({
+        context={
         'single_product': single_product,
-        # 'in_cart': in_cart,
+        'variants': variants,
         'cat':cat,
         'products':products,
         'reviews':reviews
-    })
-    print(context)
+        }
+        
+        try:
+            if request.GET.get('size'):
+                size = request.GET.get('size')
+                
+                price = single_product.get_product_price_by_size(size)               
+                context.update({
+                'selected_size': size,  
+                'updates_price': price,                          
+                })
+        except:
+            pass  
+    except Exception as e:
+        return render(request,'404.html')     
+        
+
+        
+    
+  
 
     return render(request,'product/single_product.html',context)
 
@@ -312,10 +344,7 @@ def product_details(request, category_slug,product_slug):
 
 
 
-
-
-
-
+# --------------------------------Review-----------------------------------
 
 
 @login_required

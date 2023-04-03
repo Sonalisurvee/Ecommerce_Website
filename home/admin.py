@@ -10,4 +10,6 @@ class BannerAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Carousel)
+admin.site.register(Admin_profile)
+
  

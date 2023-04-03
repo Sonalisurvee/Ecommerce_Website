@@ -54,12 +54,23 @@ urlpatterns = [
     path('admin/order_management/order_details/<int:id>/', views.view_order, name='view_order'),       
     path('admin/update_status/<int:id>/', views.update_status, name='update_status'),       
     
+    # Review management
+
+    path('admin/review_management/', views.review_management, name='review_management'),
+    path('admin/review_management/delete_review/<int:id>', views.delete_review, name='delete_review'),
     
-    
-    # path('orders/', views.orders, name="orders"),  
+
+    # Variants management
+
+    path('admin/variant_management', views.variant_management, name='variant_management'),       
+    path('admin/variant_management/variant_delete/<int:id>/', views.variant_delete, name='variant_delete'),       
+    path('admin/variant_management/variant_edit/<int:id>/', views.variant_edit, name='variant_edit'), 
+    path('admin/variant_management/add_variant/', views.add_variant, name='add_variant'), 
+
 
     # admin profile
-    # path('admin/profile/', views.admin_profile, name='admin_profile'),       
+    path('admin/profile/', views.admin_profile, name='admin_profile'),       
+    path('admin/profile/admin_profile_update/<int:admin_id>', views.admin_profile_update, name='admin_profile_update'),       
 
 
 ]

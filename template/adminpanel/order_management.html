@@ -46,12 +46,18 @@
               <td><a href="#">
                 {{o.order_id}}</a>
               </td>
-              <td class="text-center">{{o.user.id}}</td>
-              <td>{{o.delivery_address.full_name}}, {{o.delivery_address.house_name}},
-                    {{o.delivery_address.city}}, {{o.delivery_address.district}}, {{o.delivery_address.state}},
-                    PIN: {{o.delivery_address.pin}}
+              <td class="text-center">{{o.user.username}}</td>
+              {% if o.delivery_address %}
+              <td>{{o.delivery_address.house_name}},
+                    {{o.delivery_address.state}}, {{o.delivery_address.city}}, {{o.delivery_address.state}},
+                    PIN: {{o.delivery_address.pincode}}
               </td>
-              <td>{{o.ordered_date}}</td>
+              {% else %}
+              <td>no address</td>
+              {% endif %}
+              <!-- <td>{{o.ordered_date.date}}</td> -->
+              <td>{{ o.ordered_date.date|date:"m/d/Y" }}</td>
+
               <td>{{o.payment.payment_method}}</td>
               <td>₹{{o.payment.cart_total}}</td>
               <td><span class="badge bg-success">₹{{o.payment.tax}}</span></td>

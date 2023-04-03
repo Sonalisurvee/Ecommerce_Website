@@ -6,7 +6,7 @@ class CartAdmin(admin.ModelAdmin):
     list_display = [ 'user']
 
 class CartitemAdmin(admin.ModelAdmin):
-    list_display = [ 'carts', 'products', 'size_variant']
+    list_display = [ 'carts', 'products', 'variant']
 
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):

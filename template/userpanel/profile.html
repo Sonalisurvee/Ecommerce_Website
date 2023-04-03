@@ -222,7 +222,7 @@
 
 
 <!-- Modal to edit the details of user-->
-<div class="modal fade" id="deletModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<!-- <div class="modal fade" id="deletModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -260,13 +260,156 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- multiple address -->
+<!-- <div class="modal fade" id="deletModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'update_profile' user.id %}" method="POST" id="update-profile-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="fname">First name:</label>
+                        <input name="fname" value="{{user.first_name}}" type="text" id="fname"
+                            class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="lname">Last name:</label>
+                        <input name="lname" value="{{user.last_name}}" type="text" id="lname"
+                            class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="number">Phone number:</label>
+                        <input name="number" value="{{ user.phone_number }}" type="tel" id="number"
+                            class="form-control" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Update</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> -->
+  
 
 
+<!-- this is the perfect modal for update above one-->
 
+<div class="modal fade" id="deletModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="messages" style="display: none;"></div>
+                <!-- message div -->
+                <form action="{% url 'update_profile' user.id %}" method="POST" id="update-profile-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="fname">First name:</label>
+                        <input name="fname" value="{{user.first_name}}" type="text" id="fname"
+                            class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="lname">Last name:</label>
+                        <input name="lname" value="{{user.last_name}}" type="text" id="lname"
+                            class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="number">Phone number:</label>
+                        <input name="number" value="{{ user.phone_number }}" type="tel" id="number"
+                            class="form-control" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Update</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% comment %} 
+<script>
+    var messagesDiv = document.getElementById('messages');
+    var updateForm = document.getElementById('update-profile-form');
 
+    updateForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        messagesDiv.innerHTML = ''; // clear previous messages
+        var fname = updateForm.elements['fname'].value;
+        var lname = updateForm.elements['lname'].value;
+        var number = updateForm.elements['number'].value;
+        if (!fname) {
+            messagesDiv.innerHTML = '<div class="alert alert-danger">First name is missing</div>';
+        }
+        else if (!lname) {
+            messagesDiv.innerHTML = '<div class="alert alert-danger">Last name is missing</div>';
+        }
+        else {
+            // submit the form
+            updateForm.submit();
+        }
+        // show the messages div if there are messages
+        if (messagesDiv.innerHTML.trim() !== '') {
+            messagesDiv.style.display = 'block';
+        }
+    });
+</script>  {% endcomment %}
+
+<script>
+    var messagesDiv = document.getElementById('messages');
+    var updateForm = document.getElementById('update-profile-form');
+
+    updateForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        messagesDiv.innerHTML = ''; // clear previous messages
+        var fname = updateForm.elements['fname'].value;
+        var lname = updateForm.elements['lname'].value;
+        var number = updateForm.elements['number'].value;
+        if (!fname) {
+            messagesDiv.innerHTML = '<div class="alert alert-danger">First name is missing</div>';
+        }        
+        else if (!fname.match(/^[A-Za-z ]+$/)) {
+            messagesDiv.innerHTML = '<div class="alert alert-danger">First name should not contain numbers or special characters</div>';
+        }
+        else if (!lname) {
+            messagesDiv.innerHTML = '<div class="alert alert-danger">Last name is missing</div>';
+        }        
+        else if (!lname.match(/^[A-Za-z ]+$/)) {
+            messagesDiv.innerHTML = '<div class="alert alert-danger">Last name should not contain numbers or special characters</div>';
+        }
+        else if (/\s/.test(fname) || /\s/.test(lname)) {
+            messagesDiv.innerHTML = '<div class="alert alert-danger">First and last name should not contain spaces</div>';
+        }
+        else if (!/^[1-9]\d{9}$/.test(number) || number.startsWith('00')) {
+            messagesDiv.innerHTML = '<div class="alert alert-danger">Invalid entry for phone number</div>';
+        }
+        else {
+            // submit the form
+            updateForm.submit();
+        }
+        // show the messages div if there are messages
+        if (messagesDiv.innerHTML.trim() !== '') {
+            messagesDiv.style.display = 'block';
+        }
+    });
+</script>
 
 
 

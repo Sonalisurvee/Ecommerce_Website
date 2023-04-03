@@ -6,13 +6,6 @@ from django.utils.text import slugify
 from account.models import Account
 
 
-class ColorVariant(models.Model):
-   color_name = models.CharField(max_length=100)
-   price = models.IntegerField(default=0)
-
-   def __str__(self):
-        return self.color_name
-
 class SizeVariant(models.Model):
    size_name = models.CharField(max_length=100)
    price = models.IntegerField(default=0)
@@ -31,7 +24,6 @@ class Product(models.Model):
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    color_variant = models.ManyToManyField(ColorVariant,blank=True)
     size_variant = models.ManyToManyField(SizeVariant,blank=True)
 
 
@@ -69,7 +61,6 @@ class Product_Image(models.Model):
 
     def __str__(self):
         return f'{self.product.product_name}'
-
 
 
 class Varitaion(models.Model):

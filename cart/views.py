@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from store.models import Product,SizeVariant
+from store.models import Product,SizeVariant,Varitaion
 from .models import Coupon,Cartt,CartItems,Payment,Order,OrderItem
 from account.models import Address
 from django.core.exceptions import ObjectDoesNotExist
@@ -24,34 +24,35 @@ def add_to_cart(request,product_id):
     variant = None
     variation =None
     variation = request.GET.get('variant')#querystring
+    product = Product.objects.get(id=product_id)
     
     if variation:
         variation = request.GET.get('variant')
-        variant = SizeVariant.objects.get(size_name=variation)
+        size = SizeVariant.objects.get(size_name=variation)
+        variant = Varitaion.objects.get(product=product, size_variant=size)
+
 
     current_user = request.user
-    product = Product.objects.get(id=product_id)
-    if product.stock < 1:
+    if variant.stock < 1:
         messages.warning(request, f"{product.product_name} are out of stock")
         return redirect('cart')
 
     
     if current_user.is_authenticated:
         cart , _ = Cartt.objects.get_or_create(user = current_user,is_paid = False)
-        is_cart_item_exists = CartItems.objects.filter(carts=cart, products=product, size_variant=variant).exists()
+        is_cart_item_exists = CartItems.objects.filter(carts=cart, products=product, variant=variant).exists()
         if is_cart_item_exists:
-            cart_item = CartItems.objects.get(carts=cart, products=product, size_variant=variant)
-            if cart_item.quantity >= product.stock:
-                messages.info(request,f"Sorry, only {product.stock} units of {product.product_name} are available.")
+            cart_item = CartItems.objects.get(carts=cart, products=product, variant=variant)
+            if cart_item.quantity == variant.stock:
+                messages.info(request,f"Sorry, only {variant.stock} units of {product.product_name} are available.")
                 return redirect('cart')
-                # return False, f"Sorry, only {product.stock} units of {product.product_name} are available."
-            else:
-                cart_item.quantity+=1
+            cart_item.variant = variant
+            cart_item.quantity += 1
         else:
             cart_item = CartItems.objects.create( 
             carts = cart,
             products=product,
-            size_variant = variant
+            variant = variant
         )
         cart_item.save()
 
@@ -62,13 +63,17 @@ def add_to_cart(request,product_id):
             cart = Cartt.objects.create(cart_id=_cart_id(request)) 
         cart.save()
         try:
-            cart_item = CartItems.objects.get(products=product,carts=cart,size_variant=variant)
-            cart_item.quantity+=1 
+            cart_item = CartItems.objects.get(products=product,carts=cart,variant=variant)
+            if cart_item.quantity == variant.stock:
+                messages.info(request,f"Sorry, only {variant.stock} units of {product.product_name} are available.")
+                return redirect('cart')
+            cart_item.variant = variant
+            cart_item.quantity += 1
         except CartItems.DoesNotExist:
             cart_item = CartItems.objects.create(
                 products=product,
                 carts=cart,
-                size_variant=variant
+                variant=variant
             )
         cart_item.save() 
     messages.success(request, f"{product.product_name}Item had been added to the cart")  
@@ -150,9 +155,7 @@ def checkout(request,cart_items=None):
             
         except:
             pass
-        
-
-        # if name
+    
 
         if request.method == 'POST':
             coupon = request.POST.get('coupon')
@@ -204,6 +207,10 @@ def checkout(request,cart_items=None):
     else:
         messages.warning(request, 'Login required to checkout')
         return redirect('log_in')
+    
+    
+# referer = request.META['HTTP_REFERER']
+# return HttpResponseRedirect(referer)
         
 
 def success(request):
@@ -217,7 +224,7 @@ def success(request):
 # this will create details in the payment model 
 
     current_user = request.user
-    transaction = request.GET.get('order_id')
+    transaction = request.GET.get('razorpay_payment_id')
     cart_total = cart.get_cart_total()
     tax =cart.get_tax()
     grand_total = cart.get_grand_total()
@@ -246,9 +253,9 @@ def success(request):
     order_items = CartItems.objects.filter(carts = cart)
     for orderitems in order_items:
 
-        orderitems.products.stock -= orderitems.quantity
+        orderitems.variant.stock -= orderitems.quantity
 
-        orderitems.products.save()
+        orderitems.variant.save()
 
         order_items = OrderItem.objects.create(
             user = current_user,
@@ -259,10 +266,12 @@ def success(request):
             item_total = orderitems.sub_total()
         )    
         order_items.save()
-        if orderitems.size_variant:
-            order_items.variant = orderitems.size_variant.size_name
+        if orderitems.variant.size_variant:
+            order_items.variant = orderitems.variant.size_variant.size_name 
             order_items.save()
 
+            order_items.variantion = orderitems.variant
+            order_items.save()
 
     # Deleting the cart once we haev ordered the product
 

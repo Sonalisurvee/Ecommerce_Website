@@ -1,4 +1,5 @@
 from django.db import models
+from account.models import Account,Address
 
 # Create your models here.
 class Banner(models.Model):
@@ -22,3 +23,13 @@ class Carousel(models.Model):
     
     def __str__(self):
         return f'{self.carousel_name.banner_name}'
+
+
+class Admin_profile(models.Model):
+    user = models.ForeignKey(Account,on_delete=models.CASCADE)
+    about = models.CharField(max_length=300)
+    address = models.ForeignKey(Address,on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='profile')
+
+    def __str__(self):
+        return f'{self.user.username}'

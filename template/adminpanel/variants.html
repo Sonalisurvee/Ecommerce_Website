@@ -1,5 +1,5 @@
 {% extends 'adminpanel/adminbase.html' %}
-{% block title %}Coupon {% endblock title %}
+{% block title %}Variants {% endblock title %}
 {% block body %}
 
 
@@ -10,7 +10,7 @@
     <nav>
       <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'admin_index' %}">Home</a></li>
-          <li class="breadcrumb-item active"> Coupon list</li>
+          <li class="breadcrumb-item active"> Varaint list</li>
       </ol>
   </nav>
   </div> <!-- End Page Title -->
@@ -22,7 +22,7 @@
 
 
       <div class="card-body">
-        <h5 class="card-title">Coupon list</h5>
+        <h5 class="card-title">Variant list</h5>
 
             {% include 'message.html' %}
 
@@ -30,82 +30,20 @@
           <thead>
             <tr>
                 <th scope="col">id</th>
-                <th scope="col">Coupon</th>
-                <th scope="col">Discount price</th>
-                <th scope="col">Minimum amount</th>
-                <th scope="col">Expired</th>
+                <th scope="col">Product</th>
+                <th scope="col">Size</th>
+                <th scope="col">Stock</th>
                 <th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
 
-          {% for c in coupon %}
+          {% for v in variations %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{c.coupan_code}}</td>
-                        <td>{{c.discount_price}}</td>
-                        <td>{{c.minimum_amount}}</td>
-
-
-                        {% if c.is_expired %}
-                        <td><button type="button" class="btn btn-outline-danger px-4" data-bs-toggle="modal"
-                                data-bs-target="#delete{{ forloop.counter }}">
-                                Expired
-                            </button></td>
-                        <div class="modal fade" id="delete{{ forloop.counter }}" tabindex="-1"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm Delete</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Unexpire {{c.coupan_code}} ?
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                        <a href="{% url 'expired' c.id %}"> <button type="button"
-                                                class="btn btn-primary">Confirm</button></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% else %}
-
-                        <td>
-                            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
-                                data-bs-target="#delete{{ forloop.counter }}">
-                                Un Expired
-                            </button>
-                        </td>
-                        <div class="modal fade" id="delete{{ forloop.counter }}" tabindex="-1"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm Delete</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Expire {{c.coupan_code}}  ?
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                            <a href="{% url 'expired' c.id %}"> <button type="button"
-                                                class="btn btn-primary">Confirm</button></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-
+                        <td>{{v.product.product_name}}</td>
+                        <td>{{v.size_variant}}</td>
+                        <td>{{v.stock}}</td>                  
 
                         <td> 
                             <button type="button" class="btn text-warning" data-bs-toggle="modal"
@@ -127,19 +65,19 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
-                                            Delete Coupon</h1>
+                                            Delete product variant</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        are you sure to delete this coupon <span
-                                            class="text-danger">"{{c.coupan_code}}"</span>
+                                        are you sure to delete this vaiation product <span
+                                            class="text-danger">"{{v.product.product_name}}"</span>
 
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Close</button>
-                                        <form action="{% url 'delete_coupon' c.id %}" style="float: right;"
+                                        <form action="{% url 'variant_delete' v.id %}" style="float: right;"
                                             method="post" class="float-right d-inline">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-primary">Delete</button>
@@ -158,30 +96,36 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">
-                                            Edit Coupon</h1>
+                                            Edit product variant</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="{% url 'update_coupon' c.id %}" method="POST" class="row g-2">
+                                        <form action="{% url 'variant_edit' v.id %}" method="POST" class="row g-2">
                                             {% csrf_token %}
                                             <div class="form-outline mb-3 ">
-                                                <input name="coupan" value="{{c.coupan_code}}" type="text"
-                                                    id="form3Example1cg" class="form-control form-control-lg" />
-                                                <label class="form-label cap" for="form3Example1cg">Coupon</label>
+                                                <select class="form-select" name="product" required>
+                                                    <option value="{{v.product}}" selected>{{v.product}}</option>
+                                                    {% for p in products %}
+                                                    <option value="{{p}}">{{p}}</option>
+                                                    {% endfor %}
+                                                  </select>
                                             </div>
 
                                             <div class="form-outline mb-3">
-                                                <input name="discount" value="{{c.discount_price}}" type="number"
-                                                    id="form3Example1cg" class="form-control form-control-lg" />
-                                                <label class="form-label" for="form3Example1cg">Discount</label>
+                                                <select class="form-select" name="size" required>
+                                                    <option value="{{v.size_variant}}" selected>{{v.size_variant}}</option>
+                                                    {% for s in size %}
+                                                    <option value="{{s}}">{{s}}</option>
+                                                    {% endfor %}
+                                                  </select>
                                             </div>
 
 
                                             <div class="form-outline mb-3">
-                                                <input name="minimum" value="{{c.minimum_amount }}" type="number"
+                                                <input name="stock" value="{{v.stock }}" type="number"
                                                     id="form3Example3cg" class="form-control form-control-lg" />
-                                                <label class="form-label" for="form3Example3cg">Minimum amount</label>
+                                                <label class="form-label" for="form3Example3cg">Stock</label>
                                             </div>
 
                                             <button type="submit" class="btn btn-success">Update</button>
@@ -209,7 +153,7 @@
        
 <button type="button" class="btn btn-outline-primary m-3 sticky-bottom" style="float:right" data-bs-toggle="modal"
     data-bs-target="#addcategory_model-{{forloop.counter}}">
-    Add Coupon
+    Add Variant
 </button>
 
 <!-- Modal -->
@@ -218,29 +162,35 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">Add Coupon</h1>
+                <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">Add Product variant</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{% url 'add_coupon' %}" method="POST" class="row g-2">
+                <form action="{% url 'add_variant' %}" method="POST" class="row g-2">
                     {% csrf_token %}
 
                     <div class="form-outline mb-3">
-                        <input name="coupon" type="text" id="form3Example1cg"
-                            class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Example1cg">Coupon</label>
+                        <select class="form-select" name="product" required>
+                            <option value="{{v.product}}" selected>{{v.product}}</option>
+                            {% for p in products %}
+                            <option value="{{p}}">{{p}}</option>
+                            {% endfor %}
+                          </select>
+                    </div>                
+
+                    <div class="form-outline mb-3">
+                        <select class="form-select" name="size" required>
+                            <option value="{{v.size_variant}}" selected>{{v.size_variant}}</option>
+                            {% for s in size %}
+                            <option value="{{s}}">{{s}}</option>
+                            {% endfor %}
+                          </select>
                     </div>
 
                     <div class="form-outline mb-3">
-                        <input name="discount" type="number" id="form3Example1cg"
+                        <input name="stock" type="number" id="form3Example1cg"
                             class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Example1cg">Discount</label>
-                    </div>
-
-                    <div class="form-outline mb-3">
-                        <input name="minimum" type="number" id="form3Example1cg"
-                            class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Example1cg">Minimun Amount</label>
+                        <label class="form-label" for="form3Example1cg">Stock</label>
                     </div>
 
 

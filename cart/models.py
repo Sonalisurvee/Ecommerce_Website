@@ -1,5 +1,5 @@
 from django.db import models
-from store.models import Product,ColorVariant,SizeVariant
+from store.models import Product,SizeVariant,Varitaion
 from account.models import Account,Address
 from decimal  import Decimal
 
@@ -57,9 +57,10 @@ class Cartt(models.Model):
 class CartItems(models.Model):
     carts = models.ForeignKey(Cartt, on_delete=models.CASCADE,related_name='cart_items')
     products = models.ForeignKey(Product, on_delete=models.SET_NULL,null=True,blank=True)
-    color_variant = models.ForeignKey(ColorVariant,on_delete=models.SET_NULL,null=True,blank=True)
     size_variant = models.ForeignKey(SizeVariant,on_delete=models.SET_NULL,null=True,blank=True)
     quantity = models.IntegerField(default=1)
+    variant = models.ForeignKey(Varitaion, on_delete=models.SET_NULL, null=True, blank=True)
+
     
     def __unicode__(self):
         return self.carts
@@ -121,6 +122,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     variant = models.CharField(max_length=100, null=True,blank=True)
+    variantion = models.ForeignKey(Varitaion,on_delete=models.CASCADE,null=True,blank=True)
     order_status = models.CharField(max_length=20, choices=STATUS, default='Ordered')
     item_price = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()

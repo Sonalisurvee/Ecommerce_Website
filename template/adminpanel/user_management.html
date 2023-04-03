@@ -31,6 +31,7 @@
                 <th scope="col">User</th>
                 <th scope="col">Email</th>
                 <th scope="col">Joined Date</th>
+                <th scope="col">Status</th>
                 <th scope="col">Block/Unblock</th>
             </tr>
           </thead>
@@ -41,6 +42,12 @@
               <td>{{u.username}}</td>
               <td>{{u.email}}</td>
               <td>{{u.date_joined}}</td>
+              {% if u.is_active %}
+              <td><span class="badge" style="color: black;">Verified</span></td>
+              {% else %}
+              <td><span class="badge bg-secondary">Not Verified</span></td>
+              {% endif %}
+
               
                       {% if u.is_active %}
                       <td><button type="button" class="btn btn-outline-danger px-4" data-bs-toggle="modal"
