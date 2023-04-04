@@ -1,0 +1,108 @@
+{% extends 'userpanel/userbase.html' %}
+{% load static %}
+{% block title %}About{% endblock title %}
+{% block body %}
+
+
+    <!-- product list part start-->
+    <section class="about_us padding_top">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="about_us_content">
+                        <h5>Our Mission</h5>
+                        <h4>We’re on a journey with our brand partners to offer you more eco-conscious products - from the materials they're made of to the packaging in which they're shipped, to the processes used to design and develop them. Look for our Eco-Conscious icon throughout the site and in our stores to shop items created with sustainability in mind.</h4>
+                        <div class="about_us_video">
+                            <img src="{% static 'users/imgg/about.jpg' %}" alt="#" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- product list part end-->
+
+    <!-- feature part here -->
+    <section class="feature_part section_padding">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-lg-6">
+                    <div class="feature_part_tittle">
+                        <h3>We believe the perfect fit is when
+                             an inclusive environment celebrates every person.</h3>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="feature_part_content">
+                        <p>At Signora Footwear, we know that sometimes the best way to express yourself is through your footware. After all, a new pair of footwares can say a lot. They're what make you stand out. Help you go faster. Or just add a pop of color to your personality. They're just what you need to help make you..., we've got the famous brands perfectly fit for you.
+                            
+                            </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single_feature_part">
+                        <img src="{% static 'users/img/icon/feature_icon_1.svg' %}" alt="#">
+                        <h4>New Products</h4>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single_feature_part">
+                        <img src="{% static 'users/img/icon/feature_icon_2.svg' %}" alt="#">
+                        <h4>Online Order</h4>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single_feature_part">
+                        <img src="{% static 'users/img/icon/feature_icon_3.svg' %}" alt="#">
+                        <h4>Free Delivery</h4>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single_feature_part">
+                        <img src="{% static 'users/img/icon/feature_icon_4.svg' %}" alt="#">
+                        <h4>Product with Gift</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- feature part end -->
+    
+    <!-- client review part here -->
+    <section class="client_review">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="client_review_slider owl-carousel">
+                        <div class="single_client_review">
+                            <div class="client_img">
+                                <img src="{% static 'users/img/client.png' %}" alt="#">
+                            </div>
+                            <p>"Working in conjunction with humanitarian aid agencies, we have supported programmes to help alleviate human suffering.</p>
+                            <h5>- Micky Mouse</h5>
+                        </div>
+                        <div class="single_client_review">
+                            <div class="client_img">
+                                <img src="{% static 'users/img/client_1.png' %}" alt="#">
+                            </div>
+                            <p>"Working in conjunction with humanitarian aid agencies, we have supported programmes to help alleviate human suffering.</p>
+                            <h5>- Micky Mouse</h5>
+                        </div>
+                        <div class="single_client_review">
+                            <div class="client_img">
+                                <img src="{% static 'users/img/client_2.png' %}" alt="#">
+                            </div>
+                            <p>"Working in conjunction with humanitarian aid agencies, we have supported programmes to help alleviate human suffering.</p>
+                            <h5>- Micky Mouse</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- client review part end -->
+
+
+{% endblock body %}

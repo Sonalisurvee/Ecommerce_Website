@@ -3,81 +3,42 @@ from django.contrib import messages
 from .models import Banner,Carousel,Admin_profile
 from account.models import Account,Address
 from category.models import Category
-from cart.models import Coupon,Order,OrderItem,Payment
+from cart.models import Coupon,Order,OrderItem
 from store.models import Product,ReviewRating,Varitaion,SizeVariant
-from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 import razorpay
 from django.conf import settings
-from django.db.models import  Sum
-import os
-import re
-from django.http import JsonResponse
 from django.core.mail import send_mail
+
+
 
 
 def index(request):   
     banner = Banner.objects.all().order_by('id')
     banners = Carousel.objects.all().order_by('id')
     category = Category.objects.all().order_by('id')
+    most_sold_product = Product.objects.all().order_by('id')[:3]
 
     dict_banner={
         'banners': banners,
         'banner': banner,
         'category': category,
+        'product' : most_sold_product
     }    
     return render(request,'userpanel/index.html',dict_banner)
 
 
-@login_required(login_url='/login')
-def admin_index(request):
-    if request.user.is_authenticated and request.user.is_superadmin:
-        user = Account.objects.all().count()
-        product = Product.objects.all().count()
-        category = Category.objects.all().count()
-        sales = OrderItem.objects.count()
-        orders = Order.objects.all().count()
-        item = OrderItem.objects.all()
-        delivered_orders = OrderItem.objects.filter().values('item_total')
-        revenue = 0
-
-        for order in delivered_orders:        
-            revenue += order['item_total']
-
-        recent_sale = OrderItem.objects.all().order_by('-id')[:5]
-        total_income = Payment.objects.aggregate(Sum('grand_total'))['grand_total__sum']
-        total_income = round(total_income, 2)
-
-
-        context = {
-            'user': user,
-            'category': category,
-            'product': product,
-            'sales': sales,
-            'orders': orders,
-            'item': item,
-            'total_income': total_income,        
-            'recent_sales':recent_sale,
-        }
-
-        return render(request, 'adminpanel/admin_index.html',context)
-    else:
-        return redirect('/')
-    
-
-
 # -----------------------------------------user_management-----------------------------------------
 
-
+@login_required(login_url='/login')
 def user_management(request):
     dict_user={
         'users':Account.objects.filter(is_staff=False).order_by('id')
     }    
     return render(request,'adminpanel/user_management.html',dict_user)
 
-
+@login_required(login_url='/login')
 def block_unblock(request,user_id):
     user=get_object_or_404(Account,id=user_id) #is user that we are checking exits then it will store it in the user variable else it will throw man 404 error
     if user.is_active:
@@ -107,7 +68,7 @@ def profile(request):
 
 
 
-#---
+@login_required(login_url='/login')
 def update_profile(request,user_id):
     user=get_object_or_404(Account,pk=user_id)
     if request.method == 'POST':
@@ -125,7 +86,7 @@ def update_profile(request,user_id):
 
 
 # -----------------------------------------Banner_management-----------------------------------------
-    
+@login_required(login_url='/login')
 def banner_management(request):
     dict_banner={
         'banners': Banner.objects.all().order_by('id'),
@@ -227,9 +188,8 @@ def error_404(request,exception):
 
 # -----------------------------------------Order management-----------------------------------------
 
-
+@login_required(login_url='/login')
 def order_management(request):
-
     context = {
         'orders':Order.objects.all().order_by('-id')
     }
@@ -246,8 +206,7 @@ def view_order(request,id):
     dict_order = {
         'order_items':order_items,
         'statuses' : OrderItem.STATUS
-    }
-    
+    }    
     return render(request, 'adminpanel/view_order.html',dict_order)
 
 
@@ -259,6 +218,7 @@ def update_status(request, id):
             order.order_status = status
             order.save()
             messages.success(request, 'Status updated succesfully')
+            # email 
             mess=f'Hello\t{order.user.first_name},\n Your order {order.product.product_name} with Order ID: {order.order.order_id} has been {order.order_status} successfully\n Track your order status in our website \n Thank you' 
             send_mail(
                     'Order status',
@@ -267,6 +227,7 @@ def update_status(request, id):
                     [order.user.email],
                     fail_silently=False
                 )
+            # email stop
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         
         except OrderItem.DoesNotExist:
@@ -278,7 +239,7 @@ def update_status(request, id):
 
 # -----------------------------------------Coupan management-----------------------------------------
 
-
+@login_required(login_url='/login')
 def coupan_management(request):
     dict_coupon = {
         'coupon':Coupon.objects.all().order_by('id')
@@ -400,29 +361,22 @@ def expired(request,coupan_id):
 # -----------------------------------------Order management user side-----------------------------------------
 
 
-login_required
+@login_required(login_url='/login')
 def orders_list(request):
 
     orders = Order.objects.filter(user=request.user).order_by('-id')
     return render(request, 'cart/order_list.html', {'orders' : orders})
 
-
-
-
-login_required
+@login_required(login_url='/login')
 def order_details(request,order_id):
     try:
         order = Order.objects.get(id=order_id)
         order_items = OrderItem.objects.filter(order=order)
     except:
         pass 
-
     return render(request, 'cart/order_details.html', {'order_items' : order_items})
 
-
-
-
-login_required
+@login_required(login_url='/login')
 def order_tracking(request, item_id):
     current_date = timezone.now()
     item = OrderItem.objects.get(id=item_id)
@@ -432,24 +386,18 @@ def order_tracking(request, item_id):
     }
     return render(request, 'cart/order_tracking.html' ,context)
 
-
+@login_required(login_url='/login')
 def order_invoice(request, order_id):
-
     order = Order.objects.get(id=order_id,user=request.user)
-
     order_items = OrderItem.objects.filter(order=order)
-
-
     context = {
-
         'order' : order,
         'order_items' : order_items
     }
-
     return render(request, 'cart/invoice.html',context)
 
 
-
+@login_required(login_url='/login')
 def cancel_order(request, item_id=None, order_id=None):        
     client = razorpay.Client(auth=(settings.KEY, settings.SECRET_KEY))
     order = Order.objects.get(user=request.user, order_id=order_id)
@@ -473,7 +421,7 @@ def cancel_order(request, item_id=None, order_id=None):
 # -----------------------------------------Order management admin side-----------------------------------------
 
 
-
+@login_required(login_url='/login')
 def sales(request):
     context = {}
 
@@ -492,10 +440,9 @@ def sales(request):
             context.update(sales = order_items,s_date=start_date,e_date = end_date)
         else:
             messages.error(request,'no data found')
-
-
     return render(request,'adminpanel/sales_report.html',context)
 
+@login_required(login_url='/login')
 def admin_profile(request):
         admin = Admin_profile.objects.get(user = request.user)
 
@@ -503,6 +450,7 @@ def admin_profile(request):
         # profile = Account
         return render(request,'adminpanel/admin_profile.html',{'admin': admin})
 
+@login_required(login_url='/login')
 def admin_profile_update(request,admin_id):
     
         return render(request,'adminpanel/admin_profile.html')
@@ -512,15 +460,13 @@ def admin_profile_update(request,admin_id):
 
 # -----------------------------------------------review managment-----------------------------------------------
 
+@login_required(login_url='/login')
 def review_management(request):
     dict_review = {
         'review': ReviewRating.objects.all().order_by('id')        
     }
 
     return render(request,'adminpanel/admin_review.html',dict_review)
-
-
-
 
 def delete_review(request,id):
     review = get_object_or_404(ReviewRating,pk=id)
@@ -531,6 +477,7 @@ def delete_review(request,id):
 
 # -----------------------------------------------Varaint managment-----------------------------------------------
 
+@login_required(login_url='/login')
 def variant_management(request):
     dict_variant = {
         'variations' : Varitaion.objects.all().order_by('id'),
@@ -563,7 +510,7 @@ def variant_edit(request,id):
             size_variant=sizes,
             stock=stock
             )
-        messages.success(request,f"Updated the {variant.size_variant} on {variant.product}")
+        messages.success(request,f"Updated the variant on {variant.product}")
         return redirect(variant_management)
     else:
         messages.info(request,'some field is empty')
@@ -588,3 +535,9 @@ def add_variant(request):
     else:
         messages.info(request,'some field is empty')
         return redirect(variant_management)
+    
+
+
+
+def about(request):
+    return render(request,'userpanel/about.html')

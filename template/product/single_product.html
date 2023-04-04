@@ -8,6 +8,7 @@
     max-width: 100%;
     height: auto
   }
+
   @media only screen and (min-width: 992px) and (max-width: 1200px) {
 
     /* line 133, /Applications/MAMP/htdocs/old/palash/cl/shop_html/sass/_single_product.scss */
@@ -67,14 +68,14 @@
     .product_image_area .single_product_text p {
       margin-top: 0px;
     }
-  
+
   }
 
   .card_ara .product_count_area p {
     color: #693964;
     /* color: white; */
     font-size: 20px;
-  font-weight: bold;
+    font-weight: bold;
   }
 
   .btn_3 {
@@ -122,36 +123,37 @@
 
 
 
-.newradio .col{
-  padding-left: 1px;
-  padding-right: 10px;
+  .newradio .col {
+    padding-left: 1px;
+    padding-right: 10px;
 
-}
-.btn-secondary{
-  padding: 4px;  
-}
+  }
 
-.ratee{
-  padding-left: 15px;
-}
+  .btn-secondary {
+    padding: 4px;
+  }
+
+  .ratee {
+    padding-left: 15px;
+  }
 
 
-/* Hide the radio Button */
-.rate > input{
+  /* Hide the radio Button */
+  .rate>input {
     display: none;
   }
-  
-.rate{
+
+  .rate {
     display: inline-block;
     border: 0;
-}
-  
-.rate > label{
+  }
+
+  .rate>label {
     float: right;
-}
-  
-/* Showing the Stars */
-.rate > label:before{
+  }
+
+  /* Showing the Stars */
+  .rate>label:before {
     display: inline-block;
     font-size: 1.1rem;
     content: "\f005";
@@ -159,35 +161,36 @@
     margin: 0;
     padding: 0.3rem .2rem;
     cursor: pointer;
-}
-  
-/* Half Star */
-.rate .half:before{
+  }
+
+  /* Half Star */
+  .rate .half:before {
     content: "\f089";
     position: absolute;
     padding-right: 0;
-}
+  }
 
-/* Check and Hover */
-input:checked ~ label, label:hover ~ label{
+  /* Check and Hover */
+  input:checked~label,
+  label:hover~label {
     color: #ffb503;
-}
+  }
 
-/* Hover Hightlight */
-input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:hover ~ label, label:hover ~ input:checked ~ label{
+  /* Hover Hightlight */
+  input:checked+label:hover,
+  input:checked~label:hover,
+  input:checked~label:hover~label,
+  label:hover~input:checked~label {
     color: #cc9000;
+  }
+
+  .section_padding {
+  padding: 100px 0px;
 }
 
 
 
-
-
-/* ########################## */
-
-
-
-
-
+  /* ########################## */
 </style>
 
 <!-- breadcrumb part start-->
@@ -217,7 +220,7 @@ input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:
             <img src="{{ im.productimage.url}}" alt="#" class="img-fluid">
           </div>
           {% endfor %}
-         
+
         </div>
       </div>
       <div class="col-lg-6">
@@ -231,15 +234,15 @@ input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:
 
         <div class="single_product_text">
           <h3>{{ single_product.product_name }}</h3>
-          
+
           <p>{{ single_product.product_description }}</p>
           <div class="card_ara">
             <div class="product_count_area">
               {% if updates_price %}
-              <p>${{ updates_price }}</p>
+              <p>₹ {{ updates_price }}</p>
               {% else %}
 
-              <p>${{ single_product.price }}</p>
+              <p>₹ {{ single_product.price }}</p>
               {% endif %}
             </div>
             <div class="row">
@@ -250,75 +253,42 @@ input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:
               <p class="col-md-4 col-sm-6">Available : In stock</p>
               {% endif %} -->
             </div>
-
             <hr>
-<!-- 
-<div class="newradio pt-2">
-            {% if single_product.size_variant.count %}
-            <div class="row container pl-3">
-              <p class="col">Size : </p>
-     
 
-              {% for size in single_product.size_variant.all %}
+            <div class="newradio pt-2">
+              {% if variants %}
+              <div class="row container pl-3">
+                <p class="col">Size : </p>
+                {% for variant in variants %}
                 <div class="col btn-group btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-secondary {% if selected_size == size.size_name %} active {% endif %}">
-                  <input type="radio" name="options" id="suv" autocomplete="off" onchange="get_correct_price('{{size.size_name}}')" {% if selected_size == size.size_name %} checked {% endif %}>{{ size.size_name }}
+                  <label class="btn btn-outline-dark {% if selected_size == variant.size_variant.size_name %} active {% endif %}">
+                    <input type="radio" name="options" id="suv" autocomplete="off"
+                      onchange="get_correct_price('{{variant.size_variant}}')" value="{{variant}}"
+                      {% if selected_size == variant.size_variant %} checked {% endif %}> {{ variant.size_variant }}
                   </label>
                 </div>
-              {% endfor %}           
+                {% endfor %}
               </div>
-            {% endif %}
-          </div> -->
-
-
-
-          <div class="newradio pt-2">
-            {% if variants %}
-            <div class="row container pl-3">
-                <p class="col">Size : </p>
-        
-                <div class="col btn-group btn-group-toggle" data-toggle="buttons">
-                   
-                  <!-- {% if selected_size %}
-                    <label class="btn btn-secondary active">
-                        <input type="radio" name="options" id="suv" autocomplete="off" onchange="get_current_price()"
-                            value="{{selected_size}}" checked>
-                        {{size_variant}}
-                    </label>
-                    {% endif %} -->
-        
-                    {% for variant in variants %}
-                    <label class="btn btn-secondary {% if selected_size == variant.size_name %} active {% endif %}">                        
-                    <input type="radio" name="options" id="suv" autocomplete="off" onchange="get_correct_price('{{variant.size_variant}}')" 
-                    value="{{variant}}" {% if selected_size == variant.size_variant %} checked {% endif %}> {{ variant.size_variant }}
-                    </label>
-                    {% endfor %}        
-                </div>
+              {% endif %}
             </div>
-            {% endif %}
-        </div>
-        
+
+            <div class="add_to_cart pt-3">
+              {% if in_cart %}
+              <a href="#" class="btn_3 ">Added to cart</a>
+              <a href="{% url 'cart' %}" class="btn_3">View cart</a>
+              {% else %}
+              {% if selected_size %}
 
 
-
-            <div class="add_to_cart pt-3">             
-
-             
-                {% if in_cart %}
-                  <a href="#" class="btn_3 ">Added to cart</a>
-                  <a href="{% url 'cart' %}" class="btn_3">View cart</a>
-                {% else %}
-                {% if selected_size %}
- 
-
-                <a href="{% url 'add_to_cart' single_product.id %}?variant={{selected_size}}" class="btn_3">Add to
-                  cart</a>
-                  {% else %}
-                  <button onclick="alert('Add size before add to cart')" title="Add size before add to cart"  class="btn_3">Add to cart</button>
+              <a href="{% url 'add_to_cart' single_product.id %}?variant={{selected_size}}" class="btn_3">Add to
+                cart</a>
+              {% else %}
+              <button onclick="alert('Add size before add to cart')" title="Add size before add to cart"
+                class="btn_3">Add to cart</button>
               {% endif %}
               <a href="{% url 'add_wishlist' single_product.id %}" class="btn_3 mx-2">Wishlist</a>
 
-                {% endif %}
+              {% endif %}
 
 
             </div>
@@ -333,296 +303,368 @@ input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:
 {% include 'message.html' %}
 
 
- <!--================Product Description Area =================-->
-  <section class="product_description_area">
-    <div class="container">
-      <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item">
-          <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-            aria-selected="true">Description</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
-            aria-selected="false">Specification</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab" aria-controls="review"
-            aria-selected="false">Reviews</a>
-        </li>
-      </ul>
-      <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-          <p>
-            Beryl Cook is one of Britain’s most talented and amusing artists
-            .Beryl’s pictures feature women of all shapes and sizes enjoying
-            themselves .Born between the two world wars, Beryl Cook eventually
-            left Kendrick School in Reading at the age of 15, where she went
-            to secretarial school and then into an insurance office. After
-            moving to London and then Hampton, she eventually married her next
-            door neighbour from Reading, John Cook. He was an officer in the
-            Merchant Navy and after he left the sea in 1956, they bought a pub
-            for a year before John took a job in Southern Rhodesia with a
-            motor company. Beryl bought their young son a box of watercolours,
-            and when showing him how to use it, she decided that she herself
-            quite enjoyed painting. John subsequently bought her a child’s
-            painting set for her birthday and it was with this that she
-            produced her first significant work, a half-length portrait of a
-            dark-skinned lady with a vacant expression and large drooping
-            breasts. It was aptly named ‘Hangover’ by Beryl’s husband and
-          </p>
-          <p>
-            It is often frustrating to attempt to plan meals that are designed
-            for one. Despite this fact, we are seeing more and more recipe
-            books and Internet websites that are dedicated to the act of
-            cooking for one. Divorce and the death of spouses or grown
-            children leaving for college are all reasons that someone
-            accustomed to cooking for more than one would suddenly need to
-            learn how to adjust all the cooking practices utilized before into
-            a streamlined plan of cooking that is more efficient for one
-            person creating less
-          </p>
-        </div>
-        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-          <div class="table-responsive">
-            <table class="table">
-              <tbody>
-                <tr>
-                  <td>
-                    <h5>Color</h5>
-                  </td>
-                  <td>
-                    <h5>128mm</h5>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <h5>Style (cate)</h5>
-                  </td>
-                  <td>
-                    <h5>508mm</h5>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <h5>Gender  </h5>
-                  </td>
-                  <td>
-                    <h5>Female</h5>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <h5>stock  </h5>
-                  </td>
-                  <td>1
-                    <h5>52gm</h5>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <h5>Quality checking</h5>
-                  </td>
-                  <td>
-                    <h5>yes</h5>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <h5>Freshness Duration</h5>
-                  </td>
-                  <td>
-                    <h5>03days</h5>
-                  </td>
-                </tr>
-               
-                
-              </tbody>
-            </table>
-          </div>
-        </div>
-       
-        
+<!--================Product Description Area =================-->
+<section class="product_description_area">
+  <div class="container">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+          aria-selected="true">Description</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+          aria-selected="false">Specification</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab" aria-controls="review"
+          aria-selected="false">Reviews</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <p>
+          Beryl Cook is one of Britain’s most talented and amusing artists
+          .Beryl’s pictures feature women of all shapes and sizes enjoying
+          themselves .Born between the two world wars, Beryl Cook eventually
+          left Kendrick School in Reading at the age of 15, where she went
+          to secretarial school and then into an insurance office. After
+          moving to London and then Hampton, she eventually married her next
+          door neighbour from Reading, John Cook. He was an officer in the
+          Merchant Navy and after he left the sea in 1956, they bought a pub
+          for a year before John took a job in Southern Rhodesia with a
+          motor company. Beryl bought their young son a box of watercolours,
+          and when showing him how to use it, she decided that she herself
+          quite enjoyed painting. John subsequently bought her a child’s
+          painting set for her birthday and it was with this that she
+          produced her first significant work, a half-length portrait of a
+          dark-skinned lady with a vacant expression and large drooping
+          breasts. It was aptly named ‘Hangover’ by Beryl’s husband and
+        </p>
+        <p>
+          It is often frustrating to attempt to plan meals that are designed
+          for one. Despite this fact, we are seeing more and more recipe
+          books and Internet websites that are dedicated to the act of
+          cooking for one. Divorce and the death of spouses or grown
+          children leaving for college are all reasons that someone
+          accustomed to cooking for more than one would suddenly need to
+          learn how to adjust all the cooking practices utilized before into
+          a streamlined plan of cooking that is more efficient for one
+          person creating less
+        </p>
+      </div>
+      <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="table-responsive">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td>
+                  <h5>Color</h5>
+                </td>
+                <td>
+                  <h5>128mm</h5>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h5>Style (cate)</h5>
+                </td>
+                <td>
+                  <h5>508mm</h5>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h5>Gender </h5>
+                </td>
+                <td>
+                  <h5>Female</h5>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h5>stock </h5>
+                </td>
+                <td>1
+                  <h5>52gm</h5>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h5>Quality checking</h5>
+                </td>
+                <td>
+                  <h5>yes</h5>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h5>Freshness Duration</h5>
+                </td>
+                <td>
+                  <h5>03days</h5>
+                </td>
+              </tr>
 
-        <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
-          <div class="row">
-            <div class="col-lg-6">
-              <div class="row total_rate">
-                <div class="col-6">
-                  <div class="box_total">
-                    <h5>Overall</h5>
-                    <h4>4.0</h4>
-                    <h6>({{reviews.count}} Reviews)</h6>                    
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="rating_list">
-                    <h3>Based on {{reviews.count}} Reviews</h3>
-                    <ul class="list">
-                      <li>
-                        <a href="#">5 Star
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i> </a>
-                      </li>
-                      <li>
-                        <a href="#">4 Star
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i> </a>
-                      </li>
-                      <li>
-                        <a href="#">3 Star
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i> </a>
-                      </li>
-                      <li>
-                        <a href="#">2 Star
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i> </a>
-                      </li>
-                      <li>
-                        <a href="#">1 Star
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i> </a>
-                      </li>
-                    </ul>
-                  </div>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+
+      <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="row total_rate">
+              <div class="col-6">
+                <div class="box_total">
+                  <h5>Overall</h5>
+                  <h4>4.0</h4>
+                  <h6>({{reviews.count}} Reviews)</h6>
                 </div>
               </div>
-
-
-              {% if reviews %}
-
-              {% for review in reviews %}
-              
-              <div class="review_list">
-                <div class="review_item">
-                  <div class="media">
-                    <div class="d-flex pt-4">
-                      <img src="{% static 'users/imgg/profile.png' %}" alt="" width="40px"/>
-                    </div>
-                    <div class="media-body pt-4">
-                      <h4>{{review.user.first_name}}</h4>
-                      <i class="fa fa-star"> </i>
-                      {% comment %} <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>  {% endcomment %}
-                      <span> {{review.rating}}/5.0 <i class="ms-1 zmdi zmdi-star"></i><span>
-                    </div>
-                  </div>
-                  {% comment %} <h6 class="pt-2">{{review.title}}</h6> {% endcomment %}
-                  <p class="container">
-                    {{review.review}}</p>
-                </div>                                
+              <div class="col-6">
+                <div class="rating_list">
+                  <h3>Based on {{reviews.count}} Reviews</h3>
+                  <ul class="list">
+                    <li>
+                      <a href="#">5 Star
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i> </a>
+                    </li>
+                    <li>
+                      <a href="#">4 Star
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i> </a>
+                    </li>
+                    <li>
+                      <a href="#">3 Star
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i> </a>
+                    </li>
+                    <li>
+                      <a href="#">2 Star
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i> </a>
+                    </li>
+                    <li>
+                      <a href="#">1 Star
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i> </a>
+                    </li>
+                  </ul>
+                </div>
               </div>
-              
+            </div>
+
+
+            {% if reviews %}
+
+            {% for review in reviews %}
+
+            <div class="review_list">
+              <div class="review_item">
+                <div class="media">
+                  <div class="d-flex pt-4">
+                    <img src="{% static 'users/imgg/profile.png' %}" alt="" width="40px" />
+                  </div>
+                  <div class="media-body pt-4">
+                    <h4>{{review.user.first_name}}</h4>
+                    <i class="fa fa-star"> </i>
+                    {% comment %} <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i> {% endcomment %}
+                    <span> {{review.rating}}/5.0 <i class="ms-1 zmdi zmdi-star"></i><span>
+                  </div>
+                </div>
+                {% comment %} <h6 class="pt-2">{{review.title}}</h6> {% endcomment %}
+                <p class="container">
+                  {{review.review}}</p>
+              </div>
+            </div>
+
             {% endfor %}
 
             {% else %}
             <h5 class="text-center pt-5">Be the first to post a review on this product</h5>
             {% endif %}
-            </div>
+          </div>
 
 
 
-            <div class="col-lg-6">
-              <div class="review_box">      
-                <h4>Add a Review</h4>
+          <div class="col-lg-6">
+            <div class="review_box">
+              <h4>Add a Review</h4>
 
-                <form action="{% url 'submit_review' single_product.id %}" method="POST" class="row contact_form">
-                    {% csrf_token %}
-                                 
-                    <div class="flex-w flex-m ratee">
-                      <span class="stext-102 cl3 m-r-16">
-                        How do you rate this product?
-                      </span>
-                      <br>
+              <form action="{% url 'submit_review' single_product.id %}" method="POST" class="row contact_form">
+                {% csrf_token %}
 
-
-                      <div class="rate">
-                          <input type="radio" name="rating" id="rating10" value="5"
-                              required><label for="rating10" title="5"></label>
-                          <input type="radio" name="rating" id="rating9" value="4.5"
-                              required><label for="rating9" title="4.5" class="half"></label>
-                          <input type="radio" name="rating" id="rating8" value="4" required><label
-                              for="rating8" title="4"></label>
-                          <input type="radio" name="rating" id="rating7" value="3.5"
-                              required><label for="rating7" title="3.5" class="half"></label>
-                          <input type="radio" name="rating" id="rating6" value="3" required><label
-                              for="rating6" title="3"></label>
-                          <input type="radio" name="rating" id="rating5" value="2.5"
-                              required><label for="rating5" title="2.5" class="half"></label>
-                          <input type="radio" name="rating" id="rating4" value="2" required><label
-                              for="rating4" title="2"></label>
-                          <input type="radio" name="rating" id="rating3" value="1.5"
-                              required><label for="rating3" title="1.5" class="half"></label>
-                          <input type="radio" name="rating" id="rating2" value="1" required><label
-                              for="rating2" title="1"></label>
-                          <input type="radio" name="rating" id="rating1" value="0.5"
-                              required><label for="rating1" title="0.5" class="half"></label>
-                      </div>
-                    </div>
-                  
+                <div class="flex-w flex-m ratee">
+                  <span class="stext-102 cl3 m-r-16">
+                    How do you rate this product?
+                  </span>
+                  <br>
 
 
-
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <input type="text" class="form-control" name="title" rows="1" placeholder="Review title">
-                    </div>
+                  <div class="rate">
+                    <input type="radio" name="rating" id="rating10" value="5" required><label for="rating10"
+                      title="5"></label>
+                    <input type="radio" name="rating" id="rating9" value="4.5" required><label for="rating9" title="4.5"
+                      class="half"></label>
+                    <input type="radio" name="rating" id="rating8" value="4" required><label for="rating8"
+                      title="4"></label>
+                    <input type="radio" name="rating" id="rating7" value="3.5" required><label for="rating7" title="3.5"
+                      class="half"></label>
+                    <input type="radio" name="rating" id="rating6" value="3" required><label for="rating6"
+                      title="3"></label>
+                    <input type="radio" name="rating" id="rating5" value="2.5" required><label for="rating5" title="2.5"
+                      class="half"></label>
+                    <input type="radio" name="rating" id="rating4" value="2" required><label for="rating4"
+                      title="2"></label>
+                    <input type="radio" name="rating" id="rating3" value="1.5" required><label for="rating3" title="1.5"
+                      class="half"></label>
+                    <input type="radio" name="rating" id="rating2" value="1" required><label for="rating2"
+                      title="1"></label>
+                    <input type="radio" name="rating" id="rating1" value="0.5" required><label for="rating1" title="0.5"
+                      class="half"></label>
                   </div>
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <textarea class="form-control" name="review" rows="1" placeholder="Review"></textarea>
-                    </div>
+                </div>
+
+
+
+
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <input type="text" class="form-control" name="title" rows="1" placeholder="Review title">
                   </div>
-            {% if user.is_authenticated %}
-
-                  <div class="col-md-12 text-right">
-                    <button type="submit" value="submit" class="btn_3">
-                      Submit Now
-                    </button>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <textarea class="form-control" name="review" rows="1" placeholder="Review"></textarea>
                   </div>
+                </div>
+                {% if user.is_authenticated %}
 
-                    {% else %}
-                    <h6 class="pl-5">Please login to submit your review.
+                <div class="col-md-12 text-right">
+                  <button type="submit" value="submit" class="btn_3">
+                    Submit Now
+                  </button>
+                </div>
 
-              <a href="{% url 'log_in' %}" class="btn_3 mx-2">Login</a>
-                    
-                {% endif %}
-                </form>
-              </div>
+                {% else %}
+                <h6 class="pl-5">Please login to submit your review.
+
+                  <a href="{% url 'log_in' %}" class="btn_3 mx-2">Login</a>
+
+                  {% endif %}
+              </form>
             </div>
           </div>
         </div>
-
-
-
       </div>
     </div>
-  </section>
-  <!--================End Product Description Area =================-->
+  </div>
+</section>
+<!--================End Product Description Area =================-->
 
-
-
-
-
-
-
+<!-- feature part here -->
+<section class="feature_part section_padding">
+  <div class="container">
+      <div class="row justify-content-between">
+          <div class="col-lg-6">
+              <div class="feature_part_tittle">
+                  <h3>We believe the perfect fit is when
+                        an inclusive environment celebrates every person.</h3>
+              </div>
+          </div>
+          <div class="col-lg-5">
+              <div class="feature_part_content">
+                  <p>At Signora Footwear, we know that sometimes the best way to express yourself is through your footware. After all, a new pair of footwares can say a lot. They're what make you stand out. Help you go faster. Or just add a pop of color to your personality. They're just what you need to help make you..., we've got the famous brands perfectly fit for you.
+                      
+                      </p>
+              </div>
+          </div>
+      </div>
+      <div class="row justify-content-center">
+          <div class="col-lg-3 col-sm-6">
+              <div class="single_feature_part">
+                  <img src="{% static 'users/img/icon/feature_icon_1.svg' %}" alt="#">
+                  <h4>New Products</h4>
+              </div>
+          </div>
+          <div class="col-lg-3 col-sm-6">
+              <div class="single_feature_part">
+                  <img src="{% static 'users/img/icon/feature_icon_2.svg' %}" alt="#">
+                  <h4>Online Order</h4>
+              </div>
+          </div>
+          <div class="col-lg-3 col-sm-6">
+              <div class="single_feature_part">
+                  <img src="{% static 'users/img/icon/feature_icon_3.svg' %}" alt="#">
+                  <h4>Free Delivery</h4>
+              </div>
+          </div>
+          <div class="col-lg-3 col-sm-6">
+              <div class="single_feature_part">
+                  <img src="{% static 'users/img/icon/feature_icon_4.svg' %}" alt="#">
+                  <h4>Product with Gift</h4>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+<!-- feature part end -->
+  
+<!-- client review part here -->
+<section class="client_review">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="client_review_slider owl-carousel">
+                    <div class="single_client_review">
+                        <div class="client_img">
+                            <img src="{% static 'users/img/client.png' %}" alt="#">
+                        </div>
+                        <p>"Working in conjunction with humanitarian aid agencies, we have supported programmes to help alleviate human suffering.</p>
+                        <h5>- Micky Mouse</h5>
+                    </div>
+                    <div class="single_client_review">
+                        <div class="client_img">
+                            <img src="{% static 'users/img/client_1.png' %}" alt="#">
+                        </div>
+                        <p>"Working in conjunction with humanitarian aid agencies, we have supported programmes to help alleviate human suffering.</p>
+                        <h5>- Micky Mouse</h5>
+                    </div>
+                    <div class="single_client_review">
+                        <div class="client_img">
+                            <img src="{% static 'users/img/client_2.png' %}" alt="#">
+                        </div>
+                        <p>"Working in conjunction with humanitarian aid agencies, we have supported programmes to help alleviate human suffering.</p>
+                        <h5>- Micky Mouse</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- client review part end -->
 
 
 

@@ -290,24 +290,24 @@ aria-hidden="true"
             <ul class="list list_2">
               <li>
                 <a href="#">Subtotal
-                  <span>$ {{ cart.get_cart_total }}</span>
+                  <span>₹ {{ cart.get_cart_total }}</span>
                 </a>
               </li>           
             <li>
                 <a href="#">Tax
-                  <span>$ {{ cart.get_tax }}</span>
+                  <span>₹ {{ cart.get_tax }}</span>
                 </a>
               </li>
               {% if cart.coupon %}             
               <li>
                 <a href="#">Coupan Amount
-                  <span>-{{cart.coupon.discount_price}}</span>
+                  <span>-₹ {{cart.coupon.discount_price}}</span>
                 </a>
               </li>
             {% endif %}
               <li>
                 <a href="#">Grand Total
-                  <span>$ {{ cart.get_grand_total }}</span>
+                  <span>₹ {{ cart.get_grand_total }}</span>
                 </a>
               </li>
             </ul>

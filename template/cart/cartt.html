@@ -59,7 +59,7 @@
                             <th scope="col">Price</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Total</th>
-                            <th scope="col bt"></th>
+                            <th scope="col"></th>
 
                         </tr>
                     </thead>
@@ -120,9 +120,9 @@
                                 <h5>Grand total</h5>
                             </td>
                             <td>
-                                <h5>$ {{ cart.get_cart_total }}</h5>
-                                <h5>$ {{ cart.get_tax }}</h5>
-                                <h5>$ {{ cart.get_grand_total }}</h5>
+                                <h5>₹ {{ cart.get_cart_total }}</h5>
+                                <h5>₹ {{ cart.get_tax }}</h5>
+                                <h5>₹ {{ cart.get_grand_total }}</h5>
                             </td>
                             <!--<td>
                                  <div class="cupon_text float-right">

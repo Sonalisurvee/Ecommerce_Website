@@ -263,7 +263,8 @@ def success(request):
             product = orderitems.products,
             item_price = orderitems.get_product_price(),
             quantity = orderitems.quantity,
-            item_total = orderitems.sub_total()
+            item_total = cart.get_grand_total()
+            # get_grand_total
         )    
         order_items.save()
         if orderitems.variant.size_variant:
