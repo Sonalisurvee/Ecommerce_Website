@@ -25,11 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-y%4c+kl=^sznyy0#!-%u$vsx%0%e0_ofp&x8%at1^qwd=ki!!i'
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
 DEBUG = os.getenv('DEBUG')
 
 
@@ -94,16 +92,6 @@ AUTH_USER_MODEL = 'account.Account'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME' : 'new_commerce',
-#         'USER': 'postgres',
-#         'PASSWORD': 'dsonalisurve',
-#         'HOST': 'localhost',
-
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE':'django.db.backends.postgresql',
@@ -174,11 +162,6 @@ MEDIA_URL = '/media/'
 LOGIN_URL='signin'
 LOGIN_REDIRECT_URL='home'
 EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST='smtp.gmail.com'
-# EMAIL_PORT=587
-# EMAIL_HOST_USER='sonalidsurve1@gmail.com'
-# EMAIL_HOST_PASSWORD='msuwazjmljivvkrv'
-# EMAIL_USE_TLS=True
 
 # SMTP configuration
 EMAIL_HOST = os.getenv('EMAIL_HOST')
@@ -186,11 +169,6 @@ EMAIL_PORT =  os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
-
-
-# KEY = 'rzp_test_a0WKFGxNpEjkyL'
-# SECRET_KEY = 'k7q1VWdctZVX6sZe9p9FWGpJ'
-
 
 
 # Razorpay configuration
