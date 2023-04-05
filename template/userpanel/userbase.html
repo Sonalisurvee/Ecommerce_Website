@@ -25,6 +25,9 @@
     <link rel="stylesheet" href="{% static 'users/css/slick.css' %}">
     <!-- style CSS -->
     <link rel="stylesheet" href="{% static 'users/css/style.css' %}">
+    <!-- jquery cdn -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
 </head>
 
 <body>
@@ -60,8 +63,8 @@
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdown_2">
                                         <a class="dropdown-item" href="{% url 'log_in' %}">login</a>
                                         <a class="dropdown-item" href="{% url 'signup' %}">Signup</a>
-                                        {% comment %} <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
-                                        <a class="dropdown-item" href="{% url 'log_out' %}">Logout</a> {% endcomment %}
+                                        <a class="dropdown-item" href="{% url 'about' %}">About</a>
+                                       
                                     </div>
                                 </li>
                                
@@ -73,9 +76,8 @@
                                         My account
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdown_2">
-                                        {% comment %} <a class="dropdown-item" href="{% url 'log_in' %}">login</a>
-                                        <a class="dropdown-item" href="{% url 'signup' %}">Signup</a> {% endcomment %}
                                         <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
+                                        <a class="dropdown-item" href="{% url 'about' %}">About</a>
                                         <a class="dropdown-item" href="{% url 'log_out' %}">Logout</a>
                                     </div>
                                 </li>

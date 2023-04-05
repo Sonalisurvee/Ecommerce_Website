@@ -6,10 +6,8 @@ from cart import views
 urlpatterns = [    
     
     path('', views.cart, name='cart'),        
-    path('add-to-cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),    
-    path('remove_cartitems/<int:product_id>/<int:cart_item_id>/', views.remove_cartitems, name='remove_cartitems'),    
-    path('remove_cartt/<int:product_id>/<int:cart_item_id>/', views.remove_cartt, name='remove_cartt'),    
- 
+    path('add-to-cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
+      
 
     path('checkout/', views.checkout, name='checkout'),
     
@@ -17,9 +15,13 @@ urlpatterns = [
 
     path('success/', views.success, name='success'),    
 
-    path('orderconfirmation/', views.order_confirmation, name='order_confirmation'),
-    
+    # after ajax
+    path('delete',views.cart_delete,name="cart-delete"),
+
+    path('update',views.cart_update,name="cart-update"),
 
 
 
 ]
+
+# this is my private project

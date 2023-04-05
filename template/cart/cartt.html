@@ -1,6 +1,6 @@
 {% extends 'userpanel/userbase.html' %}
 {% load static %}
-{% block title %}cart 2{% endblock title %}
+{% block title %}cart{% endblock title %}
 {% block body %}
 
 <style>
@@ -59,7 +59,7 @@
                             <th scope="col">Price</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Total</th>
-                            <th scope="col bt"></th>
+                            <th scope="col"></th>
 
                         </tr>
                     </thead>
@@ -84,23 +84,28 @@
                             </td>
 
                             <td>
-                                <div class="product_count">
-                                    <span class="input-number-decrement"><a
-                                            href="{% url 'remove_cartt' cart_item.products.id cart_item.id %}"><i
-                                                class="ti-minus"></i></span></a>
-
-                                    <input class="input-number" type="text" value="{{ cart_item.quantity }}" min="0">
-                                    <a href="{% url 'add_to_cart' cart_item.products.id %}?variant={{ cart_item.variant.size_variant }}">
-                                    <span class="input-number-increment"><i
-                                                class="ti-plus"></i></span></a>
+                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                    <div class="input-group-btn">
+                                        <button data-price="{{item.variant.price}}"  data-index="{{cart_item.id}}" class="btn btn-sm btn-light btn-minus update-button" >
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                    </div>
+                                    <input readonly id="pro_qty{{cart_item.id}}" type="text" class="form-control form-control-sm bg-light text-center" value="{{cart_item.quantity}}">
+                                    <div class="input-group-btn">
+                                        <button  data-price="{{item.variant.price}}" data-index="{{cart_item.id}}" class="btn btn-sm btn-light btn-plus update-button">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </td>
 
                             <td>
-                                <h5>{{ cart_item.sub_total }}</h5>
+                                <h5 id="single_pro_total{{cart_item.id}}">{{ cart_item.sub_total }}</h5>
                             </td>
                             <td>
-                                <a class="" href="{% url 'remove_cartitems' cart_item.products.id cart_item.id %}"><i class="fa-solid fa-trash fa-xl" style="color: #b08ead;"></i></a>
+                                <a data-index="{{cart_item.id}}" class="delete-button" href="#">
+                                    <i class="fa-solid fa-trash fa-xl" style="color: #b08ead;"></i>
+                                </a>
                             </td>
 
                         </tr>
@@ -120,18 +125,11 @@
                                 <h5>Grand total</h5>
                             </td>
                             <td>
-                                <h5>$ {{ cart.get_cart_total }}</h5>
-                                <h5>$ {{ cart.get_tax }}</h5>
-                                <h5>$ {{ cart.get_grand_total }}</h5>
-                            </td>
-                            <!--<td>
-                                 <div class="cupon_text float-right">
-                                    <a class="btn_1" href="{% url 'product_list' %}">Close Coupon</a>
-                                </div> 
-                            </td>-->
+                                <h5 id="total_field">₹ {{ cart.get_cart_total }}</h5>
+                                <h5 id="tax_field">₹ {{ cart.get_tax }}</h5>
+                                <h5 id="grand_total">₹ {{ cart.get_grand_total }}</h5>
+                            </td>               
                         </tr>
-                      
-
                     </tbody>
                 </table>
                 <div class="checkout_btn_inner float-right">
@@ -141,8 +139,142 @@
             {% endif %}
         </div>
 </section>
+
 <!--================End Cart Area =================-->
 
+<script>
+$('.quantity button').on('click', function () {
+        var button = $(this);
+        var oldValue = button.parent().parent().find('input').val();
+        if (button.hasClass('btn-plus')) {
+            var newVal = parseFloat(oldValue) + 1;
+        } else {
+            if (oldValue > 1) {
+                var newVal = parseFloat(oldValue) - 1;
+            } else {
+                newVal = 1;
+            }
+        }
+        button.parent().parent().find('input').val(newVal);
+    });
+
+
+
+// Update button
+$(document).on('click', '.update-button', function(e){
+
+e.preventDefault();
+
+
+var price = $(this).data('price')
+var id = $(this).data('index')
+
+
+var pro_qty = parseInt($('#pro_qty' + id).val())
+
+console.log('success','selected qty: ',pro_qty,' id = ',id );
+
+// console.log(price, id, old_qty) (for checking purpose)
+
+{% for cart_item in cart_items %}
+
+    if ('{{cart_item.id}}' == id){
+
+        var existing_quantity = parseInt('{{cart_item.variant.stock}}')
+        
+        if(existing_quantity == 0){
+            alert('sorry out of stock')
+        document.getElementById('pro_qty'+ id).value = pro_qty -1
+        return;
+        }
+
+        else if($('#pro_qty' + id).val() > existing_quantity){
+            alert('sorry only '+ existing_quantity +' left')
+        document.getElementById('pro_qty'+ id).value = pro_qty -1
+        return;
+        }
+    }
+
+{% endfor %}
+
+
+$.ajax({
+
+    type: 'POST',
+    url: '{% url "cart-update" %}',
+    data: {
+
+        item_id: $(this).data('index'),
+        product_quantity: parseInt($('#pro_qty' + id).val()),
+        csrfmiddlewaretoken: "{{csrf_token}}",
+        action: 'post'
+    },
+
+    success: function(json){
+
+        console.log(json)
+
+        console.log('single_pro_total'+id)
+        document.getElementById("single_pro_total"+id).textContent =  json.single_product_total
+
+        document.getElementById("total_field").textContent = '₹ ' + json.sub_total
+
+
+        document.getElementById("tax_field").textContent = '₹ ' + json.gst
+
+        document.getElementById("grand_total").textContent = '₹ ' + json.grand_total
+    },
+
+    error: function(xhr, errmsg, err){
+
+        
+    }
+
+});
+
+
+})
+
+
+
+
+
+
+
+$(document).on('click', '.delete-button', function(e){
+            
+e.preventDefault();
+
+$.ajax({
+
+    type: 'POST',
+    url: '{% url "cart-delete" %}',
+    data: {
+
+        item_id: $(this).data('index'),
+        csrfmiddlewaretoken: "{{csrf_token}}",
+        action: 'post'
+
+    },
+
+    success: function(json){
+
+        // console.log(json)
+
+        location.reload();
+
+    },
+
+    error: function(xhr, errmsg, err){
+
+    }
+
+});
+
+
+})
+
+</script>
 
 
 {% endblock body %}

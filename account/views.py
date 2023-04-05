@@ -17,9 +17,14 @@ from .forms import UserAddressForm
 from django.conf import settings
 from .models import UserOTP
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
 import random
 import re
+
+
+from cart.models import OrderItem,Payment
+from django.db.models import  Sum,DateField
+from datetime import datetime, timedelta
+from django.db.models.functions import TruncDay, Cast
 
 
 # -----------------------------------Accounts --------------------------------
@@ -63,8 +68,8 @@ def log_in(request):
          
           auth.login(request,user)
           
-          if user.is_superadmin:
-               return render(request, 'adminpanel/admin_index.html')          
+          if user.is_superadmin:                 
+               return redirect(admin_index)       
           return redirect(index)
         else:
                messages.info(request,'Username or password is incorrect')
@@ -72,8 +77,63 @@ def log_in(request):
                #itmwill goo login page
     else:
         return render(request,'userpanel\login.html')
+
+
+@login_required(login_url='/login')
+def admin_index(request):
+    if request.user.is_authenticated and request.user.is_superadmin:
+        user = Account.objects.all().count()
+        sales = OrderItem.objects.count()
+        item = OrderItem.objects.all()
+        delivered_orders = OrderItem.objects.filter().values('item_total')
+        revenue = 0
+
+        for order in delivered_orders:        
+            revenue += order['item_total']
+
+        recent_sale = OrderItem.objects.all().order_by('-id')[:5]
+        total_income = Payment.objects.aggregate(Sum('grand_total'))['grand_total__sum']
+        if total_income:
+          total_income = round(total_income, 2)
+        else:
+          total_income = 0
+
+        today = datetime.today()
+        date_range = 8
+
+        # Get the date 7 days ago
+        four_days_ago = today - timedelta(days=date_range)
+
+        #filter orders based on the date range
+        payments = Payment.objects.filter(paid_date__gte=four_days_ago, paid_date__lte=today)
+
+        # Getting the sales amount per day
+        sales_by_day = payments.annotate(day=TruncDay('paid_date')).values('day').annotate(total_sales=Sum('grand_total')).order_by('day')
+
+        # Getting the dates which sales happpened
+        sales_dates = Payment.objects.annotate(sale_date=Cast('paid_date', output_field=DateField())).values('sale_date').distinct()
     
+
+        context = {
+            'user': user,
+            'sales': sales,
+            'item': item,
+            'total_income': total_income,        
+            'recent_sales':recent_sale,
+            'sales_by_day' : sales_by_day,
+            'sales_dates' :sales_dates,
+        }
+
+        return render(request, 'adminpanel/admin_index.html',context)
+    else:
+        return redirect('/')
     
+
+
+
+
+
+
 @cache_control(no_cache=True,must_revalidate=True,no_store=True)            
 def log_out(request):
     auth.logout(request)            

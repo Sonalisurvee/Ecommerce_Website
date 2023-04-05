@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError
 
 # -----------------------------------Product Management-Delete,edit and add --------------------------------
 
-
+@login_required(login_url='/login')
 def product_management(request):
     categories = Category.objects.all()    
     products = Product.objects.all()

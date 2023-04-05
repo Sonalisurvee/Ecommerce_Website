@@ -32,7 +32,7 @@
               <th scope="col" class="text-center">Customer</th>
               <th scope="col">Delivery address</th>
               <th scope="col">Ordered date</th>
-              <th scope="col">Payment</th>
+              <!-- <th scope="col">Payment</th> -->
               <th scope="col">Sub total</th>
               <th scope="col">Tax</th>
               <th scope="col">Grand Total</th>
@@ -49,7 +49,7 @@
               <td class="text-center">{{o.user.username}}</td>
               {% if o.delivery_address %}
               <td>{{o.delivery_address.house_name}},
-                    {{o.delivery_address.state}}, {{o.delivery_address.city}}, {{o.delivery_address.state}},
+                    {{o.delivery_address.state}}, {{o.delivery_address.city}}, {{o.delivery_address.state}},<br>
                     PIN: {{o.delivery_address.pincode}}
               </td>
               {% else %}
@@ -58,7 +58,7 @@
               <!-- <td>{{o.ordered_date.date}}</td> -->
               <td>{{ o.ordered_date.date|date:"m/d/Y" }}</td>
 
-              <td>{{o.payment.payment_method}}</td>
+              <!-- <td>{{o.payment.payment_method}}</td> -->
               <td>₹{{o.payment.cart_total}}</td>
               <td><span class="badge bg-success">₹{{o.payment.tax}}</span></td>
               <td class="text-center"><span class="badge bg-secondary">₹{{o.payment.grand_total}}</span></td>
