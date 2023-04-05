@@ -85,6 +85,7 @@
                                     <div class="media-body">
                                         <p>{{ wishlist_item.product.product_name }}</p>
                                         <p>{{ wishlist_item.product.product_description }}</p>
+                                        <p style="color: black;">Category : {{ wishlist_item.product.category }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -94,7 +95,7 @@
                           
                             <td>
                                 <a class="pr-3" href="{% url 'remove_wishlistitem' wishlist_item.product.id wishlist_item.id %}"><i class="fa-solid fa-trash fa-xl" style="color: #b08ead;"></i></a>                            
-                                <a class="" href="{% url 'add_to_cart' wishlist_item.product.id %}"><i class="fa-solid fa-cart-shopping fa-xl" style="color:#b08ead;"></i></a>                            
+                                <!-- <a class="" href="{% url 'add_to_cart' wishlist_item.product.id %}"><i class="fa-solid fa-cart-shopping fa-xl" style="color:#b08ead;"></i></a>                             -->
                             </td>
                            
                         </tr>

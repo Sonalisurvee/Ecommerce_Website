@@ -77,9 +77,6 @@ def log_in(request):
                #itmwill goo login page
     else:
         return render(request,'userpanel\login.html')
-    
-
-
 
 
 @login_required(login_url='/login')
@@ -96,7 +93,10 @@ def admin_index(request):
 
         recent_sale = OrderItem.objects.all().order_by('-id')[:5]
         total_income = Payment.objects.aggregate(Sum('grand_total'))['grand_total__sum']
-        total_income = round(total_income, 2)
+        if total_income:
+          total_income = round(total_income, 2)
+        else:
+          total_income = 0
 
         today = datetime.today()
         date_range = 8
@@ -113,7 +113,6 @@ def admin_index(request):
         # Getting the dates which sales happpened
         sales_dates = Payment.objects.annotate(sale_date=Cast('paid_date', output_field=DateField())).values('sale_date').distinct()
     
-
 
         context = {
             'user': user,

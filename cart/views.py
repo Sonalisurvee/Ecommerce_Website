@@ -2,13 +2,13 @@ from django.shortcuts import render,redirect,get_object_or_404
 from store.models import Product,SizeVariant,Varitaion
 from .models import Coupon,Cartt,CartItems,Payment,Order,OrderItem
 from account.models import Address
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseRedirect,HttpResponse
+from django.http import HttpResponseRedirect
 import razorpay
 from django.conf import settings
 from store.views import product_details
+from django.http import JsonResponse
 
 # -----------------------------------Carts --------------------------------
 
@@ -80,35 +80,6 @@ def add_to_cart(request,product_id):
     return redirect('cart')
 
 
-def remove_cartt(request,product_id,cart_item_id):
-    product = get_object_or_404(Product,id=product_id)
-    try:
-        if request.user.is_authenticated:
-            cart_item = CartItems.objects.get(products=product,id=cart_item_id)    
-        else:
-            cart = Cartt.objects.get(cart_id=_cart_id(request))
-            cart_item = CartItems.objects.get(products=product,carts=cart,id=cart_item_id)
-        if cart_item.quantity > 1:
-            cart_item.quantity -= 1
-            cart_item.save()
-        else:
-            cart_item.delete()
-    except:
-        pass
-    return redirect('cart')
-
-
-def remove_cartitems(request,product_id,cart_item_id):    
-    product = get_object_or_404(Product,id=product_id)
-    if request.user.is_authenticated:
-        cart_item = CartItems.objects.get(products=product,id=cart_item_id)
-    else:
-        cart = Cartt.objects.get(cart_id=_cart_id(request))
-        cart_item = CartItems.objects.get(products=product,carts=cart,id=cart_item_id)
-    cart_item.delete()
-    messages.success(request, f"{product.product_name} has been removed from the cart")
-    return redirect('cart')
-
 
 def cart(request):
     cart=None
@@ -133,10 +104,6 @@ def cart(request):
 
 
 # ----------------------------------checkout--------------------------------------------
-
-
-# KEY = 'rzp_test_a0WKFGxNpEjkyL'
-# SECRET_KEY = 'k7q1VWdctZVX6sZe9p9FWGpJ'
 
 
 # @login_required(login_url= 'log_in')
@@ -186,7 +153,7 @@ def checkout(request,cart_items=None):
         
             # -----------------Coupon-end----------------
         try:
-            client = razorpay.Client(auth = (settings.KEY , settings.SECRET_KEY))
+            client = razorpay.Client(auth = (settings.KEY_ID , settings.KEY_SECRET))
             payment = client.order.create({'amount' : int(cart.get_grand_total()) * 100, 'currency' : 'INR', 'payment_capture': 1})
             cart.razorpay_order_id = payment['id']
             cart.save()
@@ -216,10 +183,6 @@ def checkout(request,cart_items=None):
 def success(request):
     order_id = request.GET.get('order_id')
     cart = Cartt.objects.get(razorpay_order_id = order_id )
-
-    # razorpay_order_id = request.GET.get('razorpay_order_id').split("_")[1]
-    # cart = Cartt.objects.get(razorpay_order_id=razorpay_order_id )
-
 
 # this will create details in the payment model 
 
@@ -293,12 +256,81 @@ def remove_coupon(request):
 
 
 
-# ------------------------------------------------------order_success ---------------------------------------------------
 
 
-def order_confirmation(request):
-    return render(request,'cart/order_confirmation.html')
+# after ajax
+
+def cart_delete(request):
 
 
-# -----------------------------------------Order management user side-----------------------------------------
+    if request.POST.get('action') == 'post':
 
+        item_id = int(request.POST.get('item_id'))
+        item = CartItems.objects.get(id = item_id)
+        item.delete()
+        
+        response = JsonResponse({"message":'success'})
+        return response
+
+
+def cart_update(request):
+
+    # cart = Cart_session(request)
+    if request.POST.get('action') == 'post':
+
+        if request.user.is_authenticated:
+
+            item_id = int(request.POST.get('item_id'))
+            product_quantity = int(request.POST.get('product_quantity'))
+
+            # cart.update(variant=variant_id, qty=product_quantity)
+        
+            print('item id = ',item_id,'quatity = ',product_quantity)
+
+            item = CartItems.objects.get(id=item_id )
+            item.quantity = product_quantity
+            item.save()
+
+            cart_id = item.carts.id
+            cart_obj = Cartt.objects.get(id=cart_id)            
+            cart_gst = cart_obj.get_tax()
+            cart_total = cart_obj.get_cart_total()
+            single_product_total = item.sub_total()
+            grand_total = cart_total + cart_gst
+
+            print(cart_gst,' ', cart_total,' ', grand_total)
+
+            response = JsonResponse({'single_product_total':single_product_total,'sub_total':cart_total, 'gst':cart_gst, 'grand_total':grand_total})
+            return response 
+        
+        else:            
+            item_id = int(request.POST.get('item_id'))
+            product_quantity = int(request.POST.get('product_quantity'))
+
+            # cart.update(variant=variant_id, qty=product_quantity)
+        
+            print('item id = ',item_id,'quatity = ',product_quantity)
+
+            item = CartItems.objects.get(id=item_id )
+            item.quantity = product_quantity
+            item.save()
+
+            cart_id = item.carts.id
+
+            try:   
+                cart_obj = Cartt.objects.get(cart_id=_cart_id(request))
+            except Cartt.DoesNotExist: 
+                cart_obj = Cartt.objects.create(cart_id=_cart_id(request)) 
+            cart_obj.save()
+            
+            # cart_obj = Cartt.objects.get(id=cart_id)    
+                    
+            cart_gst = cart_obj.get_tax()
+            cart_total = cart_obj.get_cart_total()
+            single_product_total = item.sub_total()
+            grand_total = cart_total + cart_gst
+
+            print(cart_gst,' ', cart_total,' ', grand_total)
+
+            response = JsonResponse({'single_product_total':single_product_total,'sub_total':cart_total, 'gst':cart_gst, 'grand_total':grand_total})
+            return response

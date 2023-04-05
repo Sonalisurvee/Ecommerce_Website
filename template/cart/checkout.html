@@ -6,20 +6,6 @@
   .billing_details form {
     padding-top: 20px
   }
-
-  /* .checkout_area input {
-    border: 1px solid black;
-  } */        
-
-
-  /* .checkout_area .form-control {
-    border: 1px solid black;
-  } */
-
-  /* .returning_customer .form-control {
-    border: 1px solid black;
-  } */
-
   .cap {
     background-color: #795376;
     color: white;
@@ -74,19 +60,7 @@
           COUPON
           <!-- <a href="#">Click here to enter your code</a> -->
         </h2>
-      </div>
-      <!-- <form method="post">
-
-        {% csrf_token %}
-        <div class="col-md-3 mt-3">
-          {% include 'message.html' %}
-        </div>
-        <input type="text" name="coupon" placeholder="Enter coupon code" />
-        <button type="submit" class="tp_btn" href="#">Apply Coupon</button>
-        {% if cart.coupon %}
-        <a href="{% url 'remove_coupan' %}" class="btn btn-success">{{cart.coupon.discount_price}} off is applied on product</a>
-        {% endif %}
-      </form> -->
+      </div>   
 
       <form method="post">
 
@@ -345,7 +319,7 @@ var options = {
     "order_id": "{{payment.id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
     "handler": function (response){
 
-      window.location.href = `http://127.0.0.1:8000/cart/success/?razorpay_payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}&razorpay_signature=${response.razorpay_signature}`
+      window.location.href = `${window.location.origin}/cart/success/?razorpay_payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}&razorpay_signature=${response.razorpay_signature}`
 
 
         // alert(response.razorpay_payment_id);
