@@ -42,7 +42,11 @@
           {% for r in review %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{r.product.image.url}}</td>
+                        <td>
+
+
+                        <img src="{{r.product.image.url}}" alt="{{r.product.product_name}}" style="width:80px; height:80px" ></td>
+
                         <td>{{r.product.product_name}}</td>
                         <td>{{r.user.first_name}}</td>    
                         <td>{{r.title}}</td>    
